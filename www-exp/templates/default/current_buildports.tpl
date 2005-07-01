@@ -1,4 +1,4 @@
-<!-- $MCom: portstools/tinderbox/www-exp/templates/default/current_buildports.tpl,v 1.1 2005/07/01 18:09:38 oliver Exp $ //-->
+<!-- $MCom: portstools/tinderbox/www-exp/templates/default/current_buildports.tpl,v 1.1.1.1 2005/07/01 18:09:38 oliver Exp $ //-->
 <?if(!$no_list){?>
 	<?if($build_name){?>
 		<h1>Current Builds in <?=$build_name?></h1>

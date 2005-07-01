@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/index.php,v 1.1 2005/07/01 18:09:37 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/index.php,v 1.1.1.1 2005/07/01 18:09:37 oliver Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
