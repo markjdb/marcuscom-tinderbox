@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/BuildPortsQueue.php,v 1.5 2005/09/04 02:54:47 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/BuildPortsQueue.php,v 1.5.2.1 2005/10/02 20:50:36 marcus Exp $
 #
 
     require_once 'TinderObject.php';
@@ -65,7 +65,7 @@
 	}
 
 	function getEmailOnCompletion() {
-	    return $this->truth_array[$this->Email_On_Completion];
+	    return $this->_truth_array[$this->Email_On_Completion];
 	}
 
 	function getStatus() {
