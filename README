@@ -1,4 +1,4 @@
-$MCom: portstools/tinderbox/README,v 1.40.2.1 2005/10/16 04:57:39 marcus Exp $
+$MCom: portstools/tinderbox/README,v 1.40.2.2 2005/10/22 06:10:06 marcus Exp $
 
 BASIC INSTALLATION AND USAGE INSTRUCTIONS
 
@@ -233,6 +233,7 @@ The tinderbuild script also accepts some additional command line arguments:
                    prior to starting the build
  -fetch-original : ignores the distfile cache, and fetches all distfiles
                    from their respective sources
+ -nolog          : disables log analysis code
 
 Maintenance:
 ------------
