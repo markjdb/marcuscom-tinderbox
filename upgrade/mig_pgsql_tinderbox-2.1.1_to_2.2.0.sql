@@ -1,236 +1,31 @@
-SET FOREIGN_KEY_CHECKS=0;
-
-DROP TABLE IF EXISTS ports;
-CREATE TABLE ports (
-  Port_Id int NOT NULL auto_increment,
-  Port_Directory varchar(255) NOT NULL,
-  Port_Name varchar(64),
-  Port_Maintainer varchar(128),
-  Port_Comment varchar(255),
-  PRIMARY KEY (Port_Id),
-  UNIQUE (Port_Directory),
-  INDEX Port_Directory_Idx (Port_Directory)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS jails;
-CREATE TABLE jails (
-  Jail_Id int NOT NULL auto_increment,
-  Jail_Name varchar(32) NOT NULL,
-  Jail_Tag varchar(32),
-  Jail_Last_Built datetime,
-  Jail_Update_Cmd varchar(255) DEFAULT 'CVSUP',
-  Jail_Description text,
-  Jail_Src_Mount text,
-  PRIMARY KEY (Jail_Id),
-  UNIQUE (Jail_Name),
-  INDEX Jail_Name_Idx (Jail_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS ports_trees;
-CREATE TABLE ports_trees (
-  Ports_Tree_Id int NOT NULL auto_increment,
-  Ports_Tree_Name varchar(32) NOT NULL,
-  Ports_Tree_Description text,
-  Ports_Tree_Last_Built datetime,
-  Ports_Tree_Update_Cmd varchar(255) DEFAULT 'CVSUP',
-  Ports_Tree_CVSweb_URL varchar(255),
-  Ports_Tree_Ports_Mount text,
-  PRIMARY KEY (Ports_Tree_Id),
-  UNIQUE (Ports_Tree_Name),
-  INDEX Ports_Tree_Name_Idx (Ports_Tree_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS builds;
-CREATE TABLE builds (
-  Build_Id int NOT NULL auto_increment,
-  Build_Name varchar(32) NOT NULL,
-  Jail_Id int NOT NULL,
-  Ports_Tree_Id int NOT NULL,
-  Build_Description text,
-  Build_Status enum('IDLE','PREPARE','PORTBUILD') DEFAULT 'IDLE',
-  Build_Current_Port varchar(255),
-  PRIMARY KEY (Build_Id),
-  UNIQUE (Build_Name),
-  INDEX Build_Name_Idx (Build_Name),
-  INDEX (Jail_Id),
-  FOREIGN KEY (Jail_Id)
-    REFERENCES jails(Jail_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Ports_Tree_Id),
-  FOREIGN KEY (Ports_Tree_Id)
-    REFERENCES ports_trees(Ports_Tree_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-  User_Id int NOT NULL auto_increment,
-  User_Name varchar(16) NOT NULL,
-  User_Email varchar(255),
-  User_Password varchar(41),
-  User_Www_Enabled tinyint(1) NOT NULL default '0',
-  PRIMARY KEY (User_Id),
-  UNIQUE (User_Name),
-  INDEX User_Name_Idx (User_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS user_permissions;
-CREATE TABLE IF NOT EXISTS user_permissions (
-  User_Id int(11) NOT NULL,
-  Host_Id int(11) NOT NULL,
-  User_Permission_Object_Type enum('builds','users') NOT NULL,
-  User_Permission_Object_Id int(11) NOT NULL default '0',
-  User_Permission int(11) NOT NULL default '0',
-  PRIMARY KEY  (User_Id,User_Permission_Object_Type,User_Permission_Object_Id,User_Permission,Host_Id),
-  INDEX (User_Id),
-  FOREIGN KEY (User_Id)
-    REFERENCES users(User_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS build_users;
-CREATE TABLE build_users (
-  Build_User_Id int NOT NULL auto_increment,
-  Build_Id int NOT NULL,
-  User_Id int NOT NULL,
-  Email_On_Completion tinyint(1) DEFAULT 1,
-  Email_On_Error tinyint(1) DEFAULT 1,
-  PRIMARY KEY (Build_User_Id),
-  INDEX (Build_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds(Build_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (User_Id),
-  FOREIGN KEY (User_Id)
-    REFERENCES users(User_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS port_fail_reasons;
 CREATE TABLE port_fail_reasons (
-  Port_Fail_Reason_Tag varchar(20) NOT NULL,
-  Port_Fail_Reason_Descr text,
-  Port_Fail_Reason_Type enum('COMMON','RARE','TRANSIENT') NOT NULL DEFAULT 'COMMON',
-  PRIMARY KEY (Port_Fail_Reason_Tag)
-) TYPE=INNODB;
+        Port_Fail_Reason_Tag VARCHAR(20) PRIMARY KEY,
+        Port_Fail_Reason_Descr TEXT,
+        Port_Fail_Reason_Type VARCHAR(16) CHECK (port_fail_reason_type IN ('COMMON','RARE','TRANSIENT')) NOT NULL DEFAULT 'COMMON'
+);
 
-DROP TABLE IF EXISTS build_ports;
-CREATE TABLE build_ports (
-  Build_Port_Id int NOT NULL auto_increment,
-  Build_Id int NOT NULL,
-  Port_Id int NOT NULL,
-  Last_Built datetime,
-  Last_Status enum('UNKNOWN','SUCCESS','FAIL','BROKEN', 'LEFTOVERS') DEFAULT 'UNKNOWN',
-  Last_Fail_Reason varchar(20) NOT NULL DEFAULT '__nofail__',
-  Last_Successful_Built datetime,
-  Last_Built_Version varchar(100),
-  PRIMARY KEY (Build_Port_Id),
-  INDEX (Build_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds(Build_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Port_Id),
-  FOREIGN KEY (Port_Id)
-    REFERENCES ports(Port_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Last_Fail_Reason),
-  FOREIGN KEY (Last_Fail_Reason)
-    REFERENCES port_fail_reasons(Port_Fail_Reason_Tag)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
+ALTER TABLE build_ports
+  ADD Last_Fail_Reason VARCHAR(20) NOT NULL DEFAULT '__nofail__' REFERENCES port_fail_reasons(Port_Fail_Reason_Tag) ON UPDATE CASCADE ON DELETE RESTRICT;
 
-DROP TABLE IF EXISTS hosts;
-CREATE TABLE hosts (
-  Host_Id int NOT NULL auto_increment,
-  Host_Name varchar(255) NOT NULL,
-  PRIMARY KEY (Host_Id),
-  KEY Host_Name (Host_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS config;
-CREATE TABLE config (
-  Config_Option_Name varchar(255) NOT NULL,
-  Config_Option_Value text,
-  Host_Id int NOT NULL DEFAULT -1,
-  PRIMARY KEY (Config_Option_Name, Host_Id),
-  INDEX (Host_Id),
-  FOREIGN KEY (Host_Id)
-    REFERENCES hosts(Host_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS build_ports_queue;
-CREATE TABLE build_ports_queue (
-  Build_Ports_Queue_Id int(11) NOT NULL auto_increment,
-  Enqueue_Date datetime,
-  Completion_Date datetime,
-  Build_Id int NOT NULL,
-  User_Id int NOT NULL,
-  Port_Directory varchar(255) NOT NULL,
-  Priority int NOT NULL default '10',
-  Host_Id int NOT NULL,
-  Email_On_Completion tinyint(1) NOT NULL,
-  Status enum('ENQUEUED','PROCESSING','SUCCESS','FAIL') NOT NULL default 'ENQUEUED',
-  PRIMARY KEY (Build_Ports_Queue_Id),
-  KEY Host_Id (Host_Id),
-  KEY User_Id (User_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds (Build_Id)
-    ON UPDATE CASCADE,
-  FOREIGN KEY (Host_Id)
-    REFERENCES hosts (Host_Id)
-    ON UPDATE CASCADE
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS port_fail_patterns;
 CREATE TABLE port_fail_patterns (
-  Port_Fail_Pattern_Id int NOT NULL,
-  Port_Fail_Pattern_Expr text NOT NULL,
-  Port_Fail_Pattern_Reason varchar(20) NOT NULL,
-  Port_Fail_Pattern_Parent int NOT NULL DEFAULT 0,
-  PRIMARY KEY (Port_Fail_Pattern_Id),
-  INDEX Port_Fail_Pattern_Parent_Idx (Port_Fail_Pattern_Parent),
-  INDEX (Port_Fail_Pattern_Reason),
-  FOREIGN KEY (Port_Fail_Pattern_Reason)
-    REFERENCES port_fail_reasons(Port_Fail_Reason_Tag)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
+        Port_Fail_Pattern_Id INTEGER PRIMARY KEY,
+        Port_Fail_Pattern_Expr TEXT NOT NULL,
+        Port_Fail_Pattern_Reason VARCHAR(20) NOT NULL DEFAULT '__nofail__' REFERENCES port_fail_reasons(Port_Fail_Reason_Tag) ON UPDATE CASCADE ON DELETE RESTRICT,
+        Port_Fail_Pattern_Parent INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX Port_Fail_Pattern_Parent_Idx ON port_fail_patterns(Port_Fail_Pattern_Parent);
 
-INSERT INTO hosts VALUES (-1, '__ALL__');
-
-##
-# Supported config commands.  If any new commands are added here,
-# __DSVERSION__ must be bumped.  Use micro version bumps for new config
-# commands, and minor version bumps for schema changes.
-##
-INSERT INTO config VALUES ('__DSVERSION__', '2.2.0', -1);
-INSERT INTO config VALUES ('CCACHE_ENABLED', '0', -1);
-INSERT INTO config VALUES ('CCACHE_DIR', '', -1);
-INSERT INTO config VALUES ('CCACHE_NOLINK', '1', -1);
-INSERT INTO config VALUES ('CCACHE_MAX_SIZE', '1G', -1);
-INSERT INTO config VALUES ('CCACHE_JAIL', '0', -1);
-INSERT INTO config VALUES ('CCACHE_LOGFILE', '', -1);
-INSERT INTO config VALUES ('DISTFILE_CACHE', '', -1);
-INSERT INTO config VALUES ('TINDERD_SLEEPTIME', '120', -1);
-INSERT INTO config VALUES ('JAIL_OBJDIR', '', -1);
-
-##
-# Port failure reasons.  These are reasons why a port may fail to build.
-# One reason may have multiple supporting patterns.  The tag column should
-# be a short identifier for the given reason description.  Changes to the
-# reasons list require a micro version bump to __DSVERSION__.
-##
 INSERT INTO port_fail_reasons VALUES ('__parent__', 'This is a parent reason.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('__nofail__', 'The port was built successfully.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('gcc_bug', 'You have tickled a bug in gcc itself. See the GNU bug report documentation for further information.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('checksum', 'The checksum of one or more of the files is incorrect.', 'COMMON');
-INSERT INTO port_fail_reasons VALUES ('perl', 'perl is no longer included by default in the base system, but your port\'s configuration process depends on it. While this change helps avoid having a stale version of perl in the base system, it also means that many ports now need to include USE_PERL5.', 'COMMON');
+INSERT INTO port_fail_reasons VALUES ('perl', 'perl is no longer included by default in the base system, but your port''s configuration process depends on it. While this change helps avoid having a stale version of perl in the base system, it also means that many ports now need to include USE_PERL5.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('threads', 'This port is attempting to use the wrong pthread library.  You should replace static instances of -pthread, -lpthread, and -lc_r with ${PTHREAD_LIBS}.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('distinfo_update', 'The contents of distinfo does not match the list of distfiles or patchfiles.', 'COMMON');
-INSERT INTO port_fail_reasons VALUES ('apxs', 'Your port depends on Apache (in particular, the apxs binary) but the Makefile doesn\'t have Apache in BUILD_DEPENDS and/or LIB_DEPENDS.', 'COMMON');
-INSERT INTO port_fail_reasons VALUES ('arch', 'The port does not build on a particular architecture, due to assembler or linker errors. In some easy cases this is due to not picking up the various ARCH configuration variables in the Makefile; you\'ll see this via, e.g., a Sparc make failing while looking for an i386 subdirectory. For the 64-bit architectures, a common problem is the assumption many programmers make that pointers may be cast to and from 32-bit ints. In other cases the problems run much deeper, in which case ONLY_FOR_ARCHS may be needed.', 'COMMON');
+INSERT INTO port_fail_reasons VALUES ('apxs', 'Your port depends on Apache (in particular, the apxs binary) but the Makefile doesn''t have Apache in BUILD_DEPENDS and/or LIB_DEPENDS.', 'COMMON');
+INSERT INTO port_fail_reasons VALUES ('arch', 'The port does not build on a particular architecture, due to assembler or linker errors. In some easy cases this is due to not picking up the various ARCH configuration variables in the Makefile; you''ll see this via, e.g., a Sparc make failing while looking for an i386 subdirectory. For the 64-bit architectures, a common problem is the assumption many programmers make that pointers may be cast to and from 32-bit ints. In other cases the problems run much deeper, in which case ONLY_FOR_ARCHS may be needed.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('stl', 'Your port requires the STL library but cannot find it.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('configure_error', 'The port\'s configure script produced some kind of error.', 'COMMON');
+INSERT INTO port_fail_reasons VALUES ('configure_error', 'The port''s configure script produced some kind of error.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('bison', 'Your port requires bison, which does not exist in 4.x-stable or newer anymore. Either patch it to use byacc instead, or define USE_BISON.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('fetch', 'One or more of the files could not be fetched.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('patch', 'One or more of the patches failed.', 'COMMON');
@@ -239,7 +34,7 @@ INSERT INTO port_fail_reasons VALUES ('X_manpage', 'This port does not install a
 INSERT INTO port_fail_reasons VALUES ('MOTIF', 'This port requires Motif but does not define REQUIRES_MOTIF. See the <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/porting-motif.html">handbook</a> for details.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('MOTIFLIB', 'This port requires Motif but does not refer to the libraries using ${MOTIFLIB}. See <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/porting-motif.html">handbook</a> for details.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('WRKDIR', 'The port is attempting to change something outside ${WRKDIR}. See <a href="http://www.freebsd.org/doc/en_US.ISO8859-1/books/porters-handbook/porting-motif.html">handbook</a> for details.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('texinfo', 'The new makeinfo cannot process a texinfo source file. You can probably add a "--no-validate" option to force it through if you are sure it\'s correct regardless of what makeinfo says.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('texinfo', 'The new makeinfo cannot process a texinfo source file. You can probably add a "--no-validate" option to force it through if you are sure it''s correct regardless of what makeinfo says.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('perl5', 'There is a problem in processing a perl5 module.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('LIB_DEPENDS', 'The LIB_DEPENDS line specifies a library name incorrectly. This often happens when a port is upgraded and the shared library version number changes.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('ELF', 'The port does not properly work in the new ELF world. It is probably looking for an a.out object (e.g., crt0.o).', 'RARE');
@@ -254,8 +49,8 @@ INSERT INTO port_fail_reasons VALUES ('compiler_error', 'There is a C compiler e
 INSERT INTO port_fail_reasons VALUES ('new_compiler_error', 'The new gcc (2.95.x or above) does not like the source code. This is usually due to stricter C++ type checking or changes in register allocation policy.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('bad_C++_code', 'There is a compiler error which is caused by something specific to C++.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('linker_error', 'There is a linker error which is caused by something other than those flagged by e.g. MOTIF or MOTIFLIB.', 'COMMON');
-INSERT INTO port_fail_reasons VALUES ('chown', 'POSIX has deprecated the usage "chown user.group filename" in favor of "chown user:group filename". This happened quite some time ago, actually, but it is only now being enforced. (The change was made to allow \'.\' in usernames).', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('cgi-bin', 'Your port assumes that a directory (usually /usr/local/www/cgi-bin) already exists, but by default it doesn\'t.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('chown', 'POSIX has deprecated the usage "chown user.group filename" in favor of "chown user:group filename". This happened quite some time ago, actually, but it is only now being enforced. (The change was made to allow ''.'' in usernames).', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('cgi-bin', 'Your port assumes that a directory (usually /usr/local/www/cgi-bin) already exists, but by default it doesn''t.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('install_error', 'There was an error during installation.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('manpage', 'There is a manpage listed in a MAN? macro that does not exist or is not installed in the right place.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('DISPLAY', 'This port requires an X display to build. There is nothing you can do about it unless you can somehow make it not require an X connection.', 'RARE');
@@ -267,11 +62,11 @@ INSERT INTO port_fail_reasons VALUES ('segfault', 'Some process in the build cha
 INSERT INTO port_fail_reasons VALUES ('union_wait', 'The compiler could not calculate the storage size of an object, often due to misuse of a union.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('stdio', 'You need to bring your port up to date with the current <stdio.h>.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('struct_changes', 'Your port is trying to refer to structure elements that are not really there. This is often due to changes in the underlying include files.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('alignment', 'You\'ve managed to confuse the assembler with a misaligned structure.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('alignment', 'You''ve managed to confuse the assembler with a misaligned structure.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('assert', 'Compilation failed due to an assert. This is often a variation on arch or missing header.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('autoconf', 'Your port depends on autoconf, but the Makefile either doesn\'t have USE_AUTOCONF, or does not use USE_AUTOCONF_VER correctly.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('autoconf', 'Your port depends on autoconf, but the Makefile either doesn''t have USE_AUTOCONF, or does not use USE_AUTOCONF_VER correctly.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('autoheader', 'Your port depends on autoheader, but the Makefile cannot find it; set USE_AUTOHEADER.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('automake', 'Your port depends on automake, but the Makefile either doesn\'t have USE_AUTOMAKE, or does not use USE_AUTOMAKE_VER correctly.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('automake', 'Your port depends on automake, but the Makefile either doesn''t have USE_AUTOMAKE, or does not use USE_AUTOMAKE_VER correctly.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('awk', 'awk is complaining about some kind of bogus string expression.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('ffs_conflict', 'Both /usr/include/machine/cpufunc.h and /usr/include/strings.h are attempting to define int ffs(). The "correct" fix is not known at this time.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('forbidden', 'Someone has marked this port as "forbidden", almost always due to security concerns. See the logfile for more information.', 'RARE');
@@ -279,8 +74,8 @@ INSERT INTO port_fail_reasons VALUES ('getopt', 'Your port may need to set the n
 INSERT INTO port_fail_reasons VALUES ('getopt.h', '<getopt.h> is conflicting with unistd.h.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('imake', 'Imake has encountered a problem.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('makefile', 'There is an error in the Makefile, possibly in the default targets.', 'COMMON');
-INSERT INTO port_fail_reasons VALUES ('mtree', 'The port leaves ${PREFIX} in a state that is not consistent with the mtree definition after pkg_delete. This usually means some files are missing from PLIST. It could also mean that your installation scripts create files or directories not properly deleted by the deinstallation scripts. Another possibility is that your port is deleting some directories it is not supposed to, or incorrectly modifying some directory\'s permission.', 'RARE');
-INSERT INTO port_fail_reasons VALUES ('pod2man', 'perl is no longer included by default in the base system, but your port\'s documentation process depends on it. While this change helps avoid having a stale version of perl in the base system, it also means that many ports now need to include USE_PERL5.', 'COMMON');
+INSERT INTO port_fail_reasons VALUES ('mtree', 'The port leaves ${PREFIX} in a state that is not consistent with the mtree definition after pkg_delete. This usually means some files are missing from PLIST. It could also mean that your installation scripts create files or directories not properly deleted by the deinstallation scripts. Another possibility is that your port is deleting some directories it is not supposed to, or incorrectly modifying some directory''s permission.', 'RARE');
+INSERT INTO port_fail_reasons VALUES ('pod2man', 'perl is no longer included by default in the base system, but your port''s documentation process depends on it. While this change helps avoid having a stale version of perl in the base system, it also means that many ports now need to include USE_PERL5.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('portcomment', 'The COMMENT macro contains shell metacharacters that are not properly quoted.', 'RARE');
 INSERT INTO port_fail_reasons VALUES ('process_failed', 'The make process terminated unexpectedly, due to something like a signal 6 or bus error.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('python', 'The Makefile needs to define USE_PYTHON.', 'RARE');
@@ -290,13 +85,6 @@ INSERT INTO port_fail_reasons VALUES ('NFS', 'There was either a temporary NFS e
 INSERT INTO port_fail_reasons VALUES ('PLIST', 'There is a missing item in the PLIST. Note that this is often caused by an earlier error that went undetected. In this case, you should fix the error and also the build process so it will fail upon an error instead of continuing, since that makes debugging that much harder.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('???', 'The automated script cannot even guess what is wrong with your port. Either the script is really stupid (more likely), or your port has ventured into unknown lands (congratulations!).', 'COMMON');
 
-##
-# Port failure patterns.  Port error logs are searched for matches to these
-# patterns in an attempt to put a simple reason behind why a port failed
-# to build correctly.  Order is important here.  The order number field
-# is the first field, and there should be a difference of 100 between
-# patterns.  Changes here require a micro version bump to __DSVERSION__.
-##
 INSERT INTO port_fail_patterns VALUES (0, '.*', '__parent__', 0);
 INSERT INTO port_fail_patterns VALUES (100, 'See <URL:http://gcc.gnu.org/bugs.html> for instructions.', 'gcc_bug', 0);
 INSERT INTO port_fail_patterns VALUES (200, 'See <URL:http://www.gnu.org/software/gcc/bugs.html> for instructions.', 'gcc_bug', 0);
@@ -435,4 +223,4 @@ INSERT INTO port_fail_patterns VALUES (13400, 'cd: can.t cd to', 'NFS', 0);
 INSERT INTO port_fail_patterns VALUES (13500, 'pkg_create: make_dist: tar command failed with code', 'PLIST', 0);
 INSERT INTO port_fail_patterns VALUES (2147483647, '.*', '???', 0);
 
-SET FOREIGN_KEY_CHECKS=1;
+UPDATE config SET Config_Option_Value='2.2.0' WHERE Config_Option_Name='__DSVERSION__';

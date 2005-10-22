@@ -1,111 +1,5 @@
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS ports;
-CREATE TABLE ports (
-  Port_Id int NOT NULL auto_increment,
-  Port_Directory varchar(255) NOT NULL,
-  Port_Name varchar(64),
-  Port_Maintainer varchar(128),
-  Port_Comment varchar(255),
-  PRIMARY KEY (Port_Id),
-  UNIQUE (Port_Directory),
-  INDEX Port_Directory_Idx (Port_Directory)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS jails;
-CREATE TABLE jails (
-  Jail_Id int NOT NULL auto_increment,
-  Jail_Name varchar(32) NOT NULL,
-  Jail_Tag varchar(32),
-  Jail_Last_Built datetime,
-  Jail_Update_Cmd varchar(255) DEFAULT 'CVSUP',
-  Jail_Description text,
-  Jail_Src_Mount text,
-  PRIMARY KEY (Jail_Id),
-  UNIQUE (Jail_Name),
-  INDEX Jail_Name_Idx (Jail_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS ports_trees;
-CREATE TABLE ports_trees (
-  Ports_Tree_Id int NOT NULL auto_increment,
-  Ports_Tree_Name varchar(32) NOT NULL,
-  Ports_Tree_Description text,
-  Ports_Tree_Last_Built datetime,
-  Ports_Tree_Update_Cmd varchar(255) DEFAULT 'CVSUP',
-  Ports_Tree_CVSweb_URL varchar(255),
-  Ports_Tree_Ports_Mount text,
-  PRIMARY KEY (Ports_Tree_Id),
-  UNIQUE (Ports_Tree_Name),
-  INDEX Ports_Tree_Name_Idx (Ports_Tree_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS builds;
-CREATE TABLE builds (
-  Build_Id int NOT NULL auto_increment,
-  Build_Name varchar(32) NOT NULL,
-  Jail_Id int NOT NULL,
-  Ports_Tree_Id int NOT NULL,
-  Build_Description text,
-  Build_Status enum('IDLE','PREPARE','PORTBUILD') DEFAULT 'IDLE',
-  Build_Current_Port varchar(255),
-  PRIMARY KEY (Build_Id),
-  UNIQUE (Build_Name),
-  INDEX Build_Name_Idx (Build_Name),
-  INDEX (Jail_Id),
-  FOREIGN KEY (Jail_Id)
-    REFERENCES jails(Jail_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Ports_Tree_Id),
-  FOREIGN KEY (Ports_Tree_Id)
-    REFERENCES ports_trees(Ports_Tree_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-  User_Id int NOT NULL auto_increment,
-  User_Name varchar(16) NOT NULL,
-  User_Email varchar(255),
-  User_Password varchar(41),
-  User_Www_Enabled tinyint(1) NOT NULL default '0',
-  PRIMARY KEY (User_Id),
-  UNIQUE (User_Name),
-  INDEX User_Name_Idx (User_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS user_permissions;
-CREATE TABLE IF NOT EXISTS user_permissions (
-  User_Id int(11) NOT NULL,
-  Host_Id int(11) NOT NULL,
-  User_Permission_Object_Type enum('builds','users') NOT NULL,
-  User_Permission_Object_Id int(11) NOT NULL default '0',
-  User_Permission int(11) NOT NULL default '0',
-  PRIMARY KEY  (User_Id,User_Permission_Object_Type,User_Permission_Object_Id,User_Permission,Host_Id),
-  INDEX (User_Id),
-  FOREIGN KEY (User_Id)
-    REFERENCES users(User_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS build_users;
-CREATE TABLE build_users (
-  Build_User_Id int NOT NULL auto_increment,
-  Build_Id int NOT NULL,
-  User_Id int NOT NULL,
-  Email_On_Completion tinyint(1) DEFAULT 1,
-  Email_On_Error tinyint(1) DEFAULT 1,
-  PRIMARY KEY (Build_User_Id),
-  INDEX (Build_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds(Build_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (User_Id),
-  FOREIGN KEY (User_Id)
-    REFERENCES users(User_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
 DROP TABLE IF EXISTS port_fail_reasons;
 CREATE TABLE port_fail_reasons (
   Port_Fail_Reason_Tag varchar(20) NOT NULL,
@@ -114,73 +8,12 @@ CREATE TABLE port_fail_reasons (
   PRIMARY KEY (Port_Fail_Reason_Tag)
 ) TYPE=INNODB;
 
-DROP TABLE IF EXISTS build_ports;
-CREATE TABLE build_ports (
-  Build_Port_Id int NOT NULL auto_increment,
-  Build_Id int NOT NULL,
-  Port_Id int NOT NULL,
-  Last_Built datetime,
-  Last_Status enum('UNKNOWN','SUCCESS','FAIL','BROKEN', 'LEFTOVERS') DEFAULT 'UNKNOWN',
-  Last_Fail_Reason varchar(20) NOT NULL DEFAULT '__nofail__',
-  Last_Successful_Built datetime,
-  Last_Built_Version varchar(100),
-  PRIMARY KEY (Build_Port_Id),
-  INDEX (Build_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds(Build_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Port_Id),
-  FOREIGN KEY (Port_Id)
-    REFERENCES ports(Port_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-  INDEX (Last_Fail_Reason),
-  FOREIGN KEY (Last_Fail_Reason)
+ALTER TABLE build_ports
+  ADD Last_Fail_Reason varchar(20) NOT NULL DEFAULT '__nofail__',
+  ADD INDEX (Last_Fail_Reason),
+  ADD FOREIGN KEY (Last_Fail_Reason)
     REFERENCES port_fail_reasons(Port_Fail_Reason_Tag)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS hosts;
-CREATE TABLE hosts (
-  Host_Id int NOT NULL auto_increment,
-  Host_Name varchar(255) NOT NULL,
-  PRIMARY KEY (Host_Id),
-  KEY Host_Name (Host_Name)
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS config;
-CREATE TABLE config (
-  Config_Option_Name varchar(255) NOT NULL,
-  Config_Option_Value text,
-  Host_Id int NOT NULL DEFAULT -1,
-  PRIMARY KEY (Config_Option_Name, Host_Id),
-  INDEX (Host_Id),
-  FOREIGN KEY (Host_Id)
-    REFERENCES hosts(Host_Id)
-    ON UPDATE CASCADE ON DELETE RESTRICT
-) TYPE=INNODB;
-
-DROP TABLE IF EXISTS build_ports_queue;
-CREATE TABLE build_ports_queue (
-  Build_Ports_Queue_Id int(11) NOT NULL auto_increment,
-  Enqueue_Date datetime,
-  Completion_Date datetime,
-  Build_Id int NOT NULL,
-  User_Id int NOT NULL,
-  Port_Directory varchar(255) NOT NULL,
-  Priority int NOT NULL default '10',
-  Host_Id int NOT NULL,
-  Email_On_Completion tinyint(1) NOT NULL,
-  Status enum('ENQUEUED','PROCESSING','SUCCESS','FAIL') NOT NULL default 'ENQUEUED',
-  PRIMARY KEY (Build_Ports_Queue_Id),
-  KEY Host_Id (Host_Id),
-  KEY User_Id (User_Id),
-  FOREIGN KEY (Build_Id)
-    REFERENCES builds (Build_Id)
-    ON UPDATE CASCADE,
-  FOREIGN KEY (Host_Id)
-    REFERENCES hosts (Host_Id)
-    ON UPDATE CASCADE
-) TYPE=INNODB;
+    ON UPDATE CASCADE ON DELETE RESTRICT;
 
 DROP TABLE IF EXISTS port_fail_patterns;
 CREATE TABLE port_fail_patterns (
@@ -196,30 +29,6 @@ CREATE TABLE port_fail_patterns (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) TYPE=INNODB;
 
-INSERT INTO hosts VALUES (-1, '__ALL__');
-
-##
-# Supported config commands.  If any new commands are added here,
-# __DSVERSION__ must be bumped.  Use micro version bumps for new config
-# commands, and minor version bumps for schema changes.
-##
-INSERT INTO config VALUES ('__DSVERSION__', '2.2.0', -1);
-INSERT INTO config VALUES ('CCACHE_ENABLED', '0', -1);
-INSERT INTO config VALUES ('CCACHE_DIR', '', -1);
-INSERT INTO config VALUES ('CCACHE_NOLINK', '1', -1);
-INSERT INTO config VALUES ('CCACHE_MAX_SIZE', '1G', -1);
-INSERT INTO config VALUES ('CCACHE_JAIL', '0', -1);
-INSERT INTO config VALUES ('CCACHE_LOGFILE', '', -1);
-INSERT INTO config VALUES ('DISTFILE_CACHE', '', -1);
-INSERT INTO config VALUES ('TINDERD_SLEEPTIME', '120', -1);
-INSERT INTO config VALUES ('JAIL_OBJDIR', '', -1);
-
-##
-# Port failure reasons.  These are reasons why a port may fail to build.
-# One reason may have multiple supporting patterns.  The tag column should
-# be a short identifier for the given reason description.  Changes to the
-# reasons list require a micro version bump to __DSVERSION__.
-##
 INSERT INTO port_fail_reasons VALUES ('__parent__', 'This is a parent reason.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('__nofail__', 'The port was built successfully.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('gcc_bug', 'You have tickled a bug in gcc itself. See the GNU bug report documentation for further information.', 'RARE');
@@ -290,13 +99,6 @@ INSERT INTO port_fail_reasons VALUES ('NFS', 'There was either a temporary NFS e
 INSERT INTO port_fail_reasons VALUES ('PLIST', 'There is a missing item in the PLIST. Note that this is often caused by an earlier error that went undetected. In this case, you should fix the error and also the build process so it will fail upon an error instead of continuing, since that makes debugging that much harder.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('???', 'The automated script cannot even guess what is wrong with your port. Either the script is really stupid (more likely), or your port has ventured into unknown lands (congratulations!).', 'COMMON');
 
-##
-# Port failure patterns.  Port error logs are searched for matches to these
-# patterns in an attempt to put a simple reason behind why a port failed
-# to build correctly.  Order is important here.  The order number field
-# is the first field, and there should be a difference of 100 between
-# patterns.  Changes here require a micro version bump to __DSVERSION__.
-##
 INSERT INTO port_fail_patterns VALUES (0, '.*', '__parent__', 0);
 INSERT INTO port_fail_patterns VALUES (100, 'See <URL:http://gcc.gnu.org/bugs.html> for instructions.', 'gcc_bug', 0);
 INSERT INTO port_fail_patterns VALUES (200, 'See <URL:http://www.gnu.org/software/gcc/bugs.html> for instructions.', 'gcc_bug', 0);
@@ -434,5 +236,7 @@ INSERT INTO port_fail_patterns VALUES (13300, 'Cannot stat: ', 'configure_error'
 INSERT INTO port_fail_patterns VALUES (13400, 'cd: can.t cd to', 'NFS', 0);
 INSERT INTO port_fail_patterns VALUES (13500, 'pkg_create: make_dist: tar command failed with code', 'PLIST', 0);
 INSERT INTO port_fail_patterns VALUES (2147483647, '.*', '???', 0);
+
+UPDATE config SET Config_Option_Value='2.2.0' WHERE Config_Option_Name='__DSVERSION__';
 
 SET FOREIGN_KEY_CHECKS=1;

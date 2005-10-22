@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.1 2005/10/19 01:01:08 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.2 2005/10/22 06:07:59 marcus Exp $
 #
 
 package TinderboxDS;
@@ -37,6 +37,8 @@ use Build;
 use User;
 use Host;
 use TBConfig;
+use PortFailPattern;
+use PortFailReason;
 use DBI;
 use Carp;
 use Digest::MD5 qw(md5_hex);
@@ -59,6 +61,8 @@ use vars qw(
         "User"            => "users",
         "Host"            => "hosts",
         "TBConfig"        => "config",
+        "PortFailReason"  => "port_fail_reasons",
+        "PortFailPattern" => "port_fail_patterns",
 );
 
 require "ds.ph";
@@ -487,6 +491,34 @@ sub getBuildByName {
         return $results[0];
 }
 
+sub getPortFailPatternById {
+        my $self = shift;
+        my $id   = shift;
+
+        my @results =
+            $self->getObjects("PortFailPattern", {Port_Fail_Pattern_Id => $id});
+
+        if (!@results) {
+                return undef;
+        }
+
+        return $results[0];
+}
+
+sub getPortFailReasonByTag {
+        my $self = shift;
+        my $tag  = shift;
+
+        my @results =
+            $self->getObjects("PortFailReason", {Port_Fail_Reason_Tag => $tag});
+
+        if (!@results) {
+                return undef;
+        }
+
+        return $results[0];
+}
+
 sub getJailById {
         my $self = shift;
         my $id   = shift;
@@ -690,6 +722,34 @@ sub addPort {
         return $rc;
 }
 
+sub addPortFailPattern {
+        my $self    = shift;
+        my $pattern = shift;
+        my $pCls    = (ref($pattern) eq "REF") ? $$pattern : $pattern;
+
+        my $rc = $self->_addObject($pCls);
+
+        if (ref($pattern) eq "REF") {
+                $$pattern = $self->getPortFailPatternById($pCls->getId());
+        }
+
+        return $rc;
+}
+
+sub addPortFailReason {
+        my $self   = shift;
+        my $reason = shift;
+        my $rCls   = (ref($reason) eq "REF") ? $$reason : $reason;
+
+        my $rc = $self->_addObject($rCls);
+
+        if (ref($reason) eq "REF") {
+                $$reason = $self->getPortFailReasonByTag($rCls->getTag());
+        }
+
+        return $rc;
+}
+
 sub updateBuildUser {
         my $self         = shift;
         my $build        = shift;
@@ -735,6 +795,23 @@ sub updateUser {
 
         if (ref($user) eq "REF") {
                 $$user = $self->getUserByName($uCls->getName());
+        }
+
+        return $rc;
+}
+
+sub updatePortFailReason {
+        my $self   = shift;
+        my $reason = shift;
+        my $rCls   = (ref($reason) eq "REF") ? $$reason : $reason;
+
+        my $rc = $self->_doQuery(
+                "UPDATE port_fail_reasons SET Port_Fail_Reason_Type=?, Port_Fail_Reason_Descr=? WHERE Port_Fail_Reason_Tag=?",
+                [$rCls->getType(), $rCls->getDescr(), $rCls->getTag()]
+        );
+
+        if (ref($reason) eq "REF") {
+                $$reason = $self->getPortFailReasonByTag($rCls->getTag());
         }
 
         return $rc;
@@ -821,6 +898,11 @@ sub updatePortLastBuilt {
 sub updatePortLastSuccessfulBuilt {
         my $self = shift;
         return $self->updatePortLastBuilts(@_, "Last_Successful_Built");
+}
+
+sub updatePortLastFailReason {
+        my $self = shift;
+        return $self->updatePortLastBuilts(@_, "Last_Fail_Reason");
 }
 
 sub updatePortLastBuilts {
@@ -1374,6 +1456,30 @@ sub removeBuild {
         return $rc;
 }
 
+sub removePortFailPattern {
+        my $self    = shift;
+        my $pattern = shift;
+
+        my $rc =
+            $self->_doQuery(
+                "DELETE FROM port_fail_patterns WHERE Port_Fail_Pattern_Id=?",
+                [$pattern->getId()]);
+
+        return $rc;
+}
+
+sub removePortFailReason {
+        my $self   = shift;
+        my $reason = shift;
+
+        my $rc =
+            $self->_doQuery(
+                "DELETE FROM port_fail_reasons WHERE Port_Fail_Reason_Tag=?",
+                [$reason->getTag()]);
+
+        return $rc;
+}
+
 sub findBuildsForJail {
         my $self  = shift;
         my $jail  = shift;
@@ -1409,6 +1515,26 @@ sub findBuildsForPortsTree {
         @portstrees = $self->_newFromArray("PortsTree", @results);
 
         return @portstrees;
+}
+
+sub findPortFailPatternsWithReason {
+        my $self     = shift;
+        my $reason   = shift;
+        my @patterns = ();
+
+        my @results;
+        my $rc = $self->_doQueryHashRef(
+                "SELECT * FROM port_fail_patterns WHERE Port_Fail_Pattern_Reason=?",
+                \@results, $reason->getTag()
+        );
+
+        if (!$rc) {
+                return ();
+        }
+
+        @patterns = $self->_newFromArray("PortFailPattern", @results);
+
+        return @patterns;
 }
 
 sub isPortInDS {
@@ -1480,6 +1606,44 @@ sub isValidPortsTree {
 
         my @results =
             $self->getObjects("PortsTree", {Ports_Tree_Name => $portsTreeName});
+
+        if (!@results) {
+                return 0;
+        }
+
+        if (scalar(@results)) {
+                return 1;
+        }
+
+        return 0;
+}
+
+sub isValidPortFailReason {
+        my $self      = shift;
+        my $reasonTag = shift;
+
+        my @results =
+            $self->getObjects("PortFailReason",
+                {Port_Fail_Reason_Tag => $reasonTag});
+
+        if (!@results) {
+                return 0;
+        }
+
+        if (scalar(@results)) {
+                return 1;
+        }
+
+        return 0;
+}
+
+sub isValidPortFailPattern {
+        my $self      = shift;
+        my $patternId = shift;
+
+        my @results =
+            $self->getObjects("PortFailPattern",
+                {Port_Fail_Pattern_Id => $patternId});
 
         if (!@results) {
                 return 0;
@@ -1564,6 +1728,28 @@ sub getAllPortsTrees {
         @portstrees = $self->getObjects("PortsTree");
 
         return @portstrees;
+}
+
+sub getAllPortFailReasons {
+        my $self            = shift;
+        my @portFailReasons = ();
+
+        @portFailReasons =
+            $self->getObjects("PortFailReason",
+                {_ORDER_ => 'Port_Fail_Reason_Tag'});
+
+        return @portFailReasons;
+}
+
+sub getAllPortFailPatterns {
+        my $self             = shift;
+        my @portFailPatterns = ();
+
+        @portFailPatterns =
+            $self->getObjects("PortFailPattern",
+                {_ORDER_ => 'Port_Fail_Pattern_Id'});
+
+        return @portFailPatterns;
 }
 
 sub getError {
