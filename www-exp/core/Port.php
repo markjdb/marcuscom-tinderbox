@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/Port.php,v 1.2 2005/07/21 11:28:29 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/core/Port.php,v 1.2.2.1 2005/10/23 21:42:29 marcus Exp $
 #
 
     require_once 'TinderObject.php';
@@ -42,7 +42,8 @@
 		'Last_Built' => '',
 		'Last_Status' => '',
 		'Last_Successful_Built' => '',
-		'Last_Built_Version' => ''
+		'Last_Built_Version' => '',
+		'Last_Fail_Reason' => ''
 	    );
 
 	    $this->TinderObject($object_hash, $argv);
@@ -86,6 +87,10 @@
 
 	function getLastBuiltVersion() {
 	    return $this->Last_Built_Version;
+	}
+
+	function getLastFailReason() {
+	    return $this->Last_Fail_Reason;
 	}
 
 	function getLogfileName() {
