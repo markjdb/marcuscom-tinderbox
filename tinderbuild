@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.1 2005/10/22 06:07:58 marcus Exp $
+# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.2 2005/10/24 04:30:24 marcus Exp $
 #
 
 
@@ -48,7 +48,7 @@ pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
 usage () {
-    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [portdir/portname [...]]"
+    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [-trybroken] [portdir/portname [...]]"
 }
 
 . ${pb}/scripts/lib/tinderbox_shlib.sh
@@ -68,6 +68,7 @@ cleandistfiles=0
 skipmake=0
 fetchorig=0
 nolog=0
+trybroken=0
 error=2
 
 while [ $# -gt 0 ]; do
@@ -117,6 +118,9 @@ while [ $# -gt 0 ]; do
 	;;
       x-nolog)
         nolog=1
+	;;
+      x-trybroken)
+        trybroken=1
 	;;
       -*)
         usage
@@ -215,6 +219,9 @@ if [ "$skipmake" = "0" ]; then
     fi
     if [ "$nolog" = "1" ]; then
 	export NOLOG=1
+    fi
+    if [ "$trybroken" = "1" ]; then
+	export TRYBROKEN=1
     fi
     ${pb}/scripts/makemake ${duds} ${build} ${ports}
 
