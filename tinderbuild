@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.2 2005/10/24 04:30:24 marcus Exp $
+# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.3 2005/10/25 04:29:34 marcus Exp $
 #
 
 
@@ -48,7 +48,7 @@ pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
 usage () {
-    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [-trybroken] [portdir/portname [...]]"
+    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [-trybroken] [-jobs] [portdir/portname [...]]"
 }
 
 . ${pb}/scripts/lib/tinderbox_shlib.sh
@@ -69,6 +69,7 @@ skipmake=0
 fetchorig=0
 nolog=0
 trybroken=0
+jobs=1
 error=2
 
 while [ $# -gt 0 ]; do
@@ -86,6 +87,18 @@ while [ $# -gt 0 ]; do
 	    exit 1
 	fi
 	;;
+      x-jobs)
+          shift
+	  if ! expr -- "$1" : "^[[:digit:]]\{1,\}$" >/dev/null 2>&1 ; then
+	      echo "ERROR: The argument to -jobs must be a number."
+	      exit 1
+	  elif [ $1 -lt 1 ]; then
+	      echo "ERROR: The argument to -jobs must be a number greater than or equal to 1."
+	      exit 1
+	  fi
+
+	  jobs=$1
+	  ;;
       x-init)
         init=1
 	;;
@@ -249,7 +262,7 @@ echo "building packages (phase 1)"
 echo "================================================"
 echo "started at $(date)"
 phase1start=$(date +%s)
-cd ${PACKAGES}/All && make -k -j1 all > ${pb}/builds/${build}/make.0 2>&1 </dev/null
+cd ${PACKAGES}/All && make -k -j${jobs} all > ${pb}/builds/${build}/make.0 2>&1 </dev/null
 echo "ended at $(date)"
 phase1end=$(date +%s)
 echo "phase 1 took $(date -u -j -r $(($phase1end - $phase1start)) | awk '{print $4}')"
