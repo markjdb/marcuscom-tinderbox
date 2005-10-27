@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/modulePortFailureReasons.php,v 1.1.2.1 2005/10/23 21:42:29 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/modulePortFailureReasons.php,v 1.1.2.2 2005/10/27 03:05:58 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -39,7 +39,7 @@ class modulePortFailureReasons extends module {
 
 		foreach( $this->TinderboxDS->getAllPortFailReasons() as $reason ) {
 			$port_fail_reasons[$reason->getTag()]['tag']   = htmlentities($reason->getTag());
-			$port_fail_reasons[$reason->getTag()]['descr'] = htmlentities($reason->getDescr());
+			$port_fail_reasons[$reason->getTag()]['descr'] = $reason->getDescr();
 			$port_fail_reasons[$reason->getTag()]['type']  = $reason->getType();
 		}
 
