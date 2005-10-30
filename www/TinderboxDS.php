@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www/TinderboxDS.php,v 1.39 2005/09/15 18:21:41 marcus Exp $
+# $MCom: portstools/tinderbox/www/TinderboxDS.php,v 1.39.2.1 2005/10/30 11:55:51 oliver Exp $
 #
 
     require_once 'DB.php';
@@ -409,21 +409,22 @@
 
 	/* formatting functions */
 
- 	function prettyDatetime($input) {
-		if (ereg("[0-9]{14}", $input)) {
-			/* timestamp */
-			return substr($input,0,4)."-".substr($input,4,2)."-".substr($input,6,2)." ".substr($input,8,2).":".substr($input,10,2).":".substr($input,12,2);
-		} elseif (ereg("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", $input)) {
-			/* datetime */
-			if ($input == "0000-00-00 00:00:00") {
-				return "";
-			} else {
-				return $input;
-			}
-		} else {
-			return $input;
-		}
-	}
+         function prettyDatetime($input) {
+            if (ereg("[0-9]{14}", $input)) {
+                /* timestamp */
+                return substr($input,0,4)."-".substr($input,4,2)."-".substr($input,6,2)." ".substr($input,8,2).":".substr($input,10,2).":".substr($input,12,2);
+            } elseif (ereg("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", $input)) {
+                /* datetime */
+                if ($input == "0000-00-00 00:00:00" ||
+		    $input == "0000-00-00 00:00:00.000000") {
+                    return "";
+                } else {
+                    return substr($input,0,19);
+                }
+            } else {
+                return $input;
+            }
+        }
 
 	function prettyEmail($input) {
 		return eregi_replace("@FreeBSD.org", "", $input);

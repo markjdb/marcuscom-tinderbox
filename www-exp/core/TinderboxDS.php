@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.3 2005/10/27 03:05:58 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.4 2005/10/30 11:54:31 oliver Exp $
 #
 
     require_once 'DB.php';
@@ -797,10 +797,11 @@
                 return substr($input,0,4)."-".substr($input,4,2)."-".substr($input,6,2)." ".substr($input,8,2).":".substr($input,10,2).":".substr($input,12,2);
             } elseif (ereg("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", $input)) {
                 /* datetime */
-                if ($input == "0000-00-00 00:00:00") {
+                if ($input == "0000-00-00 00:00:00" ||
+		    $input == "0000-00-00 00:00:00.000000") {
                     return "";
                 } else {
-                    return $input;
+                    return substr($input,0,19);
                 }
             } else {
                 return $input;
