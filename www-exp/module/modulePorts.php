@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.1 2005/10/23 21:42:29 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.2 2005/10/30 11:53:32 oliver Exp $
 #
 
 require_once 'module/module.php';
@@ -126,7 +126,7 @@ class modulePorts extends module {
 						'port_id'                    => $port_id,
 						'port_last_built_version'    => $port_last_built_version,
 						'port_last_built'            => $this->TinderboxDS->prettyDatetime( $port->getLastBuilt() ),
-						'port_last_successful_built' => $port->getLastSuccessfulBuilt(),
+						'port_last_successful_built' => $this->TinderboxDS->prettyDatetime( $port->getLastSuccessfulBuilt() ),
 						'port_last_fail_reason'      => htmlentities($port->getLastFailReason()),
 						'port_link_logfile'          => $port_link_logfile,
 						'port_link_package'          => $port_link_package,
