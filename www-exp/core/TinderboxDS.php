@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.4 2005/10/30 11:54:31 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.5 2005/11/07 00:31:50 marcus Exp $
 #
 
     require_once 'DB.php';
@@ -387,6 +387,7 @@
                              bp.Last_Built_Version,
                         CASE bp.Last_Fail_Reason
                            WHEN '__nofail__' THEN ''
+                           ELSE bp.Last_Fail_Reason
                         END
                          AS Last_Fail_Reason
                         FROM ports p,
@@ -419,6 +420,7 @@
                              bp.Last_Built_Version,
                         CASE bp.Last_Fail_Reason
                            WHEN '__nofail__' THEN ''
+                           ELSE bp.Last_Fail_Reason
                         END
                          AS Last_Fail_Reason
                         FROM ports p,
