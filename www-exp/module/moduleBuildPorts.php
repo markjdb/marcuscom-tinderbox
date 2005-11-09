@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.2 2005/10/27 03:05:58 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.3 2005/11/09 18:31:45 oliver Exp $
 #
 
 require_once 'module/module.php';
@@ -162,8 +162,9 @@ class moduleBuildPorts extends module {
 				$i++;
 	                }
 			$this->template_assign( 'data', $data );
+			$this->template_assign( 'no_list', false );
 		} else {
-			$this->template_assign( 'no_list', 1 );
+			$this->template_assign( 'no_list', true );
 	        }
 
 		$this->template_assign( 'build_name', $showbuild );
