@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuilds.php,v 1.4 2005/07/21 11:28:29 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuilds.php,v 1.4.2.1 2005/11/11 02:05:43 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -85,7 +85,7 @@ class moduleBuilds extends module {
 			$data[$i]['name'] = $name;
 			$data[$i]['description'] = $description;
 			if( is_dir( $pkgdir.'/'.$name ) ) {
-				$data[$i]['packagedir'] = $pkguri.'/'.$name;
+				$data[$i]['packagedir'] = $pkguri.'/'.$name.'/';
 			} else {
 				$data[$i]['packagedir'] = false;
 			}			
