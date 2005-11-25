@@ -1,0 +1,125 @@
+#!/bin/sh
+#
+# Copyright (c) 2005 Edwin Groothuis <edwin@FreeBSD.org>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
+# $MCom: portstools/tinderbox/enterbuild,v 1.1.2.1 2005/11/25 02:35:35 marcus Exp $
+#
+
+pb=$0
+[ -z "$(echo "${pb}" | sed 's![^/]!!g')" ] && \
+pb=$(type "$pb" | sed 's/^.* //g')
+pb=$(realpath $(dirname $pb))
+pb=${pb%%/scripts}
+
+build=""
+portDir=""
+autoSleep=0
+resp="n"
+sleepName=""
+found=0
+
+_builds=$(${pb}/scripts/tc listBuilds)
+
+while getopts b:d: arg >/dev/null 2>&1
+do
+    case "${arg}" in
+
+    b)	build="${OPTARG}";;
+    d)	portDir="${OPTARG}";;
+    ?)	exit 1;;
+
+    esac
+done
+
+if [ -z "${portDir}" ]; then
+    echo "no port specified"
+    exit 1
+fi
+
+if [ -z "${build}" ]; then
+    echo "no build specified"
+    exit 1
+fi
+
+for _build in ${_builds}; do
+    if [ "${_build}" = "${build}" ]; then
+	found=1
+	break
+    fi
+done
+if [ ${found} = 0 ]; then
+    echo "no such build: ${build}"
+    exit 1
+fi
+
+if [ ! -f ${pb}/${build} ]; then
+    echo "Build directory (${pb}/${build}) does not exist"
+    exit 1
+fi
+
+sleepName=$(echo ${portDir} | sed -e 'y/\//_/')
+
+if [ ! -d ${pb}/${build}/usr/ports/${portDir} ]; then
+    echo "Build environment does not exist yet, sleeping."
+    while [ ! -d ${pb}/${build}/usr/ports/${portDir} ]; do
+	sleep 1
+    done
+fi
+
+if [ ! -f ${pb}/${build}/usr/ports/${portDir}/.sleepme ]; then
+    echo "Build not marked for sleeping. Marking it."
+    touch ${pb}/${build}/usr/ports/${portDir}/.sleepme
+    if [ ! -f ${pb}/${build}/usr/ports/${portDir}/.sleepme ]; then
+	echo "cannot touch ${pb}/${build}/usr/ports/${portDir}/.sleepme."
+	exit 1
+    fi
+    autoSleep=1
+fi
+
+while [ ! -f ${pb}/${build}/tmp/.sleep_${sleepName} ]; do
+    echo "Build not yet sleeping, waiting 15 seconds."
+    sleep 15
+done
+
+cp ${pb}/scripts/lib/enterbuild ${pb}/${build}/root
+chroot ${pb}/${build} /root/enterbuild ${portDir}
+rm -f ${pb}/${build}/tmp/.sleep_${sleepName}
+
+echo "Continuing port build."
+
+if [ ${autoSleep} = 1 ]; then
+    resp="y"
+else
+    echo -n "Remove .sleepme too? [yN] "
+    read resp
+fi
+if [ "${resp}" = "y" ]; then
+    rm -f ${pb}/$build}/usr/ports/${portDir}/.sleepme
+    if [ -f ${pb}/$build}/usr/ports/${portDir}/.sleepme ]; then
+	echo "failed to remove ${pb}/${build}/usr/ports/${portDir}/.sleepme!"
+    else
+	echo ".sleepme removed."
+    fi
+fi
