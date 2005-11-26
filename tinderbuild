@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.3 2005/10/25 04:29:34 marcus Exp $
+# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.4 2005/11/26 03:15:12 ade Exp $
 #
 
 
@@ -48,7 +48,7 @@ pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
 usage () {
-    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [-trybroken] [-jobs] [portdir/portname [...]]"
+    echo "usage: $0 -b <build name> [-init] [-cleanpackages] [-updateports] [-skipmake] [-noclean] [-noduds] [-plistcheck] [-nullfs] [-cleandistfiles] [-fetch-original] [-nolog] [-trybroken] [-jobs] [-onceonly] [portdir/portname [...]]"
 }
 
 . ${pb}/scripts/lib/tinderbox_shlib.sh
@@ -70,6 +70,7 @@ fetchorig=0
 nolog=0
 trybroken=0
 jobs=1
+onceonly=0
 error=2
 
 while [ $# -gt 0 ]; do
@@ -134,6 +135,9 @@ while [ $# -gt 0 ]; do
 	;;
       x-trybroken)
         trybroken=1
+	;;
+      x-onceonly)
+	onceonly=1
 	;;
       -*)
         usage
@@ -268,6 +272,10 @@ phase1end=$(date +%s)
 echo "phase 1 took $(date -u -j -r $(($phase1end - $phase1start)) | awk '{print $4}')"
 echo $(echo $(ls -1 ${PACKAGES}/All | wc -l) - 1 | bc) "packages built"
 echo $(echo $(du -sh ${PACKAGES} | awk '{print $1}')) " of packages"
+
+if [ ${onceonly} -eq 1 ]; then
+    cleanup ${pb} ${build} ${lock} 0
+fi
 
 echo "================================================"
 echo "building packages (phase 2)"
