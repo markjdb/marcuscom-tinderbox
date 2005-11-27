@@ -10,6 +10,7 @@ CREATE TABLE port_fail_reasons (
 
 ALTER TABLE build_ports
   ADD Last_Fail_Reason varchar(20) NOT NULL DEFAULT '__nofail__',
+  MODIFY Last_Status enum('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD') DEFAULT 'UNKNOWN',
   ADD INDEX (Last_Fail_Reason),
   ADD FOREIGN KEY (Last_Fail_Reason)
     REFERENCES port_fail_reasons(Port_Fail_Reason_Tag)
