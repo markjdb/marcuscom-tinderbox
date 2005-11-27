@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.4 2005/11/27 18:16:37 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.5 2005/11/27 22:46:15 marcus Exp $
 #
 
 package TinderboxDS;
@@ -946,7 +946,7 @@ sub updatePortLastStatus {
                 BROKEN    => 1,
                 LEFTOVERS => 1,
                 FAIL      => 1,
-		DUD	  => 1,
+                DUD       => 1,
         );
 
         if (!defined($status_hash{$status})) {
@@ -1482,8 +1482,8 @@ sub removePortFailReason {
 }
 
 sub findBuildsForJail {
-        my $self  = shift;
-        my $jail  = shift;
+        my $self   = shift;
+        my $jail   = shift;
         my @builds = ();
 
         my @results;
@@ -1500,9 +1500,9 @@ sub findBuildsForJail {
 }
 
 sub findBuildsForPortsTree {
-        my $self       = shift;
-        my $portstree  = shift;
-        my @portstrees = ();
+        my $self      = shift;
+        my $portstree = shift;
+        my @builds    = ();
 
         my @results;
         my $rc =
@@ -1513,9 +1513,9 @@ sub findBuildsForPortsTree {
                 return ();
         }
 
-        @portstrees = $self->_newFromArray("PortsTree", @results);
+        @builds = $self->_newFromArray("Build", @results);
 
-        return @portstrees;
+        return @builds;
 }
 
 sub findPortFailPatternsWithReason {
