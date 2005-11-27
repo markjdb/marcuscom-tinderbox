@@ -365,8 +365,12 @@ fi
 if [ ${ARCH} = "i386" -o ${ARCH} = "amd64" ]; then
     # JDK ports need linprocfs :(
     mkdir -p ${chroot}/compat/linux/proc
-    chroot ${chroot} mount_linprocfs linprocfs /compat/linux/proc
+    mount_linprocfs linprocfs ${chroot}/compat/linux/proc
 fi
+
+# mount procfs
+mkdir -p ${chroot}/proc
+mount_procfs procfs ${chroot}/proc
 
 _ldconfig_dirs="/lib /usr/lib /usr/lib/compat"
 ldconfig_dirs=""
