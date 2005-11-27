@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.2 2005/10/22 06:07:59 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.3 2005/11/27 00:44:51 ade Exp $
 #
 
 package TinderboxDS;
@@ -946,6 +946,7 @@ sub updatePortLastStatus {
                 BROKEN    => 1,
                 LEFTOVERS => 1,
                 FAIL      => 1,
+		DUD	  => 1,
         );
 
         if (!defined($status_hash{$status})) {
