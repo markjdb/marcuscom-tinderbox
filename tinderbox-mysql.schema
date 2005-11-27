@@ -120,7 +120,7 @@ CREATE TABLE build_ports (
   Build_Id int NOT NULL,
   Port_Id int NOT NULL,
   Last_Built datetime,
-  Last_Status enum('UNKNOWN','SUCCESS','FAIL','BROKEN', 'LEFTOVERS') DEFAULT 'UNKNOWN',
+  Last_Status enum('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD') DEFAULT 'UNKNOWN',
   Last_Fail_Reason varchar(20) NOT NULL DEFAULT '__nofail__',
   Last_Successful_Built datetime,
   Last_Built_Version varchar(100),
