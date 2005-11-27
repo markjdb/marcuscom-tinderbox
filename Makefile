@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.1 2005/10/16 05:06:17 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.2 2005/11/27 18:21:39 marcus Exp $
 
 VERSION=	2.1.1
 
@@ -6,11 +6,11 @@ DATA=		README buildscript create ds.ph.dist makemake \
 		mkbuild mkjail pnohang.c portbuild rawenv.dist tc \
 		tinderbox.ph.dist tinderbox-mysql.schema  \
 		tinderbox-pgsql.schema tinderbuild tinderd upgrade.sh \
-		setup.sh
+		setup.sh enterbuild
 LIBDATA=	Build.pm BuildPortsQueue.pm Host.pm Jail.pm MakeCache.pm \
 		Port.pm PortsTree.pm TBConfig.pm TinderObject.pm \
 		TinderboxDS.pm User.pm tinderlib.pl tinderbox_shlib.sh \
-		setup_shlib.sh setup-mysql.sh setup-pgsql.sh
+		setup_shlib.sh setup-mysql.sh setup-pgsql.sh enterbuild
 ETCRCDATA=	tinderd.sh
 MIGDATA=	mig_shlib.sh mig_mysql_tinderbox-1.X_to_2.0.0.sql \
 		mig_mysql_tinderbox-2.0.0_to_2.1.0.sql \
