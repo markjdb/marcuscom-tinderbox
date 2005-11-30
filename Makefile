@@ -1,6 +1,6 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.3 2005/11/29 16:23:47 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.4 2005/11/30 06:51:24 marcus Exp $
 
-VERSION=	2.2.0
+VERSION=	2.2.0.r1
 
 DATA=		README buildscript create ds.ph.dist makemake \
 		mkbuild mkjail pnohang.c portbuild rawenv.dist tc \
