@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.5 2005/11/30 17:40:54 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.6 2005/12/01 04:35:44 marcus Exp $
 
 VERSION=	2.2.0.r2
 
@@ -24,15 +24,17 @@ WWWDATA=	Build.php Jail.php Port.php PortsTree.php TinderObject.php \
 		tinderstyle.css Makefile
 WWWEXPDATA=	inc_ds.php inc_tinderbox.php index.php
 WWWEXPCDATA=	Build.php BuildPortsQueue.php Host.php Jail.php Port.php \
-		PortsTree.php TinderObject.php TinderboxDS.php User.php
+		PortsTree.php TinderObject.php TinderboxDS.php User.php \
+		PortFailReason.php
 WWWEXPMDATA=	module.php moduleBuildPorts.php moduleBuilds.php \
 		moduleHosts.php modulePorts.php moduleSession.php \
-		moduleTinderd.php moduleUsers.php
+		moduleTinderd.php moduleUsers.php modulePortFailureReasons.php
 WWWEXPTDATA=	current_buildports.tpl describe_port.tpl display_login.tpl \
 		failed_buildports.tpl latest_buildports.tpl list_buildports.tpl \
 		list_builds.tpl list_tinderd_queue.tpl messages.inc \
 		please_login.tpl tinderstyle.css user_admin.tpl \
-		user_permissions.tpl user_properties.tpl
+		user_permissions.tpl user_properties.tpl \
+		list_failure_reasons.tpl
 
 release:
 	-rm -rf ${.CURDIR}/tinderbox-${VERSION} \
