@@ -5,8 +5,8 @@ CREATE TABLE port_fail_reasons (
 );
 
 ALTER TABLE build_ports
-  ADD Last_Fail_Reason VARCHAR(20) NOT NULL DEFAULT '__nofail__' REFERENCES port_fail_reasons(Port_Fail_Reason_Tag) ON UPDATE CASCADE ON DELETE RESTRICT,
-  MODIFY Last_Status VARCHAR(16) CHECK (Last_Status IN ('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD')) DEFAULT 'UNKNOWN';
+  ADD COLUMN Last_Fail_Reason VARCHAR(20) NOT NULL DEFAULT '__nofail__' REFERENCES port_fail_reasons(Port_Fail_Reason_Tag) ON UPDATE CASCADE ON DELETE RESTRICT,
+  ALTER COLUMN Last_Status TYPE VARCHAR(16) CHECK (Last_Status IN ('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD')) DEFAULT 'UNKNOWN';
 
 CREATE TABLE port_fail_patterns (
         Port_Fail_Pattern_Id INTEGER PRIMARY KEY,
