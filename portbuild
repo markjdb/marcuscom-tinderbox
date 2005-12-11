@@ -163,8 +163,8 @@ unset LANG
 # wait 1 hour before killing build with no output
 export TIMEOUT=7200
 
-# to prevent runaway processes -- 256 meg file size limit, one hour CPU limit
-ulimit -f 524288
+# to prevent runaway processes -- 300 meg file size limit, one hour CPU limit
+ulimit -f 614400
 ulimit -t 3600
 
 # directories to clean
@@ -293,9 +293,9 @@ fi
 
 ln -sf ../a/ports ${chroot}/usr/ports
 
-# Don't build in a world-writable directory because some ports hardcode
-# this path and try to load things from it at runtime, which is bad for
-# user security
+# Don't build in a world-writable standard directory because some ports
+# hardcode this path and try to load things from it at runtime, which is
+# bad for user security
 rm -rf ${chroot}/${WRKDIRPREFIX}
 mkdir -p ${chroot}/${WRKDIRPREFIX}
 
