@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/enterbuild,v 1.1.2.2 2005/12/04 05:51:25 marcus Exp $
+# $MCom: portstools/tinderbox/enterbuild,v 1.1.2.3 2005/12/20 20:38:31 ade Exp $
 #
 
 pb=$0
@@ -74,7 +74,7 @@ if [ ${found} = 0 ]; then
     exit 1
 fi
 
-if [ ! -f ${pb}/${build} ]; then
+if [ ! -d ${pb}/${build} ]; then
     echo "Build directory (${pb}/${build}) does not exist"
     exit 1
 fi
