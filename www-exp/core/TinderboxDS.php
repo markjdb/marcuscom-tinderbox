@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.7 2005/11/09 18:31:11 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.8 2005/12/29 06:05:14 marcus Exp $
 #
 
     require_once 'DB.php';
@@ -628,6 +628,10 @@
         function getBuilds($params = array()) {
             return $this->getObjects("Build", $params);
         }
+
+	function getPorts($params = array()) {
+	    return $this->getObjects("Port", $params);
+	}
 
         function getBuildPortsQueue($params = array()) {
             return $this->getObjects("BuildPortsQueue", $params);
