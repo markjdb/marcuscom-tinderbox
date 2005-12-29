@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.5 2005/11/27 22:46:15 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.6 2005/12/29 06:07:03 marcus Exp $
 #
 
 package TinderboxDS;
@@ -1108,7 +1108,7 @@ sub _getBuildUsers {
         my $rc;
         if (defined($field)) {
                 $rc = $self->_doQueryHashRef(
-                        "SELECT * FROM  users WHERE User_Id IN (SELECT User_Id FROM build_users WHERE Build_Id=? AND $field=1)",
+                        "SELECT * FROM  users WHERE User_Id IN (SELECT User_Id FROM build_users WHERE Build_Id=? AND $field='1')",
                         \@results, $build->getId()
                 );
         } else {
