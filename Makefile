@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.12 2005/12/24 16:32:34 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.13 2005/12/31 01:12:49 marcus Exp $
 
 VERSION=	2.2.1
 
@@ -27,7 +27,7 @@ WWWDATA=	Build.php Jail.php Port.php PortsTree.php TinderObject.php \
 WWWEXPDATA=	inc_ds.php inc_tinderbox.php index.php
 WWWEXPCDATA=	Build.php BuildPortsQueue.php Host.php Jail.php Port.php \
 		PortsTree.php TinderObject.php TinderboxDS.php User.php \
-		PortFailReason.php
+		PortFailReason.php functions.php
 WWWEXPMDATA=	module.php moduleBuildPorts.php moduleBuilds.php \
 		moduleHosts.php modulePorts.php moduleSession.php \
 		moduleTinderd.php moduleUsers.php modulePortFailureReasons.php
