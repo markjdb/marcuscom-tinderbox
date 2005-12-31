@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleUsers.php,v 1.10 2005/07/21 11:28:29 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleUsers.php,v 1.10.2.1 2005/12/31 01:12:07 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -199,7 +199,7 @@ class moduleUsers extends module {
 		$user->setEmail( $user_email );
 		$user->setWwwEnabled( $www_enabled );
 		if( $user_password ) {
-			$user->setPassword( $this->TinderboxDS->cryptPassword( $user_password ) );
+			$user->setPassword( cryptPassword( $user_password ) );
 		}
 
 		$this->TinderboxDS->start_transaction();

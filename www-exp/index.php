@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/index.php,v 1.9.2.2 2005/12/31 00:59:25 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/index.php,v 1.9.2.3 2005/12/31 01:12:06 marcus Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
@@ -71,7 +71,8 @@ switch( $action ) {
 					$display    = $moduleBuildPorts->display_latest_buildports( $build );
 					break;
 	case 'list_buildports':		$build      = $_REQUEST['build'];
-					$display    = $moduleBuildPorts->display_list_buildports( $build );
+					$sort       = $_REQUEST['sort'];
+					$display    = $moduleBuildPorts->display_list_buildports( $build, $sort );
 					break;
 	case 'list_tinderd_queue':	$host_id    = $_REQUEST['filter_host_id'];
 					$build_id   = $_REQUEST['filter_build_id'];

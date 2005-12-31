@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.8 2005/12/29 06:05:14 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.9 2005/12/31 01:12:07 marcus Exp $
 #
 
     require_once 'DB.php';
@@ -365,7 +365,11 @@
             return true;
         }
 
-        function getPortsForBuild($build) {
+        function getPortsForBuild($build, $sortby = 'port_directory') {
+            $sortbytable = "bp";
+            if ($sortby == "") $sortby = "port_directory";
+            if ($sortby == "port_directory") $sortbytable = "p";
+            if ($sortby == "port_maintainer") $sortbytable = "p";
             $query = "SELECT p.*,
                              bp.Last_Built,
                              bp.Last_Status,
@@ -380,7 +384,7 @@
                              build_ports bp
                        WHERE p.Port_Id = bp.Port_Id
                          AND bp.Build_Id=?
-                    ORDER BY p.Port_Directory";
+                    ORDER BY $sortbytable.$sortby";
 
             $rc = $this->_doQueryHashRef($query, $results, $build->getId());
 
@@ -788,10 +792,6 @@
             $this->error = null;
         }
 
-        function cryptPassword($password) {
-            return md5($password);
-        }
-
         function getPackageSuffix($jail_id) {
             if (empty($jail_id)) return "";
             /* Use caching to avoid a lot of SQL queries */
@@ -809,29 +809,5 @@
 
             }
         }
-
-        /* formatting functions */
-
-         function prettyDatetime($input) {
-            if (ereg("[0-9]{14}", $input)) {
-                /* timestamp */
-                return substr($input,0,4)."-".substr($input,4,2)."-".substr($input,6,2)." ".substr($input,8,2).":".substr($input,10,2).":".substr($input,12,2);
-            } elseif (ereg("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", $input)) {
-                /* datetime */
-                if ($input == "0000-00-00 00:00:00" ||
-		    $input == "0000-00-00 00:00:00.000000") {
-                    return "";
-                } else {
-                    return substr($input,0,19);
-                }
-            } else {
-                return $input;
-            }
-        }
-
-        function prettyEmail($input) {
-            return eregi_replace("@FreeBSD.org", "", $input);
-        }
-
    }
 ?>

@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.3 2005/11/09 18:31:45 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.4 2005/12/31 01:12:07 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -37,10 +37,10 @@ class moduleBuildPorts extends module {
 		$this->modulePorts = new modulePorts();
 	}
 
-	function display_list_buildports( $build_name ) {
+	function display_list_buildports( $build_name, $sort ) {
 
 		$build = $this->TinderboxDS->getBuildByName( $build_name );
-		$ports = $this->TinderboxDS->getPortsForBuild( $build );
+		$ports = $this->TinderboxDS->getPortsForBuild( $build, $sort );
 		$ports_tree = $this->TinderboxDS->getPortsTreeById( $build->getPortsTreeId() );
 		$jail = $this->TinderboxDS->getJailById( $build->getJailId() );
 
@@ -57,16 +57,24 @@ class moduleBuildPorts extends module {
 			$port_fail_reasons[$reason->getTag()]['type']  = $reason->getType();
 		}
 
+		$qs = array();
+		$qkvs = explode('&', $_SERVER['QUERY_STRING']);
+		foreach ($qkvs as $qkv) {
+		    $kv = explode('=', $qkv);
+		    $qs[$kv[0]] = $kv[1];
+		}
+
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'maintainers',            $this->TinderboxDS->getAllMaintainers() );
 		$this->template_assign( 'build_description',      $build->getDescription() );
 		$this->template_assign( 'build_name',             $build_name );
 		$this->template_assign( 'jail_name',              $jail->getName() );
 		$this->template_assign( 'jail_tag',               $jail->getTag() );
-		$this->template_assign( 'jail_lastbuilt',         $this->TinderboxDS->prettyDatetime( $jail->getLastBuilt() ) );
+		$this->template_assign( 'jail_lastbuilt',         prettyDatetime( $jail->getLastBuilt() ) );
 		$this->template_assign( 'ports_tree_description', $ports_tree->getDescription() );
-		$this->template_assign( 'ports_tree_lastbuilt',   $this->TinderboxDS->prettyDatetime( $ports_tree->getLastBuilt() ) );
-		$this->template_assign( 'local_time',             $this->TinderboxDS->prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'ports_tree_lastbuilt',   prettyDatetime( $ports_tree->getLastBuilt() ) );
+		$this->template_assign( 'local_time',             prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'querystring',            $qs);
 
 		return $this->template_parse( 'list_buildports.tpl' );
 	}
@@ -98,7 +106,7 @@ class moduleBuildPorts extends module {
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'build_name', $build_name );
 		$this->template_assign( 'maintainer', $maintainer );
-		$this->template_assign( 'local_time', $this->TinderboxDS->prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'local_time', prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
 
 		return $this->template_parse( 'failed_buildports.tpl' );
 	}
@@ -132,7 +140,7 @@ class moduleBuildPorts extends module {
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'current_builds',         $current_builds );
 		$this->template_assign( 'build_name',             $build_name );
-		$this->template_assign( 'local_time',             $this->TinderboxDS->prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'local_time',             prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
 
 		return $this->template_parse( 'latest_buildports.tpl' );
 	}

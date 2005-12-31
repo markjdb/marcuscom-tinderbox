@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/modulePortFailureReasons.php,v 1.1.2.2 2005/10/27 03:05:58 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/modulePortFailureReasons.php,v 1.1.2.3 2005/12/31 01:12:07 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -45,7 +45,7 @@ class modulePortFailureReasons extends module {
 
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'mark_reason',            $reason_tag );
-		$this->template_assign( 'local_time',             $this->TinderboxDS->prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'local_time',             prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
 
 		return $this->template_parse( 'list_failure_reasons.tpl' );
 	}
