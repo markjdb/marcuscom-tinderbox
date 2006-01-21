@@ -354,9 +354,6 @@ mtree -deU -f ${chroot}/etc/mtree/BSD.local.dist -p ${chroot}/usr/local \
 mkdir ${chroot}/usr/X11R6
 if [ $X_WINDOW_SYSTEM = "xfree86-3" ]; then
     mtree -deU -f ${chroot}/usr/src/etc/mtree/BSD.x11.dist -p ${chroot}/usr/X11R6 >/dev/null 2>&1
-elif [ $X_WINDOW_SYSTEM = "xorg" ]; then
-    mtree -deU -f ${chroot}/a/ports/x11-servers/xorg-server/files/BSD.x11-xorg.dist -p ${chroot}/usr/X11R6 \
-    >/dev/null 2>&1
 else
     mtree -deU -f ${chroot}/usr/src/etc/mtree/BSD.x11-4.dist -p ${chroot}/usr/X11R6 \
     >/dev/null 2>&1
