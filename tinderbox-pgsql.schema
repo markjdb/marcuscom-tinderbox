@@ -37,7 +37,8 @@ CREATE TABLE builds (
 	Ports_Tree_Id INTEGER REFERENCES ports_trees(Ports_Tree_Id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	Build_Description TEXT,
 	Build_Status VARCHAR(16) CHECK (Build_Status IN ('IDLE','PREPARE','PORTBUILD')) DEFAULT 'IDLE',
-	Build_Current_Port VARCHAR(255)
+	Build_Current_Port VARCHAR(255),
+	Build_Last_Updated TIMESTAMP
 );
 
 -- DROP TABLE users CASCADE;
@@ -134,7 +135,7 @@ INSERT INTO hosts VALUES (-1, '__ALL__');
 -- __DSVERSION__ must be bumped.  Use micro version bumps for new config
 -- commands, and minor version bumps for schema changes.
 ----
-INSERT INTO config VALUES ('__DSVERSION__', '2.2.0', -1);
+INSERT INTO config VALUES ('__DSVERSION__', '2.3.0', -1);
 INSERT INTO config VALUES ('CCACHE_ENABLED', '0', -1);
 INSERT INTO config VALUES ('CCACHE_DIR', '', -1);
 INSERT INTO config VALUES ('CCACHE_NOLINK', '1', -1);

@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/Build.php,v 1.2 2005/07/21 11:28:28 oliver Exp $
+# $MCom: portstools/tinderbox/www-exp/core/Build.php,v 1.2.2.1 2006/01/22 01:18:16 marcus Exp $
 #
 
     require_once 'TinderObject.php';
@@ -39,7 +39,8 @@
 		'Ports_Tree_Id' => '',
 		'Build_Description' => '',
 		'Build_Status' => '',
-		'Build_Current_Port' => ''
+		'Build_Current_Port' => '',
+		'Build_Last_Updated' => ''
 	    );
 
 	    $this->TinderObject($object_hash, $argv);
@@ -71,6 +72,10 @@
 
 	function getBuildCurrentPort() {
 	    return $this->Build_Current_Port;
+	}
+
+	function getBuildLastUpdated() {
+	    return $this->Build_Last_Updated;
 	}
 
 	function setName($name) {
