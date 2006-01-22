@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.5 2006/01/22 01:18:16 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.6 2006/01/22 01:22:21 marcus Exp $
 #
 
 require_once 'module/module.php';
