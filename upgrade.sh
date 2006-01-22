@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/upgrade.sh,v 1.11.2.2 2005/12/02 02:03:30 marcus Exp $
+# $MCom: portstools/tinderbox/upgrade.sh,v 1.11.2.3 2006/01/22 01:46:32 marcus Exp $
 #
 
 pb=$0
@@ -33,14 +33,14 @@ pb=$(type "$pb" | sed 's/^.* //g')
 pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
-VERSION="2.2.0"
+VERSION="2.3.0"
 
 # DB_MIGRATION_PATH contains all versions where upgrade SQLs are existing for
 # if DB_MIGRATION_PATH is for example "1.X 2.0.0 2.0.1 2.1.0" then there are
 # scripts for 1.X->2.0.0, 2.0.0->2.0.1, 2.0.1->2.1.0 so even a user with 1.X
 # could easily upgrade to the latest version and none needs to maintain
 # 1.X->2.0.0, 1.X->2.0.1, 1.X->2.1.0 and so on scripts.
-DB_MIGRATION_PATH="1.X 2.0.0 2.1.0 2.1.1 ${VERSION}"
+DB_MIGRATION_PATH="1.X 2.0.0 2.1.0 2.1.1 2.2.0 ${VERSION}"
 
 RAWENV_HEADER="## rawenv TB v2 -- DO NOT EDIT"
 REMOVE_FILES="Build.pm BuildPortsQueue.pm Host.pm Jail.pm MakeCache.pm Port.pm PortsTree.pm TBConfig.pm TinderObject.pm TinderboxDS.pm User.pm setup_shlib.sh tinderbox_shlib.sh tinderlib.pl create_new_build create_new_jail create_new_portstree list_jails"
