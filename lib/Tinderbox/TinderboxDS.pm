@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.6 2005/12/29 06:07:03 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.7 2006/01/22 01:18:16 marcus Exp $
 #
 
 package TinderboxDS;
@@ -1048,9 +1048,10 @@ sub updateBuildStatus {
         my $build = shift;
         croak "ERROR: Argument not of type build\n" if (ref($build) ne "Build");
 
-        my $rc =
-            $self->_doQuery("UPDATE builds SET Build_Status=? WHERE Build_Id=?",
-                [$build->getStatus(), $build->getId()]);
+	my $rc = $self->_doQuery(
+		"UPDATE builds SET Build_Status=?,Build_Last_Updated=NOW() WHERE build_id=?",
+		[$build->getStatus(), $build->getId()]
+	);
 
         return $rc;
 }
@@ -1065,12 +1066,12 @@ sub updateBuildCurrentPort {
         my $rc;
         if (!defined($pkgname)) {
                 $rc = $self->_doQuery(
-                        "UPDATE builds SET Build_Current_Port=NULL WHERE Build_Id=?",
+			"UPDATE builds SET Build_Current_Port=NULL,Build_Last_Updated=NOW() WHERE Build_Id=?",
                         [$build->getId()]
                 );
         } else {
                 $rc = $self->_doQuery(
-                        "UPDATE builds SET Build_Current_Port=? WHERE Build_Id=?",
+                        "UPDATE builds SET Build_Current_Port=?,Build_Last_Updated=NOW() WHERE Build_Id=?",
                         [$pkgname, $build->getId()]
                 );
         }
