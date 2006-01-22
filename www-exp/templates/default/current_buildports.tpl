@@ -1,4 +1,4 @@
-<!-- $MCom: portstools/tinderbox/www-exp/templates/default/current_buildports.tpl,v 1.1 2005/07/01 18:09:38 oliver Exp $ //-->
+<!-- $MCom: portstools/tinderbox/www-exp/templates/default/current_buildports.tpl,v 1.1.1.1.2.1 2006/01/22 01:00:24 marcus Exp $ //-->
 <?if(!$no_list){?>
 	<?if($build_name){?>
 		<h1>Current Builds in <?=$build_name?></h1>
@@ -17,4 +17,7 @@
 			</tr>
 		<?}?>
 	</table>
+	<script language="JavaScript">
+		setTimeout("reloadpage()", 15000)
+	</script>
 <?}?>
