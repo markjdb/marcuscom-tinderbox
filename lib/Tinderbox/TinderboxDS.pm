@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.9 2006/01/23 18:42:39 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.56.2.10 2006/01/24 18:11:09 marcus Exp $
 #
 
 package TinderboxDS;
@@ -42,6 +42,7 @@ use PortFailReason;
 use DBI;
 use Carp;
 use Digest::MD5 qw(md5_hex);
+use POSIX qw(strftime);
 use vars qw(
     $DB_DRIVER
     $DB_HOST
@@ -385,9 +386,12 @@ sub reorgBuildPortsQueue {
         my $self = shift;
         my $host = shift;
 
+        my $enq_time = time - 25200;
+        my $enq_sql  = strftime("%Y-%m-%d %H:%M:%S", $enq_time);
+
         my $rc = $self->_doQuery(
-                "DELETE FROM build_ports_queue WHERE Host_Id=? AND Enqueue_Date<=NOW()-25200 AND Status != 'ENQUEUED'",
-                [$host->getId()]
+                "DELETE FROM build_ports_queue WHERE Host_Id=? AND Enqueue_Date<=? AND Status != 'ENQUEUED'",
+                [$enq_sql, $host->getId()]
         );
 
         return $rc;
@@ -1048,10 +1052,10 @@ sub updateBuildStatus {
         my $build = shift;
         croak "ERROR: Argument not of type build\n" if (ref($build) ne "Build");
 
-	my $rc = $self->_doQuery(
-		"UPDATE builds SET Build_Status=?,Build_Last_Updated=NOW() WHERE build_id=?",
-		[$build->getStatus(), $build->getId()]
-	);
+        my $rc = $self->_doQuery(
+                "UPDATE builds SET Build_Status=?,Build_Last_Updated=NOW() WHERE build_id=?",
+                [$build->getStatus(), $build->getId()]
+        );
 
         return $rc;
 }
@@ -1066,7 +1070,7 @@ sub updateBuildCurrentPort {
         my $rc;
         if (!defined($pkgname)) {
                 $rc = $self->_doQuery(
-			"UPDATE builds SET Build_Current_Port=NULL,Build_Last_Updated=NOW() WHERE Build_Id=?",
+                        "UPDATE builds SET Build_Current_Port=NULL,Build_Last_Updated=NOW() WHERE Build_Id=?",
                         [$build->getId()]
                 );
         } else {
