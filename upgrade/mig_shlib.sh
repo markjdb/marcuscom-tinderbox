@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/upgrade/mig_shlib.sh,v 1.12.2.1 2005/12/02 02:03:30 marcus Exp $
+# $MCom: portstools/tinderbox/upgrade/mig_shlib.sh,v 1.12.2.2 2006/01/29 19:12:48 marcus Exp $
 #
 
 pb=$0
@@ -45,7 +45,7 @@ mig_rawenv() {
 	else
 	    	first_line=$(head -1 "${rawenv}")
 
-		if [ x"${first_line}" = x"${RAWNEV_HEADER}" ]; then
+		if [ x"${first_line}" = x"${RAWENV_HEADER}" ]; then
 		    	return 0
 		fi
 
