@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.11 2006/01/23 18:36:39 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.12 2006/01/31 18:08:08 marcus Exp $
 #
 
     require_once 'DB.php';
@@ -207,7 +207,7 @@
                    WHEN 7 THEN 'PERM_DELETE_OTHER_QUEUE'
                    ELSE 'PERM_UNKNOWN'
                 END
-                   AS User_Permission
+                   AS user_permission
                  FROM user_permissions
                 WHERE User_Id=?
                   AND Host_Id=?
