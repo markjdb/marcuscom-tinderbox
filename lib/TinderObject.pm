@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderObject.pm,v 1.12 2005/09/04 02:58:51 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderObject.pm,v 1.12.2.1 2006/01/31 20:32:13 marcus Exp $
 #
 
 package TinderObject;
@@ -38,10 +38,10 @@ sub new {
 
         my $attrs        = $args[1];
         my $_truth_array = {
-                'f' => 0,
-                't' => 1,
-                '0' => 0,
-                '1' => 1,
+                'f' => '0',
+                't' => '1',
+                '0' => '0',
+                '1' => '1',
         };
 
         my $self = {
