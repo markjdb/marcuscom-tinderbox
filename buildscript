@@ -210,7 +210,7 @@ EOF
       grep ' missing$' /tmp/list3 > /tmp/list5
       grep -vE ' (extra|missing)$' /tmp/list3 > /tmp/list6
       if [ "x${PLISTCHECK}" != "x" ]; then
-	if grep -qE 'usr/(local|X11R6)/(bin/|include/|man/|sbin/|share/|share/|lib/|libdata/|libexec/)' /tmp/list4; then
+	if grep -vqE "(/usr/X11R6|/usr/local)/etc/" /tmp/list4; then
           echo "1" > /tmp/status
 	fi
 	if [ -s /tmp/list5 ]; then
