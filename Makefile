@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.18 2006/02/04 22:59:09 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.19 2006/03/13 00:50:26 marcus Exp $
 
 VERSION=	2.3.0
 
@@ -19,7 +19,9 @@ MIGDATA=	mig_shlib.sh mig_mysql_tinderbox-1.X_to_2.0.0.sql \
 		mig_mysql_tinderbox-2.1.1_to_2.2.0.sql \
 		mig_pgsql_tinderbox-2.1.1_to_2.2.0.sql \
 		mig_mysql_tinderbox-2.2.0_to_2.3.0.sql \
-		mig_pgsql_tinderbox-2.2.0_to_2.3.0.sql
+		mig_pgsql_tinderbox-2.2.0_to_2.3.0.sql \
+		mig_mysql_tinderbox-2.3.0_to_2.3.1.sql \
+		mig_pgsql_tinderbox-2.3.0_to_2.3.1.sql
 MAN1DATA=	tc-configCcache.1 tc-configDistfile.1 tc-configGet.1 \
 		tc-configJail.1 tc-configTinderd.1 tc-init.1
 WWWDATA=	Build.php Jail.php Port.php PortsTree.php TinderObject.php \

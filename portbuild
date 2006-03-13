@@ -470,7 +470,7 @@ if [ "${error}" = 0 ]; then
 	rm -f ${pb}/errors/${branch}/${pkgname}.log
 	if grep -q "${pkgname} is marked as broken: " ${pb}/logs/${branch}/${pkgname}.log ; then
 	    status="BROKEN"
-	elif [ $(grep -A 1 '^=== Checking filesystem state' ${pb}/logs/${branch}/${pkgname}.log | grep -c '^====') -eq 0 ] ; then
+	elif [ -f ${chroot}/tmp/leftovers ]; then
 	    status="LEFTOVERS"
 	else
 	    status="SUCCESS"
