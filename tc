@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.8 2006/01/04 09:37:04 ade Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.9 2006/03/17 02:09:22 marcus Exp $
 #
 
 BEGIN {
@@ -1410,7 +1410,7 @@ sub listBuildPortsQueue {
                             . "\n");
         } else {
                 cleanup($ds, 1,
-                        "There is no BuildPortsQueue configured in the datastore.\n"
+                        "There no more queued ports for this host in the datastore.\n"
                 );
         }
 }
