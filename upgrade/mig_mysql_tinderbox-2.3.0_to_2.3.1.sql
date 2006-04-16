@@ -1,5 +1,7 @@
 DELETE FROM port_fail_patterns WHERE Port_Fail_Pattern_Id % 100 = 0 OR Port_Fail_Pattern_Id = 2147483647;
 
+UPDATE config SET Config_Option_Value='2.3.1' WHERE Config_Option_Name='__DSVERSION__';
+
 INSERT INTO port_fail_reasons VALUES ('preinstall_error', 'The port tries to write to the target file system before the installation phase.  If this is a requirement, use the "pre-su-install" target instead of "pre-install".', 'RARE');
 
 INSERT INTO port_fail_patterns VALUES (0, '.*', '__parent__', 0);
