@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #-
-# Copyright (c) 2004-2005 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2006 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.9 2006/03/17 02:09:22 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.10 2006/04/16 06:31:33 marcus Exp $
 #
 
 BEGIN {
@@ -1410,7 +1410,7 @@ sub listBuildPortsQueue {
                             . "\n");
         } else {
                 cleanup($ds, 1,
-                        "There no more queued ports for this host in the datastore.\n"
+                        "There are no more queued ports for this host in the datastore.\n"
                 );
         }
 }
