@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/makemake,v 1.36.2.2 2005/10/24 04:30:24 marcus Exp $
+# $MCom: portstools/tinderbox/makemake,v 1.36.2.3 2006/04/26 05:55:12 marcus Exp $
 #
 
 # Handle being called from a directory other than where things
@@ -241,11 +241,11 @@ cleanup($ds, 1, "Failed to open $builddir makefile for writing: $!\n")
 foreach my $key (keys %pkgdir) {
         my $pname    = $pkgdir{$key} . $ENV{'PKGSUFFIX'};
         my $pkgnames = makeList(\%pkgdir, 1, $makecache, @{$pkgdeps{$key}});
-        my $edeplst  = makeList(\%pkgdir, 0, $makecache, @{$pkgedeps{$key}});
-        my $pdeplst  = makeList(\%pkgdir, 0, $makecache, @{$pkgpdeps{$key}});
-        my $fdeplst  = makeList(\%pkgdir, 0, $makecache, @{$pkgfdeps{$key}});
-        my $bdeplst  = makeList(\%pkgdir, 0, $makecache, @{$pkgbdeps{$key}});
-        my $rdeplst  = makeList(\%pkgdir, 0, $makecache, @{$pkgrdeps{$key}});
+        my $edeplst  = makeList(\%pkgdir, 1, $makecache, @{$pkgedeps{$key}});
+        my $pdeplst  = makeList(\%pkgdir, 1, $makecache, @{$pkgpdeps{$key}});
+        my $fdeplst  = makeList(\%pkgdir, 1, $makecache, @{$pkgfdeps{$key}});
+        my $bdeplst  = makeList(\%pkgdir, 1, $makecache, @{$pkgbdeps{$key}});
+        my $rdeplst  = makeList(\%pkgdir, 1, $makecache, @{$pkgrdeps{$key}});
 
         printf MK "all: %s\n",          $pname;
         printf MK "%s: %s\n",           $pkgdir{$key}, $pname;
