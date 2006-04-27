@@ -22,7 +22,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/MakeCache.pm,v 1.6 2005/09/26 23:39:42 ade Exp $
+# $MCom: portstools/tinderbox/lib/MakeCache.pm,v 1.5.2.1 2006/04/27 02:32:02 marcus Exp $
 #
 
 package MakeCache;
@@ -38,7 +38,6 @@ our @makeTargets = (
         'LIB_DEPENDS',     'RUN_DEPENDS',
         'DEPENDS',         'MAINTAINER',
         'COMMENT',         'PORTNAME',
-	'DISTFILES',
 );
 
 # Create a new cache object
@@ -94,7 +93,7 @@ sub _getList {
         $self->_execMake($port);
         foreach my $dep (split(/\s+/, $self->{CACHE}->{$port}{$item})) {
                 my ($d, $ddir) = split(/:/, $dep);
-                if (!defined($ddir)) {
+                if (!defined($ddir) || $item eq 'DEPENDS') {
                         $ddir = $d;
                 }
                 $ddir =~ s|^$self->{BASEDIR}/||;
@@ -222,19 +221,4 @@ sub RunDependsList {
 
         my %uniq;
         return grep { !$uniq{$_}++ } @deps;
-}
-
-sub DistFiles {
-	my $self = shift;
-	my $port = shift;
-	my $distlist = $self->_getVariable($port, 'DISTFILES');
-
-	my @distfiles;
-	foreach my $distfile (split(/ /, $distlist)) {
-		next unless $distfile;
-		$distfile =~ s/:.*$//;
-		push(@distfiles, $distfile);
-	}
-
-	return join(',', @distfiles);
 }
