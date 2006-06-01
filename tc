@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.10 2006/04/16 06:31:33 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.11 2006/06/01 01:32:57 marcus Exp $
 #
 
 BEGIN {
@@ -2966,8 +2966,9 @@ sub tbcleanup {
                 # Delete database records for nonexistent packages.
                 my @ports = $ds->getPortsForBuild($build);
                 foreach my $port (@ports) {
+                        my $path = "/nonexistent";
                         if ($ds->getPortLastBuiltVersion($port, $build)) {
-                                my $path = join(
+                                $path = join(
                                         "/",
                                         $PKGS_DIR,
                                         $build->getName(),
@@ -2978,11 +2979,9 @@ sub tbcleanup {
                                 );
                                 if (!-e $path) {
                                         print
-                                            "Removing database entry for nonexistent package "
+                                            "Removing database entry for nonexistent port "
                                             . $build->getName() . "/"
-                                            . $ds->getPortLastBuiltVersion(
-                                                $port, $build)
-                                            . "\n";
+                                            . $port->getName() . "\n";
                                         $ds->removePortForBuild($port, $build);
                                 }
                         }
