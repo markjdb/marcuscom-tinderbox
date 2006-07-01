@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/makemake,v 1.36.2.3 2006/04/26 05:55:12 marcus Exp $
+# $MCom: portstools/tinderbox/makemake,v 1.36.2.4 2006/07/01 19:02:59 marcus Exp $
 #
 
 # Handle being called from a directory other than where things
@@ -204,9 +204,9 @@ while (scalar(@PORTS)) {
         $pkgbdeps{$portdir} = [];
         $pkgrdeps{$portdir} = [];
         $pkgdir{$portdir}   = $pkgname;
-        push @edeps, $makecache->ExtractDepends($portdir);
-        push @pdeps, $makecache->PatchDepends($portdir);
-        push @fdeps, $makecache->FetchDepends($portdir);
+        push @edeps, $makecache->ExtractDependsList($portdir);
+        push @pdeps, $makecache->PatchDependsList($portdir);
+        push @fdeps, $makecache->FetchDependsList($portdir);
         push @bdeps, $makecache->BuildDependsList($portdir);
         push @rdeps, $makecache->RunDependsList($portdir);
 

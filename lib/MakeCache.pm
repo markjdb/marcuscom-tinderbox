@@ -22,7 +22,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/MakeCache.pm,v 1.5.2.2 2006/06/27 02:28:08 marcus Exp $
+# $MCom: portstools/tinderbox/lib/MakeCache.pm,v 1.5.2.3 2006/07/01 19:02:59 marcus Exp $
 #
 
 package MakeCache;
@@ -192,6 +192,42 @@ sub IgnoreList {
                 $n++ if ($self->{CACHE}->{$port}{$var} ne "");
         }
         return $n eq 0 ? "" : $self->PkgName($port);
+}
+
+sub FetchDependsList {
+        my $self = shift;
+        my $port = shift;
+
+        my @deps;
+        push(@deps, $self->FetchDepends($port));
+        push(@deps, $self->Depends($port));
+
+        my %uniq;
+        return grep { !$uniq{$_}++ } @deps;
+}
+
+sub ExtractDependsList {
+        my $self = shift;
+        my $port = shift;
+
+        my @deps;
+        push(@deps, $self->ExtractDepends($port));
+        push(@deps, $self->Depends($port));
+
+        my %uniq;
+        return grep { !$uniq{$_}++ } @deps;
+}
+
+sub PatchDependsList {
+        my $self = shift;
+        my $port = shift;
+
+        my @deps;
+        push(@deps, $self->PatchDepends($port));
+        push(@deps, $self->Depends($port));
+
+        my %uniq;
+        return grep { !$uniq{$_}++ } @deps;
 }
 
 # A close approximation to the 'build-depends-list' target
