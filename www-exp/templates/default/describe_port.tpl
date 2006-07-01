@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/www-exp/templates/default/describe_port.tpl,v 1.2 2005/07/10 08:56:29 oliver Exp $ //-->
+<!-- $MCom: portstools/tinderbox/www-exp/templates/default/describe_port.tpl,v 1.2.2.1 2006/07/01 19:26:19 marcus Exp $ //-->
 <title><?=$tinderbox_name?></title>
 <link href="<?=$templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
 </head>
@@ -13,7 +13,7 @@
 			<td>Directory</td>
 			<td><?=$port_dir?> (
 			<?for($i=0;$i<count($ports_trees_links);$i++) {?>
-				<a href="<?=$ports_trees_links[$i]['cvsweb']?>/<?=$port_dir?>"><?=$ports_trees_links[$i]['name']?></a>
+				<a href="<?=$ports_trees_links[$i]['cvsweb']?>/<?=$port_dir?><?=$ports_trees_links[$i]['cvsweb_querystr']?>"><?=$ports_trees_links[$i]['name']?></a>
 			<?}?>
 			)</td>
 		</tr>

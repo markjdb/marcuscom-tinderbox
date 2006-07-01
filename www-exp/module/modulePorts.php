@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.4 2005/12/31 01:12:07 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.5 2006/07/01 19:26:19 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -51,7 +51,15 @@ class modulePorts extends module {
 			$ports_tree = $this->TinderboxDS->getPortsTreeForBuild( $build );
 			if( empty( $ports_tree_ids[$ports_tree->getId()] ) ) {
 				$ports_tree_ids[$ports_tree->getId()] = 1;
-				$ports_trees_links[] = array( 'name' => $ports_tree->getName(), 'cvsweb' => $ports_tree->getCVSwebURL() );
+
+				list( $cvsweb, $cvsweb_querystr ) = explode( '?', $ports_tree->getCVSwebURL(), 2 );
+
+				if ( $cvsweb_querystr ) {
+					$cvsweb = rtrim( $cvsweb, '/' );
+					$cvsweb_querystr = '?' . $cvsweb_querystr;
+				}
+
+				$ports_trees_links[] = array( 'name' => $ports_tree->getName(), 'cvsweb' => $cvsweb, 'cvsweb_querystr' => $cvsweb_querystr );
 			}
 		}
 
