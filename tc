@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.11 2006/06/01 01:32:57 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.12 2006/07/03 23:54:55 marcus Exp $
 #
 
 BEGIN {
@@ -2939,11 +2939,73 @@ sub addPorts {
 
 sub tbcleanup {
         my @builds = $ds->getAllBuilds();
+        my @ports  = $ds->getAllPorts();
+
+        foreach my $port (@ports) {
+                my @portstrees = $ds->getAllPortsTrees();
+                my $pathFound  = 0;
+
+                foreach my $portstree (@portstrees) {
+                        my $path = join("/",
+                                $PORTSTREES_DIR, $portstree->getName(), "ports",
+                                $port->getDirectory(), "Makefile");
+
+                        if (-e $path) {
+                                $pathFound = 1;
+                                last;
+                        }
+                }
+
+                if (!$pathFound) {
+                        print "Removing database entry for nonexistent port "
+                            . $port->getDirectory() . "\n";
+                        $ds->removePort($port);
+                }
+        }
 
         foreach my $build (@builds) {
                 print $build->getName() . "\n";
                 my $jail           = $ds->getJailById($build->getJailId());
                 my $package_suffix = $ds->getPackageSuffix($jail);
+
+                # Delete database records for nonexistent packages.
+                my @ports = $ds->getPortsForBuild($build);
+                foreach my $port (@ports) {
+                        my $path = "/nonexistent";
+                        if ($ds->getPortLastBuiltVersion($port, $build)) {
+                                $path = join(
+                                        "/",
+                                        $PKGS_DIR,
+                                        $build->getName(),
+                                        "All",
+                                        $ds->getPortLastBuiltVersion($port,
+                                                $build)
+                                            . $package_suffix
+                                );
+                        }
+                        if (!-e $path) {
+                                print
+                                    "Removing database entry for nonexistent port "
+                                    . $build->getName() . "/"
+                                    . $port->getName() . "\n";
+                                $ds->removePortForBuild($port, $build);
+                        }
+
+                        my $portstree =
+                            $ds->getPortsTreeById($build->getPortsTreeId());
+                        my $path = join("/",
+                                $PORTSTREES_DIR, $portstree->getName(), "ports",
+                                $port->getDirectory(), "Makefile");
+
+                        if (!-e $path) {
+                                print
+                                    "Removing database entry for nonexistent port "
+                                    . $build->getName() . "/"
+                                    . $port->getName() . "\n";
+                                $ds->removePortForBuild($port, $build);
+                        }
+
+                }
 
                 # Delete unreferenced log files.
                 my $dir = join("/", $LOG_DIR, $build->getName());
@@ -2963,28 +3025,5 @@ sub tbcleanup {
 
                 closedir(DIR);
 
-                # Delete database records for nonexistent packages.
-                my @ports = $ds->getPortsForBuild($build);
-                foreach my $port (@ports) {
-                        my $path = "/nonexistent";
-                        if ($ds->getPortLastBuiltVersion($port, $build)) {
-                                $path = join(
-                                        "/",
-                                        $PKGS_DIR,
-                                        $build->getName(),
-                                        "All",
-                                        $ds->getPortLastBuiltVersion($port,
-                                                $build)
-                                            . $package_suffix
-                                );
-                                if (!-e $path) {
-                                        print
-                                            "Removing database entry for nonexistent port "
-                                            . $build->getName() . "/"
-                                            . $port->getName() . "\n";
-                                        $ds->removePortForBuild($port, $build);
-                                }
-                        }
-                }
         }
 }
