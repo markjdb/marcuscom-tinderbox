@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.12 2006/07/03 23:54:55 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.13 2006/07/04 00:02:17 marcus Exp $
 #
 
 BEGIN {
@@ -2903,7 +2903,13 @@ sub addPorts {
                 }
         }
 
-        my $pCls = new Port();
+        my $pCls = $ds->getPortByDirectory($port);
+	my $newPort = 0;
+	if (!defined($pCls)) {
+	    $pCls = new Port();
+	    $newPort = 1;
+	}
+
         $pCls->setDirectory($port);
         $pCls->setName($cache->Name($port));
         $pCls->setMaintainer($cache->Maintainer($port));
@@ -2911,7 +2917,7 @@ sub addPorts {
 
         # Only add the port if it isn't already in the datastore.
         my $rc;
-        if (!$ds->isPortInDS($pCls)) {
+        if ($newPort) {
                 $rc = $ds->addPort(\$pCls);
                 if (!$rc) {
                         warn "WARN: Failed to add port "
