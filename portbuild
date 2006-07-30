@@ -17,15 +17,6 @@ cleanup()
 
     cleanup_mounts -d build -b $(basename $chroot)
 
-    if [ -n "${DISTFILE_CACHE}" ]; then
-	if [ -f ${chroot}${DISTCACHE}/.lock ]; then
-	    lpid=$(echo ${chroot}${DISTCACHE}/.lock)
-	    if [ ${lpid} = $$ ]; then
-		rm -f ${chroot}${DISTCACHE}/.lock
-	    fi
-	fi
-    fi
-
     if [ $noclean = 0 ]; then
 	rm -rf ${chroot}/tmp/*
 	for dir in ${cleandirs}; do
@@ -418,25 +409,8 @@ if [ "${error}" = 0 ]; then
     # Cache the distfiles if requested.  We will wait a maximum of
     # ten minutes before giving up on the lock.
     if [ -n "${DISTFILE_CACHE}" ]; then
-        if [ -f ${chroot}${DISTCACHE}/.lock ]; then
-	    lpid=$(echo ${chroot}${DISTCACHE}/.lock)
-	    if [ ${lpid} = $$ ]; then
-	        rm -f ${chroot}${DISTCACHE}/.lock
-	    fi
-	fi
-	lcounter=0
-	lcounter_max=200
-	while [ -f ${chroot}${DISTCACHE}/.lock -a ${lcounter} -lt ${lcounter_max} ]; do
-	    echo "INFO: Waiting for DISTCACHE lock..."
-	    lcounter=$(expr ${lcounter} + 1)
-	    sleep 3
-	done
-	if [ ${lcounter} -lt ${lcounter_max} ]; then
-	    echo $$ > ${chroot}${DISTCACHE}/.lock
-	    tar -C ${chroot}/${DISTDIR} -cf - . | \
-	        tar --unlink -C ${chroot}${DISTCACHE} -xvf -
-	    rm -f ${chroot}${DISTCACHE}/.lock
-	fi
+	lockf -t 600 ${chroot}${DISTCACHE}/.lock tar -C ${chroot}/${DISTDIR} \
+		-cf - . | tar --unlink -C ${chroot}${DISTCACHE} -xvf -
     fi
 
     chroot ${chroot} /usr/bin/nice -n $nice /buildscript ${dirname} 2  "$ED" "$PD" "$FD" "$BD" "$RD" > ${chroot}/tmp/${pkgname}.log2 2>&1
