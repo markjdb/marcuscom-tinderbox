@@ -154,8 +154,8 @@ unset LANG
 # wait 1 hour before killing build with no output
 export TIMEOUT=7200
 
-# to prevent runaway processes -- 300 meg file size limit, one hour CPU limit
-ulimit -f 614400
+# to prevent runaway processes -- 600 meg file size limit, one hour CPU limit
+ulimit -f 1228800
 ulimit -t 3600
 
 # directories to clean
