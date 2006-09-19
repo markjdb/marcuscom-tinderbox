@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/setup.sh,v 1.16 2005/09/04 00:00:45 marcus Exp $
+# $MCom: portstools/tinderbox/setup.sh,v 1.16.2.1 2006/09/19 04:29:28 marcus Exp $
 #
 
 pb=$0
@@ -33,7 +33,7 @@ pb=$(type "$pb" | sed 's/^.* //g')
 pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
-MAN_PREREQS="lang/perl5.8 net/p5-Net security/p5-Digest-MD5"
+MAN_PREREQS="lang/perl5.8"
 OPT_PREREQS="lang/php[45] databases/pear-DB www/php[45]-session"
 PREF_FILES="rawenv tinderbox.ph"
 README="${pb}/scripts/README"

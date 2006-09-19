@@ -1,4 +1,4 @@
-$MCom: portstools/tinderbox/README,v 1.40.2.8 2006/07/01 19:36:35 marcus Exp $
+$MCom: portstools/tinderbox/README,v 1.40.2.9 2006/09/19 04:29:28 marcus Exp $
 
 BASIC INSTALLATION AND USAGE INSTRUCTIONS
 
@@ -17,9 +17,8 @@ Requirements:
 
 Recent FreeBSD (development happens on -CURRENT only, but Tinderbox is known
 to work on RELENG_5 and RELENG_6 too), Perl 5.8 or later (lang/perl5.8),
-Digest::MD5 (security/p5-Digest-MD5), Net::SMTP (net/p5-Net), and either
-MySQL 4.1 or later (databases/mysql41-server) or PostgreSQL 7.4 or later
-(databases/postgres74-server).
+and either MySQL 4.1 or later (databases/mysql41-server) or PostgreSQL 7.4
+or later (databases/postgres74-server).
 
 If MySQL is used, the MySQL Perl module must also be installed
 (databases/p5-DBD-mysql41).  Is PostgreSQL is used, the Pg Perl module
