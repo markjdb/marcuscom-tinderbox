@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.1 2005/11/27 18:36:34 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.2 2006/10/12 17:30:54 marcus Exp $
 #
 
 tinder_echo() {
@@ -304,7 +304,7 @@ request_mount() {
 	fi
 
 	if [ ${_readonly} -eq 1 ] ; then
-		options="${_options} -r"
+	    _options="${_options} -r"
 	fi
 
 	mount ${_options} ${_source} ${_destination}
