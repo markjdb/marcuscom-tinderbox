@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.12 2006/01/31 18:08:08 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/TinderboxDS.php,v 1.18.2.13 2006/10/16 01:56:35 marcus Exp $
 #
 
     require_once 'DB.php';
@@ -465,7 +465,7 @@
         }
 
         function getBuildStatsWithStatus($build_id) {
-            $query = 'SELECT Last_Status,COUNT(*) AS c FROM build_ports WHERE Build_Id = ? GROUP BY Last_Status';
+            $query = 'SELECT Last_Status as last_status,COUNT(*) AS c FROM build_ports WHERE Build_Id = ? GROUP BY last_status';
             $rc = $this->_doQueryHashRef($query, $results, $build_id);
             if (!$rc) return null;
             return $results;
