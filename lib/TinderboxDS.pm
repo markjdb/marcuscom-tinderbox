@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.13 2006/01/30 16:44:00 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.14 2006/10/16 00:20:39 marcus Exp $
 #
 
 package TinderboxDS;
@@ -97,7 +97,7 @@ sub getDSVersion {
         my $config;
 
         my @results;
-        my @tables  = map  { $_ =~ s/.*\.//; $_ } $self->{'dbh'}->tables();
+        my @tables = map { $_ =~ s/.*\.//; $_ } $self->{'dbh'}->tables();
         my @matches = grep { /\bconfig\b/ } @tables;
 
         if (!scalar @matches) {
@@ -387,7 +387,7 @@ sub reorgBuildPortsQueue {
         my $host = shift;
 
         my $enq_time = time - 25200;
-        my $enq_sql  = strftime("%Y-%m-%d %H:%M:%S", localtime($enq_time));
+        my $enq_sql = strftime("%Y-%m-%d %H:%M:%S", localtime($enq_time));
 
         my $rc = $self->_doQuery(
                 "DELETE FROM build_ports_queue WHERE Host_Id=? AND Enqueue_Date<=? AND Status != 'ENQUEUED'",
@@ -999,6 +999,8 @@ sub getPortLastBuiltVersion {
         if (!$rc) {
                 return undef;
         }
+
+        $results[0] = _doCaseHack($results[0]);
 
         return $results[0]->{'Last_Built_Version'};
 }
@@ -1688,17 +1690,7 @@ sub isPortForBuild {
         );
 
         foreach (@result) {
-
-                # XXX Remove hack after schema is lowercased.
-                foreach my $key (keys %{$_}) {
-                        my $value = $_->{$key};
-                        delete $_->{$key};
-
-                        $key = ucfirst $key;
-                        $key =~ s/_(.)/_\u$1/g;
-
-                        $_->{$key} = $value;
-                }
+                $_ = _doCaseHack($_);
                 if ($build->getName() eq $_->{'Build_Name'}) {
                         $valid = 1;
                         last;
@@ -1903,6 +1895,23 @@ sub _addObject {
                 \@values);
 
         return $rc;
+}
+
+# XXX Remove hack after schema is lowercased.
+sub _doCaseHack {
+        my $hashref = shift;
+
+        foreach my $key (keys %{$hashref}) {
+                my $value = $hashref->{$key};
+                delete $hashref->{$key};
+
+                $key = ucfirst $key;
+                $key =~ s/_(.)/_\u$1/g;
+
+                $hashref->{$key} = $value;
+        }
+
+        $hashref;
 }
 
 sub destroy {
