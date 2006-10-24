@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.14 2006/07/11 01:48:24 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.15 2006/10/24 06:20:10 marcus Exp $
 #
 
 BEGIN {
@@ -89,22 +89,22 @@ require "tinderlib.pl";
                 optstr => 'h:G',
         },
         "configCcache" => {
-                func  => \&configCcache,
-                help  => "Configure Tinderbox ccache parameters",
+                func => \&configCcache,
+                help => "Configure Tinderbox ccache parameters",
                 usage =>
                     "[-d | -e] [-c <cache mount src>] [-s <max cache size>] [-j | -J] [-l <debug logfile> | -L] [-h <host name> | -G] | -G -h <host name>",
                 optstr => 'dec:s:l:LjJh:G',
         },
         "configDistfile" => {
-                func  => \&configDistfile,
-                help  => "Configure Tinderbox distfile parameters",
+                func => \&configDistfile,
+                help => "Configure Tinderbox distfile parameters",
                 usage =>
                     "[-c <distfile cache mount src> | -C] [-h <host name> | -G] | -G -h <host name>",
                 optstr => 'c:Ch:G',
         },
         "configJail" => {
-                func  => \&configJail,
-                help  => "Configure Tinderbox Jail parameters",
+                func => \&configJail,
+                help => "Configure Tinderbox Jail parameters",
                 usage =>
                     "[-o <jail object directory> | -O] [-h <host name> | -G] | -G -h <host name>",
                 optstr => 'o:Oh:G',
@@ -164,22 +164,22 @@ require "tinderlib.pl";
                 optstr => 'h:',
         },
         "addBuild" => {
-                func  => \&addBuild,
-                help  => "Add a build to the datastore",
+                func => \&addBuild,
+                help => "Add a build to the datastore",
                 usage =>
                     "-b <build name> -j <jail name> -p <portstree name> [-d <build description>]",
                 optstr => 'b:j:p:d:',
         },
         "addJail" => {
-                func  => \&addJail,
-                help  => "Add a jail to the datastore",
+                func => \&addJail,
+                help => "Add a jail to the datastore",
                 usage =>
                     "-j <jail name> -t <jail tag> [-d <jail description>] [-m <src mount source>] [-u <jail update command|CVSUP|NONE>]",
                 optstr => 'm:j:t:u:d:',
         },
         "addPortsTree" => {
-                func  => \&addPortsTree,
-                help  => "Add a portstree to the datastore",
+                func => \&addPortsTree,
+                help => "Add a portstree to the datastore",
                 usage =>
                     "-p <portstree name> [-d <portstree description>] [-m <ports mount source>] [-u <portstree update command|NONE|CVSUP>] [-w <CVSweb URL>]",
                 optstr => 'm:p:u:d:w:',
@@ -192,22 +192,22 @@ require "tinderlib.pl";
                 optstr => 'ab:d:r',
         },
         "addBuildPortsQueueEntry" => {
-                func  => \&addBuildPortsQueueEntry,
-                help  => "Adds a Port to the Ports to Build Queue",
+                func => \&addBuildPortsQueueEntry,
+                help => "Adds a Port to the Ports to Build Queue",
                 usage =>
                     "-b <build name> -d <port directory> [-h <hostname>] [-p <priority>]",
                 optstr => 'b:d:h:p:',
         },
         "addPortFailPattern" => {
-                func  => \&addPortFailPattern,
-                help  => "Add a port failure pattern to the datastore",
+                func => \&addPortFailPattern,
+                help => "Add a port failure pattern to the datastore",
                 usage =>
                     "-i <ID> -r <reason tag> -e <expression> [-p <parent ID>]",
                 optstr => 'i:r:e:p:',
         },
         "addPortFailReason" => {
-                func  => \&addPortFailReason,
-                help  => "Add a port failure reason to the datastore",
+                func => \&addPortFailReason,
+                help => "Add a port failure reason to the datastore",
                 usage =>
                     "-t <tag> [-d <description>] [-y COMMON|RARE|TRANSIENT]",
                 optstr => 't:d:y:',
@@ -280,8 +280,8 @@ require "tinderlib.pl";
                 optstr => 'h:',
         },
         "rmBuildPortsQueueEntry" => {
-                func  => \&rmBuildPortsQueueEntry,
-                help  => "Removes a Port from the Ports to Build Queue",
+                func => \&rmBuildPortsQueueEntry,
+                help => "Removes a Port from the Ports to Build Queue",
                 usage =>
                     "-i <Build_Ports_Queue_Id> | -b <build name> -d <port directory> [-h <hostname>]",
                 optstr => 'i:b:d:h:',
@@ -425,15 +425,15 @@ require "tinderlib.pl";
                 ,
         },
         "addUser" => {
-                func  => \&addUser,
-                help  => "Add a user to the datastore",
+                func => \&addUser,
+                help => "Add a user to the datastore",
                 usage =>
                     "-u <username> [-e <emailaddress>] [-p <password>] [-w]",
                 optstr => 'u:e:p:w',
         },
         "updateUser" => {
-                func  => \&updateUser,
-                help  => "Update user preferences",
+                func => \&updateUser,
+                help => "Update user preferences",
                 usage =>
                     "-u <username> [-e <emailaddress>] [-p <password>] [-w]",
                 optstr => 'u:e:p:w',
@@ -1474,9 +1474,16 @@ sub getSrcUpdateCmd {
 
         my $update_cmd = $jail->getUpdateCmd();
 
+        my $cvsupProg;
+        if (-x "/usr/bin/csup") {
+                $cvsupProg = "/usr/bin/csup";
+        } else {
+                $cvsupProg = "/usr/local/bin/cvsup";
+        }
+
         if ($update_cmd eq "CVSUP") {
                 $update_cmd =
-                    "/usr/local/bin/cvsup -g $BUILD_ROOT/jails/$jail_name/src-supfile";
+                    "$cvsupProg -g $BUILD_ROOT/jails/$jail_name/src-supfile";
         } elsif ($update_cmd eq "NONE") {
                 $update_cmd = "";
         } else {
@@ -1589,9 +1596,16 @@ sub getPortsUpdateCmd {
 
         my $update_cmd = $portstree->getUpdateCmd();
 
+        my $cvsupProg;
+        if (-x "/usr/bin/csup") {
+                $cvsupProg = "/usr/bin/csup";
+        } else {
+                $cvsupProg = "/usr/local/bin/cvsup";
+        }
+
         if ($update_cmd eq "CVSUP") {
                 $update_cmd =
-                    "/usr/local/bin/cvsup -g $BUILD_ROOT/portstrees/$portstree_name/ports-supfile";
+                    "$cvsupProg -g $BUILD_ROOT/portstrees/$portstree_name/ports-supfile";
         } elsif ($update_cmd eq "NONE") {
                 $update_cmd = "";
         } else {
@@ -1793,9 +1807,9 @@ sub rmPort {
         }
         foreach my $build (@builds) {
                 if (my $version = $ds->getPortLastBuiltVersion($port, $build)) {
-                        my $jail    = $ds->getJailById($build->getJailId());
-                        my $sufx    = $ds->getPackageSuffix($jail);
-                        my $pkgdir  = join("/", $PKGS_DIR, $build->getName());
+                        my $jail   = $ds->getJailById($build->getJailId());
+                        my $sufx   = $ds->getPackageSuffix($jail);
+                        my $pkgdir = join("/", $PKGS_DIR, $build->getName());
                         my $logpath =
                             join("/", $LOG_DIR, $build->getName(), $version);
                         my $errpath =
@@ -2131,13 +2145,17 @@ sub updatePortsTree {
         $portstree->setLastBuilt($opts->{'l'});
 
         if ($update_cmd eq "CVSUP") {
-                if (!-x "/usr/local/bin/cvsup") {
+                my $cvsupProg;
+                if (-x "/usr/bin/csup") {
+                        $cvsupProg = "/usr/bin/csup";
+                } elsif (-x "/usr/local/bin/cvsup") {
+                        $cvsupProg = "/usr/local/bin/cvsup";
+                } else {
                         cleanup($ds, 1,
-                                "Failed to find executable cvsup in /usr/local/bin.\n"
-                        );
+                                "Failed to find a usable CVSup program.\n");
                 }
                 $update_cmd =
-                    "/usr/local/bin/cvsup -g $BUILD_ROOT/portstrees/$name/ports-supfile";
+                    "$cvsupProg -g $BUILD_ROOT/portstrees/$name/ports-supfile";
         } elsif ($update_cmd eq "NONE") {
                 $update_cmd = "";
         } else {
@@ -2957,7 +2975,7 @@ sub tbcleanup {
                         $requestMountArgs{'readonly'}  = 1;
                         $requestMountArgs{'portstree'} = $portstree->getName();
                         $requestMountArgs{'destination'} = "portstree";
-                        requestMount($PORTSTREE_DIR, %requestMountArgs);
+                        requestMount($PORTSTREES_DIR, %requestMountArgs);
                         my $path = join("/",
                                 $PORTSTREES_DIR, $portstree->getName(), "ports",
                                 $port->getDirectory(), "Makefile");
@@ -3009,9 +3027,9 @@ sub tbcleanup {
                         $requestMountArgs{'readonly'}  = 1;
                         $requestMountArgs{'portstree'} = $portstree->getName();
                         $requestMountArgs{'destination'} = "portstree";
-                        requestMount($PORTSTREE_DIR, %requestMountArgs);
+                        requestMount($PORTSTREES_DIR, %requestMountArgs);
 
-                        my $path = join("/",
+                        $path = join("/",
                                 $PORTSTREES_DIR, $portstree->getName(), "ports",
                                 $port->getDirectory(), "Makefile");
 
