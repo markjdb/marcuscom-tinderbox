@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.16 2006/10/30 03:31:58 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.17 2006/10/30 07:01:49 marcus Exp $
 #
 
 BEGIN {
@@ -2962,20 +2962,23 @@ sub addPorts {
 }
 
 sub tbcleanup {
-        my @builds = $ds->getAllBuilds();
-        my @ports  = $ds->getAllPorts();
-        my %requestMountArgs;
+        my @builds     = $ds->getAllBuilds();
+        my @ports      = $ds->getAllPorts();
+        my @portstrees = $ds->getAllPortsTrees();
+
+        foreach my $portstree (@portstrees) {
+                my %requestMountArgs;
+                $requestMountArgs{'quiet'}       = 1;
+                $requestMountArgs{'readonly'}    = 1;
+                $requestMountArgs{'portstree'}   = $portstree->getName();
+                $requestMountArgs{'destination'} = "portstree";
+                requestMount($BUILD_ROOT, %requestMountArgs);
+        }
 
         foreach my $port (@ports) {
-                my @portstrees = $ds->getAllPortsTrees();
-                my $pathFound  = 0;
+                my $pathFound = 0;
 
                 foreach my $portstree (@portstrees) {
-                        $requestMountArgs{'quiet'}     = 1;
-                        $requestMountArgs{'readonly'}  = 1;
-                        $requestMountArgs{'portstree'} = $portstree->getName();
-                        $requestMountArgs{'destination'} = "portstree";
-                        requestMount($BUILD_ROOT, %requestMountArgs);
                         my $path = join("/",
                                 $PORTSTREES_DIR, $portstree->getName(), "ports",
                                 $port->getDirectory(), "Makefile");
@@ -3023,11 +3026,6 @@ sub tbcleanup {
 
                         my $portstree =
                             $ds->getPortsTreeById($build->getPortsTreeId());
-                        $requestMountArgs{'quiet'}     = 1;
-                        $requestMountArgs{'readonly'}  = 1;
-                        $requestMountArgs{'portstree'} = $portstree->getName();
-                        $requestMountArgs{'destination'} = "portstree";
-                        requestMount($BUILD_ROOT, %requestMountArgs);
 
                         $path = join("/",
                                 $PORTSTREES_DIR, $portstree->getName(), "ports",
