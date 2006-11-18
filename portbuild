@@ -18,16 +18,20 @@ cleanup()
     cleanup_mounts -d build -b $(basename $chroot)
 
     if [ $noclean = 0 ]; then
-	rm -rf ${chroot}/tmp/*
-	for dir in ${cleandirs}; do
-	    if ! rm -rf ${chroot}${dir} >/dev/null 2>&1; then
-		chflags -R noschg ${chroot}${dir}
-		rm -rf ${chroot}${dir} >/dev/null 2>&1
-	    fi
-	done
-	chroot ${chroot} /sbin/ldconfig -R
-	chroot ${chroot} /sbin/ldconfig -aout -R
-	rm -rf ${chroot}/var/db/pkg/*
+	if [ $error = 0 ]; then
+	    rm -rf ${chroot}/tmp/*
+	    for dir in ${cleandirs}; do
+	        if ! rm -rf ${chroot}${dir} >/dev/null 2>&1; then
+		    chflags -R noschg ${chroot}${dir}
+		    rm -rf ${chroot}${dir} >/dev/null 2>&1
+	        fi
+	    done
+	    chroot ${chroot} /sbin/ldconfig -R
+	    chroot ${chroot} /sbin/ldconfig -aout -R
+	    rm -rf ${chroot}/var/db/pkg/*
+	else
+	    ${pb}/scripts/mkbuild ${branch}
+	fi
     fi
 
     echo -n "$pkgname done at "
@@ -38,12 +42,30 @@ cleanup()
     exit $error
 }
 
+clean_env()
+{
+    SAFE_VARS="PATH EDITOR BLOCKSIZE PAGER ENV"
+    old_IFS=${IFS}
+    IFS='
+'
+    for i in $(env); do
+	var=${i%%=*}
+	if ! echo ${SAFE_VARS} | grep -qw ${var}; then
+	    unset ${var}
+	fi
+    done
+    IFS=${old_IFS}
+}
+
 # Configurable variables
 pb=$0
 [ -z "$(echo "${pb}" | sed 's![^/]!!g')" ] && \
 pb=$(type "$pb" | sed 's/^.* //g')
 pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
+
+# Clear out the environment.
+clean_env
 
 . ${pb}/scripts/lib/tinderbox_shlib.sh
 
@@ -175,6 +197,9 @@ export PORTOBJFORMAT=elf
 export USA_RESIDENT=yes
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/X11R6/bin
+
+# Set HOME to be /root to avoid errant leftover files
+export HOME=/root
 
 # Just to be shure we start in a clean build-tree
 cleanup_mounts -d build -b ${branch}
