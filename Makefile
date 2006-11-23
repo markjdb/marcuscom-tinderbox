@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.26 2006/11/23 07:28:49 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.27 2006/11/23 18:47:00 marcus Exp $
 
 VERSION=	2.3.4.r1
 
@@ -27,10 +27,10 @@ MIGDATA=	mig_shlib.sh mig_mysql_tinderbox-1.X_to_2.0.0.sql \
 MAN1DATA=	tc-configCcache.1 tc-configDistfile.1 tc-configGet.1 \
 		tc-configJail.1 tc-configTinderd.1 tc-init.1
 WWWDATA=	Build.php Jail.php Port.php PortsTree.php TinderObject.php \
-		TinderboxDS.php inc_ds.php failures.php index.php \
-		lastbuilds.php showbuild.php showport.php inc_tinderbox.php \
-		tinderstyle.css Makefile
-WWWEXPDATA=	inc_ds.php inc_tinderbox.php index.php
+		TinderboxDS.php inc_ds.php.dist failures.php index.php \
+		lastbuilds.php showbuild.php showport.php \
+		inc_tinderbox.php.dist tinderstyle.css Makefile
+WWWEXPDATA=	inc_ds.php.dist inc_tinderbox.php.dist index.php
 WWWEXPCDATA=	Build.php BuildPortsQueue.php Host.php Jail.php Port.php \
 		PortsTree.php TinderObject.php TinderboxDS.php User.php \
 		PortFailReason.php functions.php
