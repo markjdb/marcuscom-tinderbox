@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.17 2006/10/30 07:01:49 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.18 2006/11/23 07:00:44 marcus Exp $
 #
 
 BEGIN {
@@ -101,6 +101,13 @@ require "tinderlib.pl";
                 usage =>
                     "[-c <distfile cache mount src> | -C] [-h <host name> | -G] | -G -h <host name>",
                 optstr => 'c:Ch:G',
+        },
+        "configOptions" => {
+                func => \&configOptions,
+                help => "Configure Tinderbox port OPTIONS parameters",
+                usage =>
+                    "[-d | -e] [-o <options mount src>] [-h <host name> | -G] | -G -h <host name>",
+                optstr => 'deo:h:G',
         },
         "configJail" => {
                 func => \&configJail,
@@ -738,6 +745,57 @@ sub configDistfile {
                     . "\n");
 }
 
+sub configOptions {
+        my @config = ();
+        my $enabled;
+        my $host;
+
+        if ($opts->{'d'} && $opts->{'e'}) {
+                usage("configOptions");
+        }
+
+        _configGetHost($opts->{'h'});
+
+        if (scalar(keys %{$opts}) == 0
+                || (scalar(keys %{$opts}) == 1 && ($opts->{'h'} ^ $opts->{'G'}))
+            )
+        {
+                configGet("options", $host);
+                cleanup($ds, 0, undef);
+        }
+
+        if ($opts->{'G'} && $host) {
+                $ds->defaultConfig("options", $host);
+                cleanup($ds, 0, undef);
+        }
+
+        $enabled = new TBConfig();
+        $enabled->setOptionName("enabled");
+
+        if ($opts->{'e'}) {
+                $enabled->setOptionValue("1");
+                push @config, $enabled;
+        }
+
+        if ($opts->{'d'}) {
+                $enabled->setOptionValue("0");
+                push @config, $enabled;
+        }
+
+        if ($opts->{'o'}) {
+                my $odir = new TBConfig();
+                $odir->setOptionName("dir");
+                $odir->setOptionValue($opts->{'o'});
+                push @config, $odir;
+        }
+
+        $ds->updateConfig("options", $host, @config)
+            or cleanup($ds, 1,
+                      "Failed to update options configuration: "
+                    . $ds->getError()
+                    . "\n");
+}
+
 sub configTinderd {
         my @config = ();
         my $sleeptime;
@@ -1189,11 +1247,16 @@ sub addPort {
                 requestMount($BUILD_ROOT, %requestMountArgs);
 
                 buildenv($BUILD_ROOT, $bname, $jname, $ptname);
-                $ENV{'LOCALBASE'}  = "/nonexistentlocal";
-                $ENV{'X11BASE'}    = "/nonexistentx";
-                $ENV{'PKG_DBDIR'}  = "/nonexistentdb";
-                $ENV{'PORT_DBDIR'} = "/nonexistentportdb";
-                $ENV{'LINUXBASE'}  = "/nonexistentlinux";
+                $ENV{'LOCALBASE'} = "/nonexistentlocal";
+                $ENV{'X11BASE'}   = "/nonexistentx";
+                $ENV{'PKG_DBDIR'} = "/nonexistentdb";
+                if ($ENV{'OPTIONS_ENABLED'} == 1) {
+                        $ENV{'PORT_DBDIR'} =
+                            "${BUILD_ROOT}/$ENV{'OPTIONS_DIR'}/${bname}";
+                } else {
+                        $ENV{'PORT_DBDIR'} = "/nonexistentportdb";
+                }
+                $ENV{'LINUXBASE'} = "/nonexistentlinux";
 
                 my $makecache =
                     new MakeCache($ENV{'PORTSDIR'}, $ENV{'PKGSUFFIX'});

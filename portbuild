@@ -210,6 +210,10 @@ if [ x"${CCACHE_ENABLED}" = x"1" ]; then
     export PATH=/opt:${PATH}
 fi
 
+if [ x"${OPTIONS_ENABLED}" = x"1" ]; then
+    export PORT_DBDIR=${chroot}/var/db/ports
+fi
+
 # Use the *.env file to specify per-jail, per-portstree, and per-build
 # environment variables.
 [ -f ${pb}/jails/${jail}/jail.env ] && . ${pb}/jails/${jail}/jail.env
@@ -347,6 +351,17 @@ if [ x"${CCACHE_ENABLED}" = x"1" ]; then
         chroot ${chroot} ccache -M ${CCACHE_MAX_SIZE}
     fi
     unset CCACHE_DISABLE
+fi
+
+if [ ${OPTIONS_ENABLED} -eq 1 ]; then
+    mkdir -p ${pb}/${OPTIONS_DIR}/${branch}
+    mkdir -p ${chroot}/var/db/ports
+
+    if [ ${nullfs} -eq 1 ] ; then
+	request_mount -n -d options -s ${pb}/${OPTIONS_DIR}/${branch} -b ${branch}
+    else
+	request_mount -d options -s ${pb}/${OPTIONS_DIR}/${branch} -b ${branch}
+    fi
 fi
 
 for dir in ${cleandirs}; do

@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/makemake,v 1.36.2.4 2006/07/01 19:02:59 marcus Exp $
+# $MCom: portstools/tinderbox/makemake,v 1.36.2.5 2006/11/23 07:00:44 marcus Exp $
 #
 
 # Handle being called from a directory other than where things
@@ -118,11 +118,15 @@ $PORTSTREE_NAME = $PORTSTREE->getName();
 buildenv($BUILD_ROOT, $BUILD_NAME, $JAIL_NAME, $PORTSTREE_NAME);
 
 delete $ENV{'DISPLAY'};
-$ENV{'LOCALBASE'}  = "/nonexistentlocal";
-$ENV{'X11BASE'}    = "/nonexistentx";
-$ENV{'PKG_DBDIR'}  = "/nonexistentdb";
-$ENV{'PORT_DBDIR'} = "/nonexistentportdb";
-$ENV{'LINUXBASE'}  = "/nonexistentlinux";
+$ENV{'LOCALBASE'} = "/nonexistentlocal";
+$ENV{'X11BASE'}   = "/nonexistentx";
+$ENV{'PKG_DBDIR'} = "/nonexistentdb";
+if ($ENV{'OPTIONS_ENABLED'} == 1) {
+        $ENV{'PORT_DBDIR'} = "${BUILD_ROOT}/$ENV{'OPTIONS_DIR'}/${BUILD_NAME}";
+} else {
+        $ENV{'PORT_DBDIR'} = "/nonexistentportdb";
+}
+$ENV{'LINUXBASE'} = "/nonexistentlinux";
 
 #---------------------------------------------------------------------------
 # Handle either ports on the command line, or configured ports for
@@ -166,7 +170,7 @@ my (
         %pkgbdeps, %pkgrdeps, @duds,     $portbase, $makecache,
 );
 
-$portbase  = $ENV{'PORTSDIR'};
+$portbase = $ENV{'PORTSDIR'};
 $makecache = new MakeCache($portbase, $ENV{'PKGSUFFIX'});
 
 while (scalar(@PORTS)) {

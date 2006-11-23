@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.2 2006/10/12 17:30:54 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.3 2006/11/23 07:00:44 marcus Exp $
 #
 
 tinder_echo() {
@@ -239,6 +239,9 @@ request_mount() {
 		ccache)
 			_destination=${_pb}/${_build}/${_ccache_dir}
 			;;
+		options)
+			_destination=${_pb}/${_build}/var/db/ports
+			;;
 		*)	echo "unknown destination type!"
 			return 1
 			;;
@@ -304,7 +307,7 @@ request_mount() {
 	fi
 
 	if [ ${_readonly} -eq 1 ] ; then
-	    _options="${_options} -r"
+		_options="${_options} -r"
 	fi
 
 	mount ${_options} ${_source} ${_destination}
