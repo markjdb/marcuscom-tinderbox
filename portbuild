@@ -242,7 +242,7 @@ if [ "${major_version}" = "4" ]; then
     mkdir -p ${chroot}/libexec
     mkdir -p ${chroot}/lib
     if [ "${ARCH}" = "i386" -o "${ARCH}" = "amd64" ]; then
-        cp -p /sbin/mount_linprocfs /sbin/mount /sbin/umount ${chroot}/sbin
+        cp -p /sbin/mount /sbin/umount ${chroot}/sbin
         cp -p /lib/libufs.so.[0-9]* ${chroot}/lib
     fi
     cp -p /libexec/ld-elf.so.1 ${chroot}/libexec
@@ -401,12 +401,12 @@ fi
 if [ ${ARCH} = "i386" -o ${ARCH} = "amd64" ]; then
     # JDK ports need linprocfs :(
     mkdir -p ${chroot}/compat/linux/proc
-    mount_linprocfs linprocfs ${chroot}/compat/linux/proc
+    mount -t linprocfs linprocfs ${chroot}/compat/linux/proc
 fi
 
 # mount procfs
 mkdir -p ${chroot}/proc
-mount_procfs procfs ${chroot}/proc
+mount -t procfs procfs ${chroot}/proc
 
 _ldconfig_dirs="/lib /usr/lib /usr/lib/compat"
 ldconfig_dirs=""
