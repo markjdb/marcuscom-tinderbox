@@ -130,6 +130,13 @@ BD=$4
 RD=$5
 
 buildenv ${pb} ${branch} ${jail} ${portstree}
+# Use the *.env file to specify per-jail, per-portstree, and per-build
+# environment variables.
+[ -f ${pb}/jails/${jail}/jail.env ] && . ${pb}/jails/${jail}/jail.env
+[ -f ${pb}/portstrees/${portstree}/portstree.env ] && \
+	. ${pb}/portstrees/${portstree}/portstree.env
+[ -f ${pb}/builds/${branch}/build.env ] && . ${pb}/builds/${branch}/build.env
+
 unset DISPLAY
 
 pkgname=$(basename $6 ${PKGSUFFIX})
@@ -221,13 +228,6 @@ fi
 if [ x"${OPTIONS_ENABLED}" = x"1" ]; then
     export PORT_DBDIR=${chroot}/var/db/ports
 fi
-
-# Use the *.env file to specify per-jail, per-portstree, and per-build
-# environment variables.
-[ -f ${pb}/jails/${jail}/jail.env ] && . ${pb}/jails/${jail}/jail.env
-[ -f ${pb}/portstrees/${portstree}/portstree.env ] && \
-	. ${pb}/portstrees/${portstree}/portstree.env
-[ -f ${pb}/builds/${branch}/build.env ] && . ${pb}/builds/${branch}/build.env
 
 echo "building $pkgname in $chroot"
 
