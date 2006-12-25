@@ -214,6 +214,8 @@ INSERT INTO config VALUES ('CCACHE_LOGFILE', '', -1);
 INSERT INTO config VALUES ('DISTFILE_CACHE', '', -1);
 INSERT INTO config VALUES ('TINDERD_SLEEPTIME', '120', -1);
 INSERT INTO config VALUES ('JAIL_OBJDIR', '', -1);
+INSERT INTO config VALUES ('OPTIONS_ENABLED', '0', -1);
+INSERT INTO config VALUES ('OPTIONS_DIR', '', -1);
 
 ##
 # Port failure reasons.  These are reasons why a port may fail to build.
