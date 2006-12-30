@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14 2005/09/01 04:14:49 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.1 2006/12/30 20:38:35 marcus Exp $
 #
 
 use strict;
@@ -45,6 +45,16 @@ sub cleanup {
         exit($code);
 }
 
+sub cleanenv {
+        my @safe_vars = qw(PATH EDITOR BLOCKSIZE PAGER ENV);
+
+        foreach my $key (keys %ENV) {
+                if (!grep /^$key$/, @safe_vars) {
+                        delete $ENV{$key};
+                }
+        }
+}
+
 sub buildenv {
         my $pb        = shift;
         my $build     = shift;
@@ -53,6 +63,8 @@ sub buildenv {
 
         my ($major_version) = ($jail =~ /(^\d)/);
         my (@rawenv, @tbconfig) = ();
+
+        cleanenv();
 
         my @envfiles = (
                 "$pb/jails/$jail/jail.env",
