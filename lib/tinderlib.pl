@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.1 2006/12/30 20:38:35 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.2 2007/01/02 03:50:13 marcus Exp $
 #
 
 use strict;
@@ -53,6 +53,8 @@ sub cleanenv {
                         delete $ENV{$key};
                 }
         }
+
+        $ENV{'USER'} = 'root';
 }
 
 sub buildenv {
