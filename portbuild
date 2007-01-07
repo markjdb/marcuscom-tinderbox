@@ -387,6 +387,8 @@ mtree -deU -f ${chroot}/etc/mtree/BSD.var.dist -p ${chroot}/var \
   >/dev/null 2>&1
 mtree -deU -f ${chroot}/etc/mtree/BSD.usr.dist -p ${chroot}/usr \
   >/dev/null 2>&1
+
+mkdir -p ${chroot}${LOCALBASE}
 mtree -deU -f ${chroot}/etc/mtree/BSD.local.dist -p ${chroot}${LOCALBASE} \
   >/dev/null 2>&1
 
