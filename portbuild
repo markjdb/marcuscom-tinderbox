@@ -146,6 +146,7 @@ shift 2
 echo ${pkgname}
 echo ${dirname}
 
+portdir=$(echo ${dirname} | sed -e 's|^/usr/ports/||')
 if [ -f ${pb}/builds/${branch}/duds ]; then
     if grep -qxF ${pkgname} ${pb}/builds/${branch}/duds; then
         echo "skipping ${pkgname} (found in duds)"
@@ -155,8 +156,6 @@ if [ -f ${pb}/builds/${branch}/duds ]; then
         exit 1
     fi
 fi
-
-portdir=$(echo ${dirname} | sed -e 's|^/usr/ports/||')
 
 # Want to use the /etc/make.conf in the chroot (Jail)
 unset __MAKE_CONF
