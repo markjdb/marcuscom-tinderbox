@@ -1,5 +1,5 @@
 #-
-# Copyright (c) 2004-2005 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.2 2007/01/02 03:50:13 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.3 2007/02/18 18:13:50 marcus Exp $
 #
 
 use strict;
