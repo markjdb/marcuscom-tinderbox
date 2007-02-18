@@ -1,6 +1,8 @@
 DELETE FROM port_fail_patterns WHERE Port_Fail_Pattern_Id % 100 = 0 OR Port_Fail_Pattern_Id = 2147483647;
 
 UPDATE config SET Config_Option_Value='2.3.3' WHERE Config_Option_Name='__DSVERSION__';
+INSERT INTO config VALUES ('OPTIONS_ENABLED', '0', -1);
+INSERT INTO config VALUES ('OPTIONS_DIR', '', -1);
 
 INSERT INTO port_fail_reasons VALUES ('gcc4_error', 'Your code does not run with the latest gcc version (pending import to -CURRENT). See http://wiki.freebsd.org/gcc4 for further information.', 'COMMON');
 INSERT INTO port_fail_reasons VALUES ('sysvipc', 'Your port is interacting badly with the System V InterProcess Communication code.', 'RARE');
