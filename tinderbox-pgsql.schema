@@ -135,7 +135,7 @@ INSERT INTO hosts VALUES (-1, '__ALL__');
 -- __DSVERSION__ must be bumped.  Use micro version bumps for new config
 -- commands, and minor version bumps for schema changes.
 ----
-INSERT INTO config VALUES ('__DSVERSION__', '2.3.2', -1);
+INSERT INTO config VALUES ('__DSVERSION__', '2.3.3', -1);
 INSERT INTO config VALUES ('CCACHE_ENABLED', '0', -1);
 INSERT INTO config VALUES ('CCACHE_DIR', '', -1);
 INSERT INTO config VALUES ('CCACHE_NOLINK', '1', -1);
