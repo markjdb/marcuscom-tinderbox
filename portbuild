@@ -150,9 +150,9 @@ portdir=$(echo ${dirname} | sed -e 's|^/usr/ports/||')
 if [ -f ${pb}/builds/${branch}/duds ]; then
     if grep -qxF ${pkgname} ${pb}/builds/${branch}/duds; then
         echo "skipping ${pkgname} (found in duds)"
-	${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${build}
-	${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${build} -s DUD
-	${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${build} -v ${pkgname}
+	${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${branch}
+	${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s DUD
+	${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
         exit 1
     fi
 fi
