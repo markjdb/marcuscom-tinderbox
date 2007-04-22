@@ -165,7 +165,7 @@ if [ -z "${LOCALBASE}" ]; then
 fi
 
 if [ -z "${X11BASE}" ]; then
-    export X11BASE=/usr/X11R6
+    export X11BASE=/usr/local
 fi
 
 export WRKDIRPREFIX=/work

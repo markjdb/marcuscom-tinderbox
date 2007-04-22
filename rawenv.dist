@@ -21,7 +21,7 @@
 #7X_WINDOW_SYSTEM=xorg
 ##MACHINE_ARCH=i386
 LOCALBASE=/usr/local
-X11BASE=/usr/X11R6
+X11BASE=/usr/local
 PORTSDIR=`realpath ##PB##/portstrees/##PORTSTREE##/ports`
 SRCBASE=`realpath ##PB##/jails/##JAIL##/src`
 SRCPREFIX=`realpath ##PB##/jails/##JAIL##/src`
