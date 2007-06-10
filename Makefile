@@ -1,14 +1,14 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.30.2.35 2007/06/10 03:38:04 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.30.2.36 2007/06/10 17:23:54 marcus Exp $
 
-VERSION=	2.4.0.r1
+VERSION=	2.4.0.r2
 
 DATA=		README buildscript create ds.ph.dist makemake \
 		mkbuild mkjail pnohang.c portbuild rawenv.dist tc \
 		tinderbox.ph.dist tinderbox-mysql.schema  \
 		tinderbox-pgsql.schema tinderbuild tinderd upgrade.sh \
 		setup.sh enterbuild
-LIBDATA=	Build.pm BuildPortsQueue.pm Host.pm Jail.pm MakeCache.pm \
-		Port.pm PortsTree.pm TBConfig.pm TinderObject.pm \
+LIBDATA=	Build.pm BuildPortsQueue.pm Hook.pm Host.pm Jail.pm \
+		MakeCache.pm Port.pm PortsTree.pm TBConfig.pm TinderObject.pm \
 		TinderboxDS.pm User.pm tinderlib.pl tinderbox_shlib.sh \
 		setup_shlib.sh setup-mysql.sh setup-pgsql.sh enterbuild \
 		PortFailPattern.pm PortFailReason.pm
