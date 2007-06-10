@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/mkjail,v 1.27.2.3 2007/02/18 18:13:50 marcus Exp $
+# $MCom: portstools/tinderbox/mkjail,v 1.27.2.4 2007/06/10 03:38:04 marcus Exp $
 #
 
 
@@ -66,10 +66,19 @@ request_mount -q -r -d jail -j ${jail}
 
 update_cmd=$(${pb}/scripts/tc getSrcUpdateCmd -j ${jail})
 if [ ! -z "${update_cmd}" ]; then
+    execute_hook ${pb} "preJailUpdate" "JAIL=${jail} UPDATE_CMD=${update_cmd} PB=${pb}"
+    if [ $? != 0 ]; then
+        echo "ERROR: Terminating Jail update since hook preJailUpdate failed."
+        exit 1
+    fi
+
     echo "INFO: Updating jail with command ${update_cmd}"
     eval ${update_cmd} > ${pb}/jails/${jail}/update.log 2>&1
+    rc=$?
 
-    if [ $? != 0 ]; then
+    execute_hook ${pb} "postJailUpdate" "JAIL=${jail} RC=${rc} UPDATE_CMD=${update_cmd} PB=${pb}"
+
+    if [ ${rc} != 0 ]; then
 	echo "ERROR: Jail update failed."
 	exit 1
     fi
@@ -95,11 +104,20 @@ if [ -n "${JAIL_OBJDIR}" ]; then
     export MAKEOBJDIRPREFIX=${JAIL_OBJDIR}
 fi
 
+execute_hook ${pb} "preJailBuild" "JAIL=${jail} DESTDIR=${D} JAIL_OBJDIR=${JAIL_OBJDIR} SRCBASE=${SRCBASE} PB=${pb}"
+if [ $? != 0 ]; then
+    echo "ERROR: Terminating Jail build since hook preJailBuild failed."
+    exit 1
+fi
+
 cd ${SRCBASE}
 mkdir -p ${D}
 env DESTDIR=${D} make world
+rc=$?
 
-if [ $? != 0 ]; then
+execute_hook ${pb} "postJailBuild" "JAIL=${jail} DESTDIR=${D} JAIL_OBJDIR=${JAIL_OBJDIR} SRCBASE=${SRCBASE} PB=${pb} RC=${rc}"
+
+if [ ${rc} != 0 ]; then
     echo "ERROR: make world failed.  See above output."
     exit 1
 fi

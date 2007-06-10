@@ -1,6 +1,6 @@
 <?php
 #-
-# Copyright (c) 2005 Oliver Lehmann <oliver@FreeBSD.org>
+# Copyright (c) 2005-2007 Oliver Lehmann <oliver@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.6 2006/01/22 01:22:21 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuildPorts.php,v 1.5.2.7 2007/06/10 03:38:05 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -55,6 +55,17 @@ class moduleBuildPorts extends module {
 			$port_fail_reasons[$reason->getTag()]['tag']   = htmlentities($reason->getTag());
 			$port_fail_reasons[$reason->getTag()]['descr'] = $reason->getDescr();
 			$port_fail_reasons[$reason->getTag()]['type']  = $reason->getType();
+			$port_fail_reasons[$reason->getTag()]['link']  = true;
+		}
+
+		foreach ( $ports as $port ) {
+			if ( $port->getLastFailedDep() != "" ) {
+				$depreason = $port->getLastFailedDep();
+				$port_fail_reasons[$depreason]['tag']   = htmlentities( $depreason );
+				$port_fail_reasons[$depreason]['descr'] = htmlentities( "Port was not built since dependency $depreason failed." );
+				$port_fail_reasons[$depreason]['type']  = 'COMMON';
+				$port_fail_reasons[$depreason]['link']  = false;
+			}
 		}
 
 		$qs = array();
@@ -101,7 +112,19 @@ class moduleBuildPorts extends module {
 			$port_fail_reasons[$reason->getTag()]['tag']   = htmlentities($reason->getTag());
 			$port_fail_reasons[$reason->getTag()]['descr'] = $reason->getDescr();
 			$port_fail_reasons[$reason->getTag()]['type']  = $reason->getType();
+			$port_fail_reasons[$reason->getTag()]['link']  = true;
 		}
+
+		foreach ( $ports as $port ) {
+			if ( $port->getLastFailedDep() != "" ) {
+				$depreason = $port->getLastFailedDep();
+				$port_fail_reasons[$depreason]['tag']   = htmlentities( $depreason );
+				$port_fail_reasons[$depreason]['descr'] = htmlentities( "Port was not built since dependency $depreason failed." );
+				$port_fail_reasons[$depreason]['type']  = 'COMMON';
+				$port_fail_reasons[$depreason]['link']  = false;
+			}
+		}
+
 
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'build_name', $build_name );
@@ -135,7 +158,19 @@ class moduleBuildPorts extends module {
 			$port_fail_reasons[$reason->getTag()]['tag']   = htmlentities($reason->getTag());
 			$port_fail_reasons[$reason->getTag()]['descr'] = $reason->getDescr();
 			$port_fail_reasons[$reason->getTag()]['type']  = $reason->getType();
+			$port_fail_reasons[$reason->getTag()]['link']  = true;
 		}
+
+		foreach ( $ports as $port ) {
+			if ( $port->getLastFailedDep() != "" ) {
+				$depreason = $port->getLastFailedDep();
+				$port_fail_reasons[$depreason]['tag']   = htmlentities( $depreason );
+				$port_fail_reasons[$depreason]['descr'] = htmlentities( "Port was not built since dependency $depreason failed." );
+				$port_fail_reasons[$depreason]['type']  = 'COMMON';
+				$port_fail_reasons[$depreason]['link']  = false;
+			}
+		}
+
 
 		$this->template_assign( 'port_fail_reasons',      $port_fail_reasons );
 		$this->template_assign( 'current_builds',         $current_builds );
@@ -168,6 +203,20 @@ class moduleBuildPorts extends module {
 
 				$data[$i]['build_name'] = $build->getName();
 				$data[$i]['build_last_updated'] = $build->getBuildLastUpdated();
+
+				$data[$i]['build_eta'] = 'N/A';
+				$currport = $this->TinderboxDS->getCurrentPortForBuild($build->getId());
+				if (!is_null($currport)) {
+					$bp = $this->TinderboxDS->getBuildPorts($currport->getId(), $build->getId());
+					$as = explode(" ", $build->getBuildLastUpdated());
+					$ymd = explode("-", $as[0]);
+					$hms = explode(":", $as[1]);
+					$then = mktime($hms[0], $hms[1], $hms[2], $ymd[1], $ymd[2], $ymd[0]);
+					$diff = time() - $then;
+
+					if ($bp->getLastRunDuration() - $diff >= 0)
+						$data[$i]['build_eta'] = $bp->getLastRunDuration() - $diff;
+				}
 				$i++;
 	                }
 			$this->template_assign( 'data', $data );

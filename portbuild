@@ -42,19 +42,28 @@ cleanup()
     exit $error
 }
 
-clean_env()
+mark_failed()
 {
-    SAFE_VARS="PATH EDITOR BLOCKSIZE PAGER ENV"
-    old_IFS=${IFS}
-    IFS='
-'
-    for i in $(env); do
-	var=${i%%=*}
-	if ! echo ${SAFE_VARS} | grep -qw ${var}; then
-	    unset ${var}
-	fi
+    pb=$1
+    branch=$2
+    pkgname=$3
+    portdir=$4
+
+    mf="${pb}/builds/${branch}/Makefile"
+    if [ ! -f "${mf}" ]; then
+	return
+    fi
+
+    dependents=$(grep ${pkgname} ${mf} | grep '^[[:space:]]\{1,\}@' | awk '{print $NF}' | sed -e 's|^/usr/ports/||' | grep -v ${portdir})
+    if [ $? != 0 ]; then
+	return
+    fi
+
+    for dep in ${dependents}; do
+	${pb}/scripts/tc updatePortLastStatus -d ${dep} -b ${branch} -s DEPEND
+	${pb}/scripts/tc updatePortLastFailedDep -d ${dep} -b ${branch} -p ${portdir}
+        ${pb}/scripts/tc updatePortLastBuilt -d ${dep} -b ${branch}
     done
-    IFS=${old_IFS}
 }
 
 # Configurable variables
@@ -64,10 +73,10 @@ pb=$(type "$pb" | sed 's/^.* //g')
 pb=$(realpath $(dirname $pb))
 pb=${pb%%/scripts}
 
+. ${pb}/scripts/lib/tinderbox_shlib.sh
+
 # Clear out the environment.
 clean_env
-
-. ${pb}/scripts/lib/tinderbox_shlib.sh
 
 error=0
 init=0
@@ -147,12 +156,26 @@ echo ${pkgname}
 echo ${dirname}
 
 portdir=$(echo ${dirname} | sed -e 's|^/usr/ports/||')
+
+execute_hook ${pb} "prePortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} PORTDIR=${portdir} PB=${pb}"
+if [ $? != 0 ]; then
+    echo "Terminating build for ${pkgname} since prePortBuild hook failed"
+    ${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${branch}
+    ${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s FAIL
+    ${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
+    ${pb}/scripts/tc updatePortLastFailReason -d ${portdir} -b ${branch} -r "hook"
+    mark_failed ${pb} ${branch} ${pkgname} ${portdir}
+    exit 1
+fi
+
 if [ -f ${pb}/builds/${branch}/duds ]; then
     if grep -qxF ${pkgname} ${pb}/builds/${branch}/duds; then
         echo "skipping ${pkgname} (found in duds)"
 	${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${branch}
 	${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s DUD
 	${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
+	mark_failed ${pb} ${branch} ${pkgname} ${portdir}
+	execute_hook ${pb} "postPortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} STATUS=DUD PORTDIR=${portdir} PB=${pb}"
         exit 1
     fi
 fi
@@ -230,7 +253,8 @@ fi
 
 echo "building $pkgname in $chroot"
 
-${pb}/scripts/tc updateBuildCurrentPort -b ${branch} -n ${pkgname}
+${pb}/scripts/tc updateBuildStatus -b ${branch} -s PORTBUILD
+${pb}/scripts/tc updateBuildCurrentPort -b ${branch} -n ${pkgname} -d ${portdir}
 
 chroot=${pb}/${branch}
 packages=${pb}/packages/${branch}
@@ -282,10 +306,10 @@ elif [ "${major_version}" = "5" ]; then
         fi
         cp -p /lib/libc.so.6 ${chroot}/lib
     elif [ -f /lib/libc.so.7 ]; then
-	if [ -f ${chroot}/lib/libc.so.7 ]; then
-	    chflags noschg ${chroot}/lib/libc.so.7
-	fi
-	cp -p /lib/libc.so.7 ${chroot}/lib
+       if [ -f ${chroot}/lib/libc.so.7 ]; then
+           chflags noschg ${chroot}/lib/libc.so.7
+       fi
+       cp -p /lib/libc.so.7 ${chroot}/lib
     fi
 fi
 cp -p /rescue/ps ${chroot}/bin
@@ -412,17 +436,17 @@ else
   	>/dev/null 2>&1
 fi
 
-mkdir ${chroot}${X11BASE}
+mkdir -p ${chroot}${X11BASE}
 if [ $X_WINDOW_SYSTEM = "xfree86-3" ]; then
     mtree -deU -f ${chroot}/usr/src/etc/mtree/BSD.x11.dist -p ${chroot}${X11BASE} >/dev/null 2>&1
 else
-    if [ -f ${chroot}/a/ports/Templates/BSD.local.dist ]; then
-	mtree -deU -f ${chroot}/a/ports/Templates/BSD.local.dist -p ${chroot}${X11BASE} \
-		>/dev/null 2>&1
-    else
+#    if [ -f ${chroot}/a/ports/Templates/BSD.local.dist ]; then
+#	mtree -deU -f ${chroot}/a/ports/Templates/BSD.local.dist -p ${chroot}${X11BASE} \
+#		>/dev/null 2>&1
+#    else
 	mtree -deU -f ${chroot}/usr/src/etc/mtree/BSD.x11-4.dist -p ${chroot}${X11BASE} \
 		>/dev/null 2>&1
-    fi
+#    fi
 fi
 
 if [ ${ARCH} = "i386" -o ${ARCH} = "amd64" ]; then
@@ -529,6 +553,7 @@ if [ "${error}" = 0 ]; then
 	${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s ${status}
 	${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
 	${pb}/scripts/tc updatePortLastFailReason -d ${portdir} -b ${branch} -r "__nofail__"
+	execute_hook ${pb} "postPortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} STATUS=${status} PORTDIR=${portdir} PB=${pb}"
     else
 	cp ${chroot}/tmp/${pkgname}.log ${pb}/errors/${branch}/${pkgname}.log
 	if [ ${nolog} = 0 ]; then
@@ -538,7 +563,9 @@ if [ "${error}" = 0 ]; then
 	${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${branch}
 	${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s FAIL
 	${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
+	mark_failed ${pb} ${branch} ${pkgname} ${portdir}
         ${pb}/scripts/tc sendBuildErrorMail -d ${portdir} -b ${branch} -p ${pkgname}
+	execute_hook ${pb} "postPortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} STATUS=FAIL PORTDIR=${portdir} PB=${pb}"
     fi
 else
     cp ${chroot}/tmp/${pkgname}.log ${pb}/errors/${branch}/${pkgname}.log
@@ -551,7 +578,9 @@ else
     ${pb}/scripts/tc updatePortLastBuilt -d ${portdir} -b ${branch}
     ${pb}/scripts/tc updatePortLastStatus -d ${portdir} -b ${branch} -s FAIL
     ${pb}/scripts/tc updatePortLastBuiltVersion -d ${portdir} -b ${branch} -v ${pkgname}
+    mark_failed ${pb} ${branch} ${pkgname} ${portdir}
     ${pb}/scripts/tc sendBuildErrorMail -d ${portdir} -b ${branch} -p ${pkgname}
+	execute_hook ${pb} "postPortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} STATUS=FAIL PORTDIR=${portdir} PB=${pb}"
 fi
 
 cleanup ${chroot} ${noclean} ${error} "${cleandirs}" ${pkgname} ${pb} ${branch}

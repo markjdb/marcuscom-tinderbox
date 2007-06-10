@@ -1,6 +1,6 @@
 <?php
 #-
-# Copyright (c) 2005 Oliver Lehmann <oliver@FreeBSD.org>
+# Copyright (c) 2005-2007 Oliver Lehmann <oliver@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.5 2006/07/01 19:26:19 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/modulePorts.php,v 1.4.2.6 2007/06/10 03:38:05 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -99,38 +99,47 @@ class modulePorts extends module {
 			$port_logfilename = $port->getLogfileName();
 			$port_link_logfile = $loguri . '/' . $build_name . '/' . $port_logfilename;
 			$port_link_package = $pkguri . '/' . $build_name . '/All/' . $port_last_built_version . $package_suffix;
+			$port_last_run_duration = $port->getLastRunDuration();
+			$port_last_fail_reason = $port->getLastFailReason();
 
 			switch( $port->getLastStatus() ) {
 				case 'SUCCESS':
-					$status_field_class  = 'port_success';
-					$status_field_letter = '&nbsp;';
+					$status_field_class    = 'port_success';
+					$status_field_letter   = '&nbsp;';
 					break;
 				case 'LEFTOVERS':
-					$status_field_class  = 'port_leftovers';
-					$status_field_letter = 'L';
+					$status_field_class    = 'port_leftovers';
+					$status_field_letter   = 'L';
 					break;
 				case 'BROKEN':
-					$status_field_class  = 'port_broken';
-					$status_field_letter = 'B';
-					$port_link_package   = '';
+					$status_field_class    = 'port_broken';
+					$status_field_letter   = 'B';
+					$port_link_package     = '';
 					break;
 				case 'FAIL':
-					$status_field_class  = 'port_fail';
-					$status_field_letter = '&nbsp;';
-					$port_link_logfile   = $errorloguri . '/' . $build_name . '/' . $port_logfilename;
-					$port_link_package   = '';
+					$status_field_class    = 'port_fail';
+					$status_field_letter   = '&nbsp;';
+					$port_link_logfile     = $errorloguri . '/' . $build_name . '/' . $port_logfilename;
+					$port_link_package     = '';
+					break;
+				case 'DEPEND':
+					$status_field_class    = 'port_depend';
+					$status_field_letter   = '&nbsp;';
+					$port_link_logfile     = '';
+					$port_link_package     = '';
+					$port_last_fail_reason = $port->getLastFailedDep();
 					break;
 				case 'DUD':
-					$status_field_class  = 'port_dud';
-					$status_field_letter = 'D';
-					$port_link_logfile   = '';
-					$port_link_package   = '';
+					$status_field_class    = 'port_dud';
+					$status_field_letter   = 'D';
+					$port_link_logfile     = '';
+					$port_link_package     = '';
 					break;
 				default:
-					$status_field_class  = 'port_default';
-					$status_field_letter = '&nbsp;';
-					$port_link_logfile   = '';
-					$port_link_package   = '';
+					$status_field_class    = 'port_default';
+					$status_field_letter   = '&nbsp;';
+					$port_link_logfile     = '';
+					$port_link_package     = '';
 					break;
 			}
 
@@ -141,7 +150,8 @@ class modulePorts extends module {
 						'port_last_built_version'    => $port_last_built_version,
 						'port_last_built'            => prettyDatetime( $port->getLastBuilt() ),
 						'port_last_successful_built' => prettyDatetime( $port->getLastSuccessfulBuilt() ),
-						'port_last_fail_reason'      => htmlentities($port->getLastFailReason()),
+						'port_last_fail_reason'      => htmlentities( $port_last_fail_reason ),
+						'port_last_run_duration'     => $port_last_run_duration,
 						'port_link_logfile'          => $port_link_logfile,
 						'port_link_package'          => $port_link_package,
 						'status_field_class'         => $status_field_class,

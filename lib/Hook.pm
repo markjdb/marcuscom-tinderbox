@@ -1,4 +1,3 @@
-<?php
 #-
 # Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
@@ -24,57 +23,69 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/functions.php,v 1.1.2.3 2007/06/10 03:38:05 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Hook.pm,v 1.1.2.1 2007/06/10 03:38:04 marcus Exp $
 #
 
-function prettyEmail($input) {
-	return eregi_replace("@FreeBSD.org", "", $input);
+package Hook;
+
+use strict;
+use TinderObject;
+use vars qw(@ISA);
+@ISA = qw(TinderObject);
+
+sub new {
+        my $that        = shift;
+        my $object_hash = {
+                Hook_Name        => "",
+                Hook_Cmd         => "",
+                Hook_Description => "",
+        };
+
+        my @args = ();
+        push @args, $object_hash, @_;
+
+        my $self = $that->SUPER::new(@args);
+
+        return $self;
 }
 
-function prettyDatetime($input) {
-	if (ereg("[0-9]{14}", $input)) {
-		/* timstamp */
-		return substr($input,0,4)."-".substr($input,4,2)."-".substr($input,6,2)." ".substr($input,8,2).":".substr($input,10,2).":".substr($input,12,2);
-	} elseif (ereg("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", $input)) {
-		/* datetime */
-		if ($input == "0000-00-00 00:00:00" ||
-		    $input == "0000-00-00 00:00:00.000000") {
-			    return "";
-		} else {
-			return substr($input,0,19);
-		}
-	} else {
-		return $input;
-	}
+sub getName {
+        my $self = shift;
+
+        return $self->{Hook_Name};
 }
 
-function cryptPassword($password) {
-	return md5($password);
+sub getCmd {
+        my $self = shift;
+
+        return $self->{Hook_Cmd};
 }
 
-function build_query_string($url, $qs, $key, $value) {
-	$qs[$key] = $value;
-	$tmp = array();
-	foreach ($qs as $k => $v) {
-		array_push($tmp, $k . '=' . $v);
-	}
-	return $url . '?' . implode('&amp;', $tmp);
+sub getDescription {
+        my $self = shift;
+
+        return $self->{Hook_Description};
 }
 
-function time_difference_from_now($then) {
-	$then = strtotime(prettyDatetime($then));
-	$diff = time() - $then;
-	return time_elapsed($diff);
+sub setName {
+        my $self = shift;
+        my $name = shift;
+
+        $self->{Hook_Name} = $name;
 }
 
-function time_elapsed($c) {
-	if ($c===0 || $c < 0 || $c=="")
-		return "-";
-	if ($c>=3600)
-		return sprintf("%0d:%02d:%02d",
-			floor($c/3600),floor(($c%3600)/60),floor($c%60));
-	return sprintf("%02d:%02d",
-		floor(($c%3600)/60),floor($c%60));
+sub setCmd {
+        my $self = shift;
+        my $cmd  = shift;
+
+        $self->{Hook_Cmd} = $cmd;
 }
 
-?>
+sub setDescription {
+        my $self  = shift;
+        my $descr = shift;
+
+        $self->{Hook_Description} = $descr;
+}
+
+1;

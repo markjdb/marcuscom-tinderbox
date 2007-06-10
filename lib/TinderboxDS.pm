@@ -1,5 +1,5 @@
 #-
-# Copyright (c) 2004-2005 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.14 2006/10/16 00:20:39 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.15 2007/06/10 03:38:04 marcus Exp $
 #
 
 package TinderboxDS;
@@ -39,6 +39,7 @@ use Host;
 use TBConfig;
 use PortFailPattern;
 use PortFailReason;
+use Hook;
 use DBI;
 use Carp;
 use Digest::MD5 qw(md5_hex);
@@ -64,6 +65,7 @@ use vars qw(
         "TBConfig"        => "config",
         "PortFailReason"  => "port_fail_reasons",
         "PortFailPattern" => "port_fail_patterns",
+        "Hook"            => "hooks",
 );
 
 require "ds.ph";
@@ -232,6 +234,15 @@ sub getAllPorts {
         @ports = $self->getObjects("Port");
 
         return @ports;
+}
+
+sub getAllHooks {
+        my $self  = shift;
+        my @hooks = ();
+
+        @hooks = $self->getObjects("Hook");
+
+        return @hooks;
 }
 
 sub isValidBuildPortsQueueId {
@@ -448,6 +459,19 @@ sub getJailByName {
         my $name = shift;
 
         my @results = $self->getObjects("Jail", {Jail_Name => $name});
+
+        if (!@results) {
+                return undef;
+        }
+
+        return $results[0];
+}
+
+sub getHookByName {
+        my $self = shift;
+        my $name = shift;
+
+        my @results = $self->getObjects("Hook", {Hook_Name => $name});
 
         if (!@results) {
                 return undef;
@@ -895,7 +919,37 @@ sub updateJailLastBuilt {
 }
 
 sub updatePortLastBuilt {
-        my $self = shift;
+        my $self  = shift;
+        my $port  = $_[0];
+        my $build = $_[1];
+        my $query;
+        my $rc;
+        my @results;
+        croak "ERROR: Argument 1 not of type Port\n"
+            if (ref($port) ne "Port");
+        croak "ERROR: Argument 2 not of type Build\n"
+            if (ref($build) ne "Build");
+
+        if ($DB_DRIVER eq 'mysql') {
+                $query =
+                    'SELECT UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Build_Last_Updated) AS d FROM builds WHERE Build_Id=?';
+        } else {
+                $query =
+                    "SELECT DATE_PART('EPOCH', NOW()) - DATE_PART('EPOCH', Build_Last_Updated) AS d FROM builds WHERE Build_Id=?";
+        }
+
+        $rc = $self->_doQueryHashRef($query, \@results, $build->getId());
+
+        my $d = int($results[0]->{'d'});
+
+        $rc = $self->_doQuery(
+                "UPDATE build_ports SET Last_Run_Duration=? WHERE Port_Id=? AND Build_Id=?",
+                [$d, $port->getId(), $build->getId()]
+        );
+        if (!$rc) {
+                return $rc;
+        }
+
         return $self->updatePortLastBuilts(@_, "Last_Built");
 }
 
@@ -907,6 +961,11 @@ sub updatePortLastSuccessfulBuilt {
 sub updatePortLastFailReason {
         my $self = shift;
         return $self->updatePortLastBuilts(@_, "Last_Fail_Reason");
+}
+
+sub updatePortLastFailedDep {
+        my $self = shift;
+        return $self->updatePortLastBuilts(@_, "Last_Failed_Dependency");
 }
 
 sub updatePortLastBuilts {
@@ -951,6 +1010,7 @@ sub updatePortLastStatus {
                 LEFTOVERS => 1,
                 FAIL      => 1,
                 DUD       => 1,
+                DEPEND    => 1,
         );
 
         if (!defined($status_hash{$status})) {
@@ -1065,11 +1125,19 @@ sub updateBuildStatus {
 sub updateBuildCurrentPort {
         my $self    = shift;
         my $build   = shift;
+        my $port    = shift;
         my $pkgname = shift;
         croak "ERROR: Argument 1 not of type build\n"
             if (ref($build) ne "Build");
 
-        my $rc;
+        my $rc = $self->_doQuery(
+                "UPDATE build_ports SET Currently_Building='0' WHERE Build_Id = ? AND Currently_Building='1'",
+                [$build->getId()]
+        );
+        if (!$rc) {
+                return $rc;
+        }
+
         if (!defined($pkgname)) {
                 $rc = $self->_doQuery(
                         "UPDATE builds SET Build_Current_Port=NULL,Build_Last_Updated=NOW() WHERE Build_Id=?",
@@ -1080,6 +1148,41 @@ sub updateBuildCurrentPort {
                         "UPDATE builds SET Build_Current_Port=?,Build_Last_Updated=NOW() WHERE Build_Id=?",
                         [$pkgname, $build->getId()]
                 );
+        }
+
+        if (!$rc) {
+                return $rc;
+        }
+
+        if (defined($port)) {
+                croak "ERROR: Argument 2 not of type port\n"
+                    if (ref($port) ne "Port");
+                $rc = $self->_doQuery(
+                        "UPDATE build_ports SET Currently_Building='1' WHERE Build_Id=? AND Port_Id=?",
+                        [$build->getId(), $port->getId()]
+                );
+        }
+
+        return $rc;
+}
+
+sub updateHookCmd {
+        my $self = shift;
+        my $hook = shift;
+        my $cmd  = shift;
+        croak "ERROR: Argument 1 not of type hook\n" if (ref($hook) ne "Hook");
+
+        my $rc;
+        if (!defined($cmd)) {
+                $rc =
+                    $self->_doQuery(
+                        "UPDATE hooks SET Hook_Cmd=NULL WHERE Hook_Name=?",
+                        [$hook->getName()]);
+        } else {
+                $rc =
+                    $self->_doQuery(
+                        "UPDATE hooks SET Hook_Cmd=? WHERE Hook_Name=?",
+                        [$cmd, $hook->getName()]);
         }
 
         return $rc;
@@ -1596,6 +1699,23 @@ sub isValidJail {
         my $jailName = shift;
 
         my @results = $self->getObjects("Jail", {Jail_Name => $jailName});
+
+        if (!@results) {
+                return 0;
+        }
+
+        if (scalar(@results)) {
+                return 1;
+        }
+
+        return 0;
+}
+
+sub isValidHook {
+        my $self     = shift;
+        my $hookName = shift;
+
+        my @results = $self->getObjects("Hook", {Hook_Name => $hookName});
 
         if (!@results) {
                 return 0;

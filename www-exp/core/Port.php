@@ -1,6 +1,6 @@
 <?php
 #-
-# Copyright (c) 2004-2005 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/core/Port.php,v 1.2.2.1 2005/10/23 21:42:29 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/core/Port.php,v 1.2.2.2 2007/06/10 03:38:05 marcus Exp $
 #
 
     require_once 'TinderObject.php';
@@ -39,10 +39,13 @@
 		'Port_Directory' => '',
 		'Port_Comment' => '',
 		'Port_Maintainer' => '',
+		'Currently_Building' => '',
 		'Last_Built' => '',
 		'Last_Status' => '',
 		'Last_Successful_Built' => '',
 		'Last_Built_Version' => '',
+		'Last_Failed_Dependency' => '',
+		'Last_Run_Duration' => '',
 		'Last_Fail_Reason' => ''
 	    );
 
@@ -73,6 +76,10 @@
 	    return $this->Port_Maintainer;
 	}
 
+	function getCurrentlyBuilding() {
+	    return $this->_truth_array[$this->Currently_Building];
+	}
+
 	function getLastBuilt() {
 	    return $this->Last_Built;
 	}
@@ -91,6 +98,14 @@
 
 	function getLastFailReason() {
 	    return $this->Last_Fail_Reason;
+	}
+
+	function getLastFailedDep() {
+	    return $this->Last_Failed_Dependency;
+	}
+
+	function getLastRunDuration() {
+	    return $this->Last_Run_Duration;
 	}
 
 	function getLogfileName() {

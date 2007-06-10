@@ -1,5 +1,5 @@
 #-
-# Copyright (c) 2004-2005 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.3 2006/11/23 07:00:44 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.4 2007/06/10 03:38:04 marcus Exp $
 #
 
 tinder_echo() {
@@ -338,4 +338,49 @@ buildenv () {
 	done
 
 	IFS=${save_IFS}
+}
+
+clean_env () {
+    SAFE_VARS="PATH EDITOR BLOCKSIZE PAGER ENV"
+    old_IFS=${IFS}
+    IFS='
+'
+    for i in $(env); do
+	var=${i%%=*}
+	if ! echo ${SAFE_VARS} | grep -qw ${var}; then
+	    unset ${var}
+	fi
+    done
+    IFS=${old_IFS}
+
+    export USER="root"
+}
+
+execute_hook () {
+    pb=$1
+    name=$2
+    env=$3
+
+    hook_cmd=$(${pb}/scripts/tc getHookCmd -h ${name})
+    if [ -z "${hook_cmd}" ]; then
+	return 0
+    fi
+
+    echo "Running ${hook_cmd} for ${name} with environment \"${env}\" from ${pb}/scripts."
+
+    (
+    	clean_env
+	cd ${pb}/scripts
+	env ${env} $(realpath ${hook_cmd})
+	exit $?
+    )
+
+    rc=$?
+
+    if [ ${rc} -ne 0 ]; then
+	echo "Failed to run ${hook_cmd}, exited with ${rc}."
+    fi
+
+    return ${rc}
+
 }

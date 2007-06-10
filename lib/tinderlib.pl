@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.3 2007/02/18 18:13:50 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.4 2007/06/10 03:38:04 marcus Exp $
 #
 
 use strict;
@@ -55,6 +55,21 @@ sub cleanenv {
         }
 
         $ENV{'USER'} = 'root';
+}
+
+sub executeHook {
+        my $pb   = shift;
+        my $name = shift;
+        my $env  = shift;
+        my $args = undef;
+
+        $args = join(' ', $pb, $name, "\"$env\"");
+
+        $ENV{'pb'} = $pb;
+        system(
+                "sh -c '. $pb/scripts/lib/tinderbox_shlib.sh ; execute_hook $args'"
+        );
+        return ($? == 0);
 }
 
 sub buildenv {
