@@ -200,7 +200,7 @@ CREATE TABLE port_fail_patterns (
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) TYPE=INNODB;
 
-DROP TABLE IF EXISTS hooks
+DROP TABLE IF EXISTS hooks;
 CREATE TABLE hooks (
   Hook_Name varchar(32) NOT NULL,
   Hook_Cmd varchar(255),
