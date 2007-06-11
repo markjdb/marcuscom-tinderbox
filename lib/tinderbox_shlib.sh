@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.4 2007/06/10 03:38:04 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.5 2007/06/11 05:59:12 marcus Exp $
 #
 
 tinder_echo() {
@@ -341,7 +341,7 @@ buildenv () {
 }
 
 clean_env () {
-    SAFE_VARS="PATH EDITOR BLOCKSIZE PAGER ENV"
+    SAFE_VARS="PATH EDITOR BLOCKSIZE PAGER ENV tb"
     old_IFS=${IFS}
     IFS='
 '
