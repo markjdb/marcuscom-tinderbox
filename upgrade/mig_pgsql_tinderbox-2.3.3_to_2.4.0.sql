@@ -1,7 +1,7 @@
 CREATE TABLE hooks (
     Hook_Name VARCHAR(32) NOT NULL PRIMARY KEY,
     Hook_Cmd VARCHAR(255),
-    Hook_Description TEXT,
+    Hook_Description TEXT
 );
 
 INSERT INTO hooks VALUES ('prePortsTreeUpdate', NULL, 'Hook to run prior to updating a PortsTree.\nIf this hook returns a non-zero value, the PortsTree will not be updated.\nThe following environment will be passed to the hook command:\n\tPORTSTREE : PortsTree name\n\tUPDATE_CMD : Update command\n\tPB : Tinderbox root');
@@ -21,6 +21,9 @@ ALTER TABLE build_ports
   ADD COLUMN Last_Failed_Dependency VARCHAR(255),
   ADD COLUMN Last_Run_Duration INTEGER,
   ADD COLUMN Currently_Building INTEGER NOT NULL DEFAULT 0,
-  ALTER COLUMN Last_Status TYPE VARCHAR(16) CHECK (Last_Status IN ('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD','DEPEND')) DEFAULT 'UNKNOWN';
+  ALTER COLUMN Last_Status TYPE VARCHAR(16),
+  ALTER COLUMN Last_Status SET DEFAULT 'UNKNOWN',
+  ADD CHECK (Last_Status IN ('UNKNOWN','SUCCESS','FAIL','BROKEN','LEFTOVERS','DUD','DEPEND'));
+
 
 UPDATE config SET Config_Option_Value='2.4.0' WHERE Config_Option_Name='__DSVERSION__';
