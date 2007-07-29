@@ -312,8 +312,8 @@ elif [ "${major_version}" = "5" ]; then
        cp -p /lib/libc.so.7 ${chroot}/lib
     fi
 fi
+cp -p /rescue/mount /rescue/umount ${chroot}/sbin
 cp -p /rescue/ps ${chroot}/bin
-cp -p /usr/bin/killall ${chroot}/usr/bin
 
 # XXX This is a hack to fix some recent pkg_add problems in some releases.
 if [ -f ${pb}/jails/${jail}/pkg_install.tar ]; then
