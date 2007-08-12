@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.6 2007/08/12 04:42:09 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderbox_shlib.sh,v 1.18.2.7 2007/08/12 05:09:41 marcus Exp $
 #
 
 tinder_echo() {
@@ -371,7 +371,7 @@ execute_hook () {
     (
     	clean_env
 	cd ${pb}/scripts
-	env ${env} $(realpath ${hook_cmd})
+	eval "env ${env}" $(realpath ${hook_cmd})
 	exit $?
     )
 
