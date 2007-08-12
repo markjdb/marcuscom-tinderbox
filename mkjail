@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/mkjail,v 1.27.2.4 2007/06/10 03:38:04 marcus Exp $
+# $MCom: portstools/tinderbox/mkjail,v 1.27.2.5 2007/08/12 05:11:04 marcus Exp $
 #
 
 
@@ -66,7 +66,7 @@ request_mount -q -r -d jail -j ${jail}
 
 update_cmd=$(${pb}/scripts/tc getSrcUpdateCmd -j ${jail})
 if [ ! -z "${update_cmd}" ]; then
-    execute_hook ${pb} "preJailUpdate" "JAIL=${jail} UPDATE_CMD=${update_cmd} PB=${pb}"
+    execute_hook ${pb} "preJailUpdate" "JAIL=${jail} \"UPDATE_CMD=${update_cmd}\" PB=${pb}"
     if [ $? != 0 ]; then
         echo "ERROR: Terminating Jail update since hook preJailUpdate failed."
         exit 1
@@ -76,7 +76,7 @@ if [ ! -z "${update_cmd}" ]; then
     eval ${update_cmd} > ${pb}/jails/${jail}/update.log 2>&1
     rc=$?
 
-    execute_hook ${pb} "postJailUpdate" "JAIL=${jail} RC=${rc} UPDATE_CMD=${update_cmd} PB=${pb}"
+    execute_hook ${pb} "postJailUpdate" "JAIL=${jail} RC=${rc} \"UPDATE_CMD=${update_cmd}\" PB=${pb}"
 
     if [ ${rc} != 0 ]; then
 	echo "ERROR: Jail update failed."
