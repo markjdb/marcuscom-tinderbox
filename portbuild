@@ -182,6 +182,7 @@ fi
 
 # Want to use the /etc/make.conf in the chroot (Jail)
 unset __MAKE_CONF
+unset SRCCONF
 
 if [ -z "${LOCALBASE}" ]; then
     export LOCALBASE=/usr/local
@@ -214,7 +215,7 @@ unset LANG
 export TIMEOUT=7200
 
 # to prevent runaway processes -- 400 meg file size limit, two hours CPU limit
-ulimit -f 819200
+ulimit -f 16384000
 ulimit -t 7200
 
 # directories to clean
@@ -312,8 +313,8 @@ elif [ "${major_version}" = "5" ]; then
        cp -p /lib/libc.so.7 ${chroot}/lib
     fi
 fi
-cp -p /rescue/mount /rescue/umount ${chroot}/sbin
 cp -p /rescue/ps ${chroot}/bin
+cp -p /usr/bin/killall ${chroot}/usr/bin
 
 # XXX This is a hack to fix some recent pkg_add problems in some releases.
 if [ -f ${pb}/jails/${jail}/pkg_install.tar ]; then
