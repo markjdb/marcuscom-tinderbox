@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.15 2007/06/10 03:38:04 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.16 2007/10/24 05:00:09 ade Exp $
 #
 
 package TinderboxDS;
@@ -1937,14 +1937,15 @@ sub _doQuery {
         croak "ERROR: Attempt to call private method"
             if ($class ne __PACKAGE__);
         my $query  = shift;
-        my $params = shift;
+        my $params = shift;    # Optional depending on query
         my $sth    = shift;    # Optional
         my $rc;
 
         my $_sth;              # This is the real statement handler.
 
         #print STDERR "XXX: query = $query\n";
-        #print STDERR "XXX: values = " . (join(", ", @{$params})) . "\n";
+        #print STDERR "XXX: values = " . (join(", ", @{$params})) . "\n"
+	#	if (defined($params));
 
         $_sth = $self->{'dbh'}->prepare($query);
 
@@ -1953,7 +1954,7 @@ sub _doQuery {
                 return 0;
         }
 
-        if (scalar(@{$params})) {
+        if (defined($params) && scalar(@{$params})) {
                 $rc = $_sth->execute(@{$params});
         } else {
                 $rc = $_sth->execute;
