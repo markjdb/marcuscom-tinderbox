@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.21 2007/06/10 03:38:04 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.22 2007/12/17 06:15:45 marcus Exp $
 #
 
 BEGIN {
@@ -3291,6 +3291,10 @@ sub tbcleanup {
 
                 # Delete unreferenced log files.
                 my $dir = join("/", $LOG_DIR, $build->getName());
+                if (!-e $dir) {
+                        print "$dir does not exist, skipping.\n";
+                        next;
+                }
                 opendir(DIR, $dir) || die "Failed to open $dir: $!\n";
 
                 while (my $file_name = readdir(DIR)) {
