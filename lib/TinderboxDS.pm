@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.16 2007/10/24 05:00:09 ade Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.17 2008/03/20 06:33:20 marcus Exp $
 #
 
 package TinderboxDS;
@@ -1115,7 +1115,7 @@ sub updateBuildStatus {
         croak "ERROR: Argument not of type build\n" if (ref($build) ne "Build");
 
         my $rc = $self->_doQuery(
-                "UPDATE builds SET Build_Status=?,Build_Last_Updated=NOW() WHERE build_id=?",
+                "UPDATE builds SET Build_Status=?,Build_Last_Updated=NOW() WHERE Build_Id=?",
                 [$build->getStatus(), $build->getId()]
         );
 
