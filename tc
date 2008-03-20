@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.23 2007/12/28 18:47:44 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.24 2008/03/20 05:19:32 marcus Exp $
 #
 
 BEGIN {
@@ -142,8 +142,8 @@ require "tinderlib.pl";
         "listBuildPortsQueue" => {
                 func   => \&listBuildPortsQueue,
                 help   => "Lists the Ports to Build Queue",
-                usage  => "[-h <host>] [-r] [-s <status>]",
-                optstr => 'h:s:r',
+                usage  => "[-b <build name>] [-h <host>] [-r] [-s <status>]",
+                optstr => 'b:h:s:r',
         },
         "listPortFailPatterns" => {
                 func => \&listPortFailPatterns,
@@ -1501,6 +1501,7 @@ sub addPortFailReason {
 }
 
 sub listBuildPortsQueue {
+        my $build_filter;
         my $raw;
         my $status   = $opts->{'s'};
         my $hostname = getHostname();
@@ -1511,6 +1512,17 @@ sub listBuildPortsQueue {
 
         if ($opts->{'r'}) {
                 $raw = 1
+        }
+
+        $build_filter = undef;
+
+        if ($opts->{'b'}) {
+                if (!$ds->isValidBuild($opts->{'b'})) {
+                        cleanup($ds, 1,
+                                "Unknown Build, " . $opts->{'b'} . "\n");
+                }
+
+                $build_filter = $ds->getBuildByName($opts->{'b'});
         }
 
         if (!$ds->isValidHost($hostname)) {
@@ -1535,9 +1547,17 @@ sub listBuildPortsQueue {
                                 my $buildname = "N/A";
                                 my $build =
                                     $ds->getBuildById($buildport->getBuildId());
+
+                                if (defined($build_filter)) {
+                                        next
+                                            if $build->getId() !=
+                                                    $build_filter->getId();
+                                }
+
                                 if ($build) {
                                         $buildname = $build->getName();
                                 }
+
                                 if ($raw eq 1) {
                                         print $buildport->getId() . ":"
                                             . $buildport->getUserId() . ":"
