@@ -1,5 +1,5 @@
 #-
-# Copyright (c) 2004-2007 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
+# Copyright (c) 2004-2008 FreeBSD GNOME Team <freebsd-gnome@FreeBSD.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.17 2008/03/20 06:33:20 marcus Exp $
+# $MCom: portstools/tinderbox/lib/TinderboxDS.pm,v 1.56.2.18 2008/05/17 15:11:57 marcus Exp $
 #
 
 package TinderboxDS;
@@ -167,8 +167,7 @@ sub getConfig {
                 $configlet = '%';
         }
 
-        $rc =
-            $self->_doQueryHashRef(
+        $rc = $self->_doQueryHashRef(
                 "SELECT * FROM config WHERE (Config_Option_Name NOT IN (SELECT Config_Option_Name FROM config WHERE Host_Id=?) AND Host_Id=? OR Host_Id=?) AND Config_Option_Name LIKE ?",
                 \@results, $hostid, $fallbackhostid, $hostid, $configlet);
 
@@ -904,8 +903,7 @@ sub updateJailLastBuilt {
         my $rc;
         if ($jail->getLastBuilt()) {
                 my $last_built = $jail->getLastBuilt();
-                $rc =
-                    $self->_doQuery(
+                $rc = $self->_doQuery(
                         "UPDATE jails SET Jail_Last_Built=? WHERE Jail_Id=?",
                         [$last_built, $jail->getId()]);
         } else {
@@ -1065,6 +1063,29 @@ sub getPortLastBuiltVersion {
         return $results[0]->{'Last_Built_Version'};
 }
 
+sub getPortLastBuiltStatus {
+        my $self  = shift;
+        my $port  = shift;
+        my $build = shift;
+        croak "ERROR: Argument 1 not of type Port\n" if (ref($port) ne "Port");
+        croak "ERROR: Argument 2 not of type Build\n"
+            if (ref($build) ne "Build");
+
+        my @results;
+        my $rc = $self->_doQueryHashRef(
+                "SELECT Last_Status FROM build_ports WHERE Port_Id=? AND Build_Id=?",
+                \@results, $port->getId(), $build->getId()
+        );
+
+        if (!$rc) {
+                return undef;
+        }
+
+        $results[0] = _doCaseHack($results[0]);
+
+        return $results[0]->{'Last_Status'};
+}
+
 sub updatePortsTree {
         my $self      = shift;
         my $portstree = shift;
@@ -1174,13 +1195,11 @@ sub updateHookCmd {
 
         my $rc;
         if (!defined($cmd)) {
-                $rc =
-                    $self->_doQuery(
+                $rc = $self->_doQuery(
                         "UPDATE hooks SET Hook_Cmd=NULL WHERE Hook_Name=?",
                         [$hook->getName()]);
         } else {
-                $rc =
-                    $self->_doQuery(
+                $rc = $self->_doQuery(
                         "UPDATE hooks SET Hook_Cmd=? WHERE Hook_Name=?",
                         [$cmd, $hook->getName()]);
         }
@@ -1242,8 +1261,7 @@ sub isValidUser {
         my $self     = shift;
         my $username = shift;
 
-        my $rc =
-            $self->_doQueryNumRows(
+        my $rc = $self->_doQueryNumRows(
                 "SELECT User_Id FROM users WHERE User_Name=?", $username);
 
         return ($rc > 0) ? 1 : 0;
@@ -1410,8 +1428,7 @@ sub addPortForBuild {
         my $port  = shift;
         my $build = shift;
 
-        my $rc =
-            $self->_doQuery(
+        my $rc = $self->_doQuery(
                 "INSERT INTO build_ports (Build_Id, Port_Id) VALUES (?, ?)",
                 [$build->getId(), $port->getId()]);
 
@@ -1446,8 +1463,7 @@ sub removeBuildPortsQueueEntry {
         my $entry = shift;
 
         my $rc;
-        $rc =
-            $self->_doQuery(
+        $rc = $self->_doQuery(
                 "DELETE FROM build_ports_queue WHERE Build_Ports_Queue_Id=?",
                 [$entry->getId()]);
 
@@ -1477,8 +1493,7 @@ sub removePortForBuild {
         my $port  = shift;
         my $build = shift;
 
-        my $rc =
-            $self->_doQuery(
+        my $rc = $self->_doQuery(
                 "DELETE FROM build_ports WHERE Port_Id=? AND Build_Id=?",
                 [$port->getId(), $build->getId()]);
 
@@ -1513,8 +1528,7 @@ sub removeUserForBuild {
         croak "ERROR: Argument 2 is not nof type build\n"
             if (ref($build) ne "Build");
 
-        my $rc =
-            $self->_doQuery(
+        my $rc = $self->_doQuery(
                 "DELETE FROM build_users WHERE Build_Id=? AND User_Id=?",
                 [$build->getId(), $user->getId()]);
 
@@ -1571,8 +1585,7 @@ sub removePortFailPattern {
         my $self    = shift;
         my $pattern = shift;
 
-        my $rc =
-            $self->_doQuery(
+        my $rc = $self->_doQuery(
                 "DELETE FROM port_fail_patterns WHERE Port_Fail_Pattern_Id=?",
                 [$pattern->getId()]);
 
@@ -1583,8 +1596,7 @@ sub removePortFailReason {
         my $self   = shift;
         my $reason = shift;
 
-        my $rc =
-            $self->_doQuery(
+        my $rc = $self->_doQuery(
                 "DELETE FROM port_fail_reasons WHERE Port_Fail_Reason_Tag=?",
                 [$reason->getTag()]);
 
@@ -1652,8 +1664,7 @@ sub isPortInDS {
         my $self = shift;
         my $port = shift;
 
-        my $rc =
-            $self->_doQueryNumRows(
+        my $rc = $self->_doQueryNumRows(
                 "SELECT Port_Id FROM ports WHERE Port_Directory=?",
                 $port->getDirectory());
 
@@ -1945,7 +1956,7 @@ sub _doQuery {
 
         #print STDERR "XXX: query = $query\n";
         #print STDERR "XXX: values = " . (join(", ", @{$params})) . "\n"
-	#	if (defined($params));
+        #	if (defined($params));
 
         $_sth = $self->{'dbh'}->prepare($query);
 
