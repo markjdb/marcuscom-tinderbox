@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.9 2007/12/17 06:38:05 marcus Exp $
+# $MCom: portstools/tinderbox/tinderbuild,v 1.35.2.10 2008/05/20 16:11:58 marcus Exp $
 #
 
 
@@ -73,6 +73,7 @@ fetchorig=0
 nolog=0
 trybroken=0
 onceonly=0
+norebuild=0
 error=2
 
 while [ $# -gt 0 ]; do
@@ -98,6 +99,9 @@ while [ $# -gt 0 ]; do
 	;;
       x-cleanpackages)
         cleanpackages=1
+	;;
+      x-norebuild)
+        norebuild=1
 	;;
       x-skipmake)
         skipmake=1
@@ -174,12 +178,14 @@ buildenv ${pb} ${build} ${jail} ${portstree}
 rm -f ${pb}/builds/${build}/make.*
 
 # Clean up packages if specific ports dirs were specified on the command line.
-for port in ${ports}; do
-    pkgname=$(${pb}/scripts/tc getPortLastBuiltVersion -b ${build} -d ${port})
-    if [ ! -z "${pkgname}" ]; then
-	find -H ${PACKAGES} -name ${pkgname}${PKGSUFFIX} -delete
-    fi
-done
+if [ ${norebuild} = 0 ]; then
+    for port in ${ports}; do
+        pkgname=$(${pb}/scripts/tc getPortLastBuiltVersion -b ${build} -d ${port})
+        if [ ! -z "${pkgname}" ]; then
+	    find -H ${PACKAGES} -name ${pkgname}${PKGSUFFIX} -delete
+        fi
+    done
+fi
 
 # First we check to see if we need to clean out old packages.
 if [ "$cleanpackages" = "1" ]; then
