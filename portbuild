@@ -155,6 +155,8 @@ shift 2
 echo ${pkgname}
 echo ${dirname}
 
+chroot=${pb}/${branch}
+
 portdir=$(echo ${dirname} | sed -e 's|^/usr/ports/||')
 
 execute_hook ${pb} "prePortBuild" "PACKAGE_NAME=${pkgname} BUILD=${branch} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} PORTDIR=${portdir} PB=${pb}"
@@ -257,7 +259,6 @@ echo "building $pkgname in $chroot"
 ${pb}/scripts/tc updateBuildStatus -b ${branch} -s PORTBUILD
 ${pb}/scripts/tc updateBuildCurrentPort -b ${branch} -n ${pkgname} -d ${portdir}
 
-chroot=${pb}/${branch}
 packages=${pb}/packages/${branch}
 
 major_version=$(echo ${jail} | sed -E -e 's|(^.).*$|\1|')
