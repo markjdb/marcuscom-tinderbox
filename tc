@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/tc,v 1.67.2.26 2008/05/18 04:37:24 marcus Exp $
+# $MCom: portstools/tinderbox/tc,v 1.67.2.27 2008/06/01 23:43:07 marcus Exp $
 #
 
 BEGIN {
@@ -2365,7 +2365,8 @@ sub updatePortsTree {
         my $rc = 0;    # Allow null update commands to succeed.
         if ($update_cmd) {
                 executeHook($BUILD_ROOT, 'prePortsTreeUpdate',
-                        "PORTSTREE=$name UPDATE_CMD=$update_cmd PB=$BUILD_ROOT")
+                        "PORTSTREE=$name UPDATE_CMD=\"$update_cmd\" PB=$BUILD_ROOT"
+                    )
                     or cleanup(
                         $ds,
                         1,
@@ -2373,7 +2374,7 @@ sub updatePortsTree {
                     );
                 $rc = system($update_cmd);
                 executeHook($BUILD_ROOT, 'postPortsTreeUpdate',
-                        "PORTSTREE=$name UPDATE_CMD=$update_cmd PB=$BUILD_ROOT RC=$rc"
+                        "PORTSTREE=$name UPDATE_CMD=\"$update_cmd\" PB=$BUILD_ROOT RC=$rc"
                 );
         }
 

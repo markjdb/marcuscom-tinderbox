@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.5 2007/12/19 01:58:55 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.pl,v 1.14.2.6 2008/06/01 23:43:07 marcus Exp $
 #
 
 use strict;
@@ -39,7 +39,7 @@ sub cleanup {
                 $msg = "INFO: " . $msg;
         }
 
-        $ds->destroy()    if (defined($ds));
+        $ds->destroy() if (defined($ds));
         print STDERR $msg if (defined($msg));
 
         exit($code);
@@ -63,6 +63,7 @@ sub executeHook {
         my $env  = shift;
         my $args = undef;
 
+        $env =~ s/"/\\"/g;
         $args = join(' ', $pb, $name, "\"$env\"");
 
         $ENV{'pb'} = $pb;
