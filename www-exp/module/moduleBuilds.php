@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/www-exp/module/moduleBuilds.php,v 1.4.2.4 2006/10/16 01:56:35 marcus Exp $
+# $MCom: portstools/tinderbox/www-exp/module/moduleBuilds.php,v 1.4.2.5 2008/06/01 23:46:20 marcus Exp $
 #
 
 require_once 'module/module.php';
@@ -73,14 +73,18 @@ class moduleBuilds extends module {
 				"FAIL"       => 0,
 				"LEFTOVERS"  => 0,
 				"SUCCESS"    => 0,
+				"TOTAL"      => 0,
 			);
 			foreach ($stats as $stat) {
 				$results[$stat['last_status']] = $stat['c'];
 			}
+			$total = 0;
 			foreach ($results as $k => $v) {
+				$total += $v;
 				if ($v == 0) $results[$k] = "-";
 			}
 
+			$results["TOTAL"] = $total;
 			switch( $status ) {
 				case 'PORTBUILD':
 					$status_field_class = 'build_portbuild';
