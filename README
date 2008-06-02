@@ -1,4 +1,4 @@
-$MCom: portstools/tinderbox/README,v 1.40.2.15 2008/06/01 23:55:34 marcus Exp $
+$MCom: portstools/tinderbox/README,v 1.40.2.16 2008/06/02 04:09:40 marcus Exp $
 
 BASIC INSTALLATION AND USAGE INSTRUCTIONS
 
@@ -242,6 +242,8 @@ The tinderbuild script also accepts some additional command line arguments:
  -trybroken      : builds ports marked as BROKEN (this does NOT require
                    -noduds)
  -onceonly       : only performs one build pass (i.e. tinderbuild Phase 1)
+ -norebuild      : do not force a rebuild of packages specified on the
+                   command line
 
 Maintenance:
 ------------
