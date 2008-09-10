@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.1 2008/09/05 21:52:24 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.2 2008/09/10 14:50:25 marcus Exp $
 #
 
 my $pb;
@@ -865,7 +865,7 @@ sub configTinderd {
                 cleanup($ds, 0, undef);
         }
 
-        $sleeptime = new TBConfig();
+        $sleeptime = new Tinderbox::Config();
         $sleeptime->setOptionName("sleeptime");
 
         if ($opts->{'t'}) {
