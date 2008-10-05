@@ -12,6 +12,7 @@ include 'header.inc.tpl';
 <?}?>
 <form method="post" action="index.php">
 <?=$user_properties?>
+<p><br /></p>
 <?=$user_permissions?>
 
 <div class="subcontent">
