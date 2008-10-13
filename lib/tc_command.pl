@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.3 2008/09/10 17:21:04 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.4 2008/10/13 04:29:54 marcus Exp $
 #
 
 my $pb;
@@ -204,8 +204,8 @@ my $ds = new Tinderbox::TinderboxDS();
         },
         "rescanPorts" => {
                 help   => "Update properties for all ports in the datastore",
-                usage  => "{-b <build name> | -a} [-o] [-R]",
-                optstr => 'ab:oR',
+                usage  => "{-b <build name> | -a} [-o] [-O] [-R]",
+                optstr => 'ab:oOR',
         },
         "addBuildPortsQueueEntry" => {
                 func   => \&addBuildPortsQueueEntry,

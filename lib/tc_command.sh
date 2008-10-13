@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.3 2008/09/18 21:59:14 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.4 2008/10/13 04:29:54 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup12.FreeBSD.org"
@@ -1802,13 +1802,12 @@ rescanPorts () {
     cleanOptions=1
 
     # argument handling
-    while getopts ab:R arg >/dev/null 2>&1
+    while getopts ab:oOR arg >/dev/null 2>&1
     do
 	case "${arg}" in
 
 	a)	allBuilds=1;;
 	b)	build="${OPTARG}";;
-	d)	portDir="${OPTARG}";;
 	o)      options=1;;
 	O)	options=1 ; cleanOptions=0;;
 	R)	norecurse="-R";;
@@ -1820,14 +1819,14 @@ rescanPorts () {
     # argument validation
     if [ ${allBuilds} -eq 1 ]; then
 	if [ ! -z "${build}" ]; then
-	    echo "addPort: -a and -b are mutually exclusive"
+	    echo "rescanPorts: -a and -b are mutually exclusive"
 	    return 1
 	fi
 
 	tc=$(tinderLoc scripts tc)
 	allBuilds=$(${tc} listBuilds 2>/dev/null)
 	if [ -z "${allBuilds}" ]; then
-	    echo "addPort: no builds are configured"
+	    echo "rescanPorts: no builds are configured"
 	    return 1
 	fi
 
@@ -1837,7 +1836,7 @@ rescanPorts () {
 	done
     else
 	if ! tcExists Builds ${build}; then
-	    echo "addPort: no such build: ${build}"
+	    echo "rescanPorts: no such build: ${build}"
 	    return 1
 	fi
 
