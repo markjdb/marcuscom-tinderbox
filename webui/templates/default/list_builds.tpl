@@ -12,9 +12,10 @@ $legend = array(
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/list_builds.tpl,v 1.10.2.1 2008/09/07 13:56:27 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/list_builds.tpl,v 1.10.2.2 2008/11/02 09:37:11 beat Exp $ //-->
 <title><?=$tinderbox_name?></title>
 <link href="<?=$templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/rss+xml" title="<?=$tinderbox_name?> (RSS)" href="index.php?action=latest_buildports_rss" />
 </head>
 <body>
 <h1><?=$tinderbox_title?></h1>
