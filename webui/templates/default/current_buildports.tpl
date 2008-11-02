@@ -1,4 +1,4 @@
-<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.6 2008/08/28 20:58:54 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.5.2.1 2008/11/02 09:02:24 beat Exp $ //-->
 <?if(!$no_list){?>
 	<?if($build_name){?>
 		<h1>Current Builds in <?=$build_name?></h1>
