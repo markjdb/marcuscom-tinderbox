@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.5 2008/11/02 15:41:27 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.6 2008/11/02 16:13:29 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup12.FreeBSD.org"
@@ -325,7 +325,7 @@ Upgrade () {
     # Cleanup files that are no longer needed.
     echo ""
     tinderEcho "INFO: Cleaning up stale files..."
-    REMOVE_FILES="buildscript create enterbuild makemake mkbuild mkjail pnohang.c portbuild rawenv rawenv.dist tbkill.sh tinderbuild tinderbox-mysql.schema tinderbox-pgsql.schema setup.sh upgrade.sh lib/Build.pm lib/BuildPortsQueue.pm lib/Hook.pm lib/Host.pm lib/Jail.pm lib/MakeCache.pm lib/Port.pm lib/PortFailPattern.pm lib/PortFailReason.pm lib/PortsTree.pm lib/TBConfig.pm lib/TinderObject.pm lib/TinderboxDS.pm lib/User.pm lib/tinderbox_shlib.sh lib/setup-mysql.sh lib/setup-pgsql.sh lib/setup_shlib.sh upgrade/mig_mysql_tinderbox-1.X_to_2.0.0.sql upgrade/mig_mysql_tinderbox-2.0.0_to_2.1.0.sql upgrade/mig_mysql_tinderbox-2.1.0_to_2.1.1.sql upgrade/mig_mysql_tinderbox-2.1.1_to_2.2.0.sql upgrade/mig_mysql_tinderbox-2.2.0_to_2.3.0.sql upgrade/mig_mysql_tinderbox-2.3.0_to_2.3.1.sql upgrade/mig_mysql_tinderbox-2.3.1_to_2.3.2.sql upgrade/mig_mysql_tinderbox-2.3.2_to_2.3.3.sql upgrade/mig_mysql_tinderbox-2.3.3_to_2.4.0.sql upgrade/mig_pgsql_tinderbox-2.1.1_to_2.2.0.sql upgrade/mig_pgsql_tinderbox-2.2.0_to_2.3.0.sql upgrade/mig_pgsql_tinderbox-2.3.0_to_2.3.1.sql upgrade/mig_pgsql_tinderbox-2.3.1_to_2.3.2.sql upgrade/mig_pgsql_tinderbox-2.3.2_to_2.3.3.sql upgrade/mig_pgsql_tinderbox-2.3.3_to_2.4.0.sql upgrade/mig_shlib.sh"
+    REMOVE_FILES="buildscript create enterbuild makemake mkbuild mkjail pnohang.c portbuild rawenv rawenv.dist tbkill.sh tinderbuild tinderbox-mysql.schema tinderbox-pgsql.schema setup.sh upgrade.sh lib/Build.pm lib/BuildPortsQueue.pm lib/Hook.pm lib/Host.pm lib/Jail.pm lib/MakeCache.pm lib/Port.pm lib/PortFailPattern.pm lib/PortFailReason.pm lib/PortsTree.pm lib/TBConfig.pm lib/TinderObject.pm lib/TinderboxDS.pm lib/User.pm lib/tinderbox_shlib.sh lib/setup-mysql.sh lib/setup-pgsql.sh lib/setup_shlib.sh upgrade/mig_mysql_tinderbox-1.X_to_2.0.0.sql upgrade/mig_mysql_tinderbox-2.0.0_to_2.1.0.sql upgrade/mig_mysql_tinderbox-2.1.0_to_2.1.1.sql upgrade/mig_mysql_tinderbox-2.1.1_to_2.2.0.sql upgrade/mig_mysql_tinderbox-2.2.0_to_2.3.0.sql upgrade/mig_mysql_tinderbox-2.3.0_to_2.3.1.sql upgrade/mig_mysql_tinderbox-2.3.1_to_2.3.2.sql upgrade/mig_mysql_tinderbox-2.3.2_to_2.3.3.sql upgrade/mig_mysql_tinderbox-2.3.3_to_2.4.0.sql upgrade/mig_pgsql_tinderbox-2.1.1_to_2.2.0.sql upgrade/mig_pgsql_tinderbox-2.2.0_to_2.3.0.sql upgrade/mig_pgsql_tinderbox-2.3.0_to_2.3.1.sql upgrade/mig_pgsql_tinderbox-2.3.1_to_2.3.2.sql upgrade/mig_pgsql_tinderbox-2.3.2_to_2.3.3.sql upgrade/mig_pgsql_tinderbox-2.3.3_to_2.4.0.sql upgrade/mig_shlib.sh etc/rc.d/tinderd.sh"
     for f in ${REMOVE_FILES}; do
         rm -f "${pb}/scripts/${f}"
     done
@@ -402,7 +402,9 @@ Upgrade () {
             if ! createDb ${db_driver} ${db_admin} ${db_host} ${db_name} 0; then
     	        tinderExit "ERROR: Error creating the new database!  Consult the output above for more information.  Once the problem is corrected, run \"${tc} Upgrade -backup ${bkup_file}\" to resume migration." $?
             fi
-            if ! loadSchema ${bkup_file} ${db_driver} ${db_admin} ${db_host} ${db_name} ; then
+# XXX This will not work for Postgres as any new tables will be created with
+# the wrong owner.
+            if ! loadSchema ${bkup_file} ${db_driver} ${db_admin} ${db_admin} ${db_host} ${db_name} ; then
     	        tinderExit "ERROR: Database restoration failed!  Consult the output above for more information.  Once the problem is corrected, run \"${tc} Upgrade -backup ${bkup_file}\" to resume migration." $?
             fi
             rm -f ${bkup_file}
@@ -1169,6 +1171,35 @@ makeBuild () {
     cp -f /etc/resolv.conf ${BUILD_DIR}/etc
 
     return 0
+}
+
+resetBuild () {
+    # set up defaults
+    build=""
+
+    # argument handling
+    while getopts b: arg >/dev/null 2>&1
+    do
+	case "${arg}" in
+
+	b)	build="${OPTARG}";;
+	?)	exit 1;;
+
+	esac
+    done
+
+    # argument validation
+    if [ -z "${build}" ]; then
+	echo "resetBuild: no buildname specified"
+	exit 1
+    fi
+
+    if ! tcExists Builds ${build}; then
+	echo "resetBuild: build \"${build}\" doesn't exist"
+	exit 1
+    fi
+
+    tinderbuild_setup
 }
 
 createBuild () {
@@ -1977,7 +2008,7 @@ tbcleanup () {
 		pkgs_seen="${pkgs_seen} ${lbv}${package_suffix}"
 	    fi
 	    if [ ! -e ${path} ]; then
-		echo "Removing database entry for nonexistent port ${port}/${build}"
+		echo "Removing build port database entry for port with nonexistent package ${port}/${build}"
 		${tc} rmPort -d ${port} -b ${build} -f -c
 	    fi
 
@@ -1985,7 +2016,7 @@ tbcleanup () {
 	    path="${path}/ports/${port}/Makefile"
 
 	    if [ ! -e ${path} ]; then
-		echo "Removing database entry for nonexistent port ${build}/${port}"
+		echo "Removing build port database entry for nonexistent port ${build}/${port}"
 		${tc} rmPort -d ${port} -b ${build} -f -c
 	    fi
 	done
