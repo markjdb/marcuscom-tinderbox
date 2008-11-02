@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.58.2.2 2008/11/02 15:42:28 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.58.2.3 2008/11/02 16:01:14 marcus Exp $
 
 VERSION=	3.1.r1
 
@@ -12,10 +12,12 @@ SQLDATA=	genschema schema.mysql.post schema.mysql.pre \
 PERLMODDATA=	Build.pm BuildPortsQueue.pm Config.pm Hook.pm Jail.pm \
 		MakeCache.pm Port.pm PortFailPattern.pm PortFailReason.pm \
 		PortsTree.pm TinderObject.pm TinderboxDS.pm User.pm
-ETCRCDATA=	tinderd.sh
+ETCRCDATA=	tinderd
 ENVDATA=	.keep_me
 MIGDATA=	build_ports.map build_ports_queue.map builds.map config.map \
-		hooks.map jails.map order.lst user_permissions.map
+		hooks.map jails.map order.lst user_permissions.map \
+		mig_mysql_tinderbox-3.0_to_3.1.sql \
+		mig_pgsql_tinderbox-3.0_to_3.1.sql
 MAN1DATA=	tc-configCcache.1 tc-configDistfile.1 tc-configGet.1 \
 		tc-configJail.1 tc-configTinderd.1 tc-init.1
 WEBUIDATA=	inc_ds.php.dist inc_tinderbox.php.dist index.php
