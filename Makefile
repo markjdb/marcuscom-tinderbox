@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.58.2.3 2008/11/02 16:01:14 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.58.2.4 2008/11/02 16:22:37 marcus Exp $
 
 VERSION=	3.1.r1
 
@@ -26,13 +26,13 @@ WEBUICDATA=	Build.php BuildPortsQueue.php Config.php Jail.php Port.php \
 		TinderboxDS.php User.php functions.php
 WEBUIMDATA=	module.php moduleBuildPorts.php moduleBuilds.php \
 		moduleConfig.php modulePortFailureReasons.php \
-		modulePorts.php moduleSession.php moduleTinderd.php \
-		moduleUsers.php
+		modulePorts.php moduleRss.php moduleSession.php \
+		moduleTinderd.php moduleUsers.php
 WEBUITDDATA=	config.tpl current_buildports.tpl describe_port.tpl \
 		display_login.tpl failed_buildports.tpl latest_buildports.tpl \
 		list_buildports.tpl list_builds.tpl list_failure_reasons.tpl \
 		list_tinderd_queue.tpl messages.inc please_login.tpl \
-		tinderstyle.css user_admin.tpl user_permissions.tpl \
+		rss.tpl tinderstyle.css user_admin.tpl user_permissions.tpl \
 		user_properties.tpl
 WEBUITpaefchenDATA=config.tpl current_buildports.tpl describe_port.tpl \
 		  display_login.tpl failed_buildports.tpl footer.inc.tpl \
