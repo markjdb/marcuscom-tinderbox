@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.4 2008/10/13 04:29:54 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.5 2008/11/02 16:11:40 marcus Exp $
 #
 
 my $pb;
@@ -122,8 +122,8 @@ my $ds = new Tinderbox::TinderboxDS();
                 func => \&configTinderd,
                 help =>
                     "Configure Tinderbox tinder daemon (tinderd) parameters",
-                usage  => "[-t <sleep time>]",
-                optstr => 't:',
+                usage  => "[-t <sleep time>] [-l <log file>]",
+                optstr => 't:l:',
         },
         "listJails" => {
                 func  => \&listJails,
@@ -575,6 +575,12 @@ my $ds = new Tinderbox::TinderboxDS();
                 optstr => 'b:',
         },
 
+        "resetBuild" => {
+                help   => "Cleanup and reset a Build environment",
+                usage  => "-b <buildname>",
+                optstr => 'b:',
+        },
+
         "tinderbuild" => {
                 help => "Generate packages from an installed Build",
                 usage =>
@@ -859,6 +865,7 @@ sub configDistfile {
 sub configTinderd {
         my @config = ();
         my $sleeptime;
+        my $logfile;
 
         if (scalar(keys %{$opts}) == 0) {
                 configGet("tinderd");
@@ -868,9 +875,17 @@ sub configTinderd {
         $sleeptime = new Tinderbox::Config();
         $sleeptime->setOptionName("sleeptime");
 
+        $logfile = new Tinderbox::Config();
+        $logfile->setOptionName("logfile");
+
         if ($opts->{'t'}) {
                 $sleeptime->setOptionValue($opts->{'t'});
                 push @config, $sleeptime;
+        }
+
+        if ($opts->{'l'}) {
+                $logfile->setOptionValue($opts->{'l'});
+                push @config, $logfile;
         }
 
         $ds->updateConfig("tinderd", @config)
