@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.2 2008/10/22 01:11:10 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.3 2008/11/02 16:12:09 marcus Exp $
 #
 
 tinderLocJail () {
@@ -602,8 +602,9 @@ loadSchema () {
     schema_file=$1
     db_driver=$2
     db_admin=$3
-    db_host=$4
-    db_name=$5
+    db_user=$4
+    db_host=$5
+    db_name=$6
 
     if [ ! -f ${schema_file} ]; then
 	tinderEcho "ERROR: Schema file ${schema_file} does not exist."
@@ -848,7 +849,7 @@ createDb () {
 	return 1
     fi
 
-    loadSchema ${schema} ${db_driver} ${db_admin} ${db_host} ${db_name}
+    loadSchema ${schema} ${db_driver} ${db_admin} ${db_user} ${db_host} ${db_name}
     rc=$?
     rm -f ${schema}
 
