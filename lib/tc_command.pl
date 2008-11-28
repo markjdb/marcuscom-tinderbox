@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.6 2008/11/15 18:12:24 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.7 2008/11/28 22:14:19 marcus Exp $
 #
 
 my $pb;
@@ -1685,10 +1685,6 @@ sub listBuildPortsQueue {
                               "Failed to list BuildPortsQueue: "
                             . $ds->getError()
                             . "\n");
-        } else {
-                cleanup($ds, 1,
-                        "There are no more queued ports for this host in the datastore.\n"
-                );
         }
 }
 
