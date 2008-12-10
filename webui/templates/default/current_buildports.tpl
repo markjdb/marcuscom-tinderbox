@@ -1,4 +1,4 @@
-<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.5.2.1 2008/11/02 09:02:24 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.5.2.2 2008/12/10 23:03:29 beat Exp $ //-->
 <?if(!$no_list){?>
 	<?if($build_name){?>
 		<h1>Current Builds in <?=$build_name?></h1>
@@ -24,6 +24,6 @@
 		<?}?>
 	</table>
 	<script language="JavaScript">
-		setTimeout("reloadpage()", 60000)
+		setTimeout("reloadpage()", <?php echo $reload_interval_current ?>)
 	</script>
 <?}?>

@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/latest_buildports.tpl,v 1.10 2008/01/25 20:12:50 marcus Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/latest_buildports.tpl,v 1.10.2.1 2008/12/10 23:03:29 beat Exp $ //-->
 <script language="JavaScript">
 	function reloadpage() {
 	    document.location.reload();
 	}
-	setTimeout("reloadpage()", 300000)
+	setTimeout("reloadpage()", <?php echo $reload_interval_latest ?>)
 </script>
 <title><?=$tinderbox_name?></title>
 <link href="<?=$templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
