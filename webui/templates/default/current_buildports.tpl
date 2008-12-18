@@ -1,10 +1,10 @@
-<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.5.2.2 2008/12/10 23:03:29 beat Exp $ //-->
-<?if(!$no_list){?>
-	<?if($build_name){?>
-		<h1>Current Builds in <?=$build_name?></h1>
-	<?}else{?>
+<!-- $MCom: portstools/tinderbox/webui/templates/default/current_buildports.tpl,v 1.5.2.3 2008/12/18 21:06:36 beat Exp $ //-->
+<?php if(!$no_list){?>
+	<?php if($build_name){?>
+		<h1>Current Builds in <?php echo $build_name?></h1>
+	<?php }else{?>
 		<h1>Current Builds</h1>
-	<?}?>
+	<?php }?>
 	<table>
 		<tr>
 			<th>Build</th>
@@ -13,17 +13,17 @@
 			<th>Duration</th>
 			<th>ETA</th>
 		</tr>
-		<?foreach($data as $row) {?>
+		<?php foreach($data as $row) {?>
 			<tr>
-				<td><a href="index.php?action=list_buildports&amp;build=<?=$row['build_name']?>"><?=$row['build_name']?></a></td>
-				<td><?=$row['target_port']?></td>
-				<td><?=$row['port_current_version']?></td>
-				<td><?=time_difference_from_now($row['build_last_updated'])?></td>
-				<td><?=is_string($row['build_eta'])?$row['build_eta']:time_elapsed($row['build_eta'])?></td>
+				<td><a href="index.php?action=list_buildports&amp;build=<?php echo $row['build_name']?>"><?php echo $row['build_name']?></a></td>
+				<td><?php echo $row['target_port']?></td>
+				<td><?php echo $row['port_current_version']?></td>
+				<td><?php echo time_difference_from_now($row['build_last_updated'])?></td>
+				<td><?php echo is_string($row['build_eta'])?$row['build_eta']:time_elapsed($row['build_eta'])?></td>
 			</tr>
-		<?}?>
+		<?php }?>
 	</table>
 	<script language="JavaScript">
 		setTimeout("reloadpage()", <?php echo $reload_interval_current ?>)
 	</script>
-<?}?>
+<?php }?>
