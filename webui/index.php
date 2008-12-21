@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.3 2008/11/02 11:07:12 beat Exp $
+# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.4 2008/12/21 17:27:29 beat Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
@@ -32,6 +32,7 @@ $starttimer = explode( ' ', microtime() );
 require_once 'module/moduleBuilds.php';
 require_once 'module/moduleBuildPorts.php';
 require_once 'module/moduleConfig.php';
+require_once 'module/moduleLogs.php';
 require_once 'module/modulePorts.php';
 require_once 'module/modulePortFailureReasons.php';
 require_once 'module/moduleSession.php';
@@ -44,6 +45,7 @@ require_once $templatesdir.'/messages.inc';
 $moduleBuilds			= new moduleBuilds();
 $moduleBuildPorts		= new moduleBuildPorts();
 $moduleConfig			= new moduleConfig();
+$moduleLogs			= new moduleLogs();
 $modulePorts			= new modulePorts();
 $modulePortFailureReasons	= new modulePortFailureReasons();
 $moduleSession			= new moduleSession();
@@ -152,6 +154,13 @@ switch( $action ) {
 					break;
 	case 'latest_buildports_rss':
 					$display    = $moduleRss->display_latest_buildports();
+					break;
+	case 'display_markup_log':	$build = $_REQUEST['build'];
+					$id        = $_REQUEST['id'];
+					if ( !isset( $_REQUEST['build'] ) || !isset( $_REQUEST['id'] ) ) {
+						die( 'Build or port id missing.' );
+					}
+					$display	= $moduleLogs->markup_log( $build, $id);
 					break;
 	case 'list_builds':
 	default:			$display    = $moduleBuilds->display_list_builds();
