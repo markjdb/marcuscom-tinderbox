@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.4 2009/01/05 20:30:35 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.5 2009/01/05 21:43:10 beat Exp $
 #
 
     require_once 'DB.php';
@@ -125,7 +125,7 @@
                        WHERE p.port_id = bp.port_id
                          AND bp.port_id = ?";
 
-            $rc = $this->_doQueryHashRef($query, $results, portid );
+            $rc = $this->_doQueryHashRef($query, $results, $portid );
 
             if (!$rc) {
                 return null;
