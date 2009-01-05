@@ -43,7 +43,34 @@ include 'header.inc.tpl';
 		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 	</tr>
-
+	<form method="post" action="index.php">
+	<input type="hidden" name="action" value="add_tinderd_queue" />
+	<input type="hidden" name="entry_id" value="<?php echo $row['entry_id']?>" />
+	<input type="hidden" name="filter_build_id" value="<?php echo $build_id?>" />
+	<tr>
+		<td>
+			<select name="new_build_id">
+				<?php foreach($all_builds as $build) {?>
+					<option value="<?php echo $build['build_id']?>" <?php if ($new_build_id == $build['build_id']) {?>selected<?php }?> ><?php echo $build['build_name']?></option>
+				<?php }?>
+			</select>
+		</td>
+		<td>
+			<select name="new_priority">
+				<?php foreach($all_prio as $prio) {?>
+					<option value="<?php echo $prio?>" <?php if ($new_priority == $prio) {?>selected<?php }?> ><?php echo $prio?></option>
+				<?php }?>
+			</select>
+		</td>
+		<td><input type="text" size="20" name="new_port_directory" value="<?php echo $new_port_directory?>" /></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td align="center">
+			<input type="checkbox" name="new_email_on_completion" value="1" <?php if($new_email_on_completion == 1 ) {?>checked="checked"<?php }?> />
+		</td>
+		<td colspan="3"><input type="submit" name="add_tinderd_queue" value="add" /></td>
+	</tr>
+	</form>
 <?php if(!$no_list){?>
 
 		<?php foreach($entries as $row) {?>
@@ -103,35 +130,7 @@ include 'header.inc.tpl';
 			</form>
 		<?php }?>
 <?php }?>
-			<form method="post" action="index.php">
-			<input type="hidden" name="action" value="add_tinderd_queue" />
-			<input type="hidden" name="entry_id" value="<?php echo $row['entry_id']?>" />
-			<input type="hidden" name="filter_build_id" value="<?php echo $build_id?>" />
-			<tr>
-				<td>
-					<select name="new_build_id">
-						<?php foreach($all_builds as $build) {?>
-							<option value="<?php echo $build['build_id']?>" <?php if ($new_build_id == $build['build_id']) {?>selected<?php }?> ><?php echo $build['build_name']?></option>
-						<?php }?>
-					</select>
-				</td>
-				<td>
-					<select name="new_priority">
-						<?php foreach($all_prio as $prio) {?>
-							<option value="<?php echo $prio?>" <?php if ($new_priority == $prio) {?>selected<?php }?> ><?php echo $prio?></option>
-						<?php }?>
-					</select>
-				</td>
-				<td><input type="text" size="20" name="new_port_directory" value="<?php echo $new_port_directory?>" /></td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-				<td align="center">
-					<input type="checkbox" name="new_email_on_completion" value="1" <?php if($new_email_on_completion == 1 ) {?>checked="checked"<?php }?> />
-				</td>
-				<td colspan="3"><input type="submit" name="add_tinderd_queue" value="add" /></td>
-			</tr>
-			</form>
-	</table>
+</table>
 <p>
 	<form method="post" action="index.php">
 		<input type="hidden" name="action" value="delete_tinderd_queue" />

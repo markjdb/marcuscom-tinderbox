@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.2 2008/12/18 21:06:36 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.3 2009/01/05 22:39:01 beat Exp $ //-->
 <title><?php echo $tinderbox_name?></title>
 <link href="<?php echo $templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
 </head>
@@ -52,6 +52,36 @@ Build
 			<th>&nbsp;</th>
 		</tr>
 
+		<form method="post" action="index.php">
+		<input type="hidden" name="action" value="add_tinderd_queue" />
+		<input type="hidden" name="entry_id" value="<?php echo $row['entry_id']?>" />
+		<input type="hidden" name="filter_build_id" value="<?php echo $build_id?>" />
+		<tr>
+			<td>
+			<br />
+				<select name="new_build_id">
+					<?php foreach($all_builds as $build) {?>
+						<option value="<?php echo $build['build_id']?>" <?php if ($new_build_id == $build['build_id']) {?>selected<?php }?> ><?php echo $build['build_name']?></option>
+					<?php }?>
+				</select>
+			</td>
+			<td>
+			<br />
+				<select name="new_priority">
+					<?php foreach($all_prio as $prio) {?>
+						<option value="<?php echo $prio?>" <?php if ($new_priority == $prio) {?>selected<?php }?> ><?php echo $prio?></option>
+					<?php }?>
+				</select>
+			</td>
+			<td><br /><input type="text" size="20" name="new_port_directory" value="<?php echo $new_port_directory?>" /></td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td align="center">
+				<input type="checkbox" name="new_email_on_completion" value="1" <?php if($new_email_on_completion == 1 ) {?>checked="checked"<?php }?> />
+			</td>
+			<td colspan="3"><br /><input type="submit" name="add_tinderd_queue" value="add" /></td>
+		</tr>
+		</form>
 <?php if(!$no_list){?>
 
 		<?php foreach($entries as $row) {?>
@@ -111,36 +141,6 @@ Build
 			</form>
 		<?php }?>
 <?php }?>
-			<form method="post" action="index.php">
-			<input type="hidden" name="action" value="add_tinderd_queue" />
-			<input type="hidden" name="entry_id" value="<?php echo $row['entry_id']?>" />
-			<input type="hidden" name="filter_build_id" value="<?php echo $build_id?>" />
-			<tr>
-				<td>
-				<br />
-					<select name="new_build_id">
-						<?php foreach($all_builds as $build) {?>
-							<option value="<?php echo $build['build_id']?>" <?php if ($new_build_id == $build['build_id']) {?>selected<?php }?> ><?php echo $build['build_name']?></option>
-						<?php }?>
-					</select>
-				</td>
-				<td>
-				<br />
-					<select name="new_priority">
-						<?php foreach($all_prio as $prio) {?>
-							<option value="<?php echo $prio?>" <?php if ($new_priority == $prio) {?>selected<?php }?> ><?php echo $prio?></option>
-						<?php }?>
-					</select>
-				</td>
-				<td><br /><input type="text" size="20" name="new_port_directory" value="<?php echo $new_port_directory?>" /></td>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-				<td align="center">
-					<input type="checkbox" name="new_email_on_completion" value="1" <?php if($new_email_on_completion == 1 ) {?>checked="checked"<?php }?> />
-				</td>
-				<td colspan="3"><br /><input type="submit" name="add_tinderd_queue" value="add" /></td>
-			</tr>
-			</form>
 
 	</table>
 	<p>
