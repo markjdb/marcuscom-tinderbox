@@ -57,7 +57,7 @@ include 'header.inc.tpl';
 				<form method="get" action="index.php">
 					<table>
 						<tr>
-							<th>find ports by name</th>
+							<th>Find ports by name</th>
 						</tr>
 						<tr>
 							<td>
