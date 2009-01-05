@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.3 2009/01/05 20:12:16 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.4 2009/01/05 20:30:35 beat Exp $
 #
 
     require_once 'DB.php';
@@ -123,9 +123,9 @@
                         FROM ports p,
                              build_ports bp
                        WHERE p.port_id = bp.port_id
-                         AND bp.port_id=$portid";
+                         AND bp.port_id = ?";
 
-            $rc = $this->_doQueryHashRef($query, $results, array());
+            $rc = $this->_doQueryHashRef($query, $results, portid );
 
             if (!$rc) {
                 return null;
@@ -235,7 +235,7 @@
                       WHERE user_id=?";
 
             if( $object_type )
-                $query .= " AND user_permission_object_type='$object_type'";
+                $query .= " AND user_permission_object_type='" . $this->db->escapeSimple( $object_type ) . "'";
 
             $rc = $this->_doQuery($query, array($user->getId()), $res);
 
@@ -403,8 +403,8 @@
                        WHERE p.port_id = bp.port_id
                          AND bp.build_id=?";
             if ( $port_name )
-                 $query .= " AND p.port_name LIKE '%$port_name%'";
-            $query .= " ORDER BY $sortbytable.$sortby";
+                 $query .= " AND p.port_name LIKE '%" . $this->db->escapeSimple( $port_name ) . "%'";
+            $query .= " ORDER BY " . $this->db->escapeSimple( $sortbytable ) . "." . $this->db->escapeSimple( $sortby );
 
             $rc = $this->_doQueryHashRef($query, $results, $build->getId());
 
@@ -436,10 +436,10 @@
                        WHERE p.port_id = bp.port_id
                          AND bp.last_built IS NOT NULL ";
             if($build_id)
-                 $query .= "AND bp.build_id=$build_id ";
+                 $query .= "AND bp.build_id=" . $this->db->escapeSimple( $build_id );
             $query .= " ORDER BY bp.last_built DESC ";
             if($limit)
-                 $query .= " LIMIT $limit";
+                 $query .= " LIMIT " . $this->db->escapeSimple( $limit );
 
             $rc = $this->_doQueryHashRef($query, $results, array());
 
@@ -498,13 +498,13 @@
                        WHERE p.port_id = bp.port_id ";
 
             if($build_id)
-                 $query .= "AND bp.build_id=$build_id ";
+                 $query .= "AND bp.build_id=" . $this->db->escapeSimple( $build_id ) . " ";
             if($status<>'')
-                 $query .= "AND bp.last_status='$status' ";
+                 $query .= "AND bp.last_status='" . $this->db->escapeSimple( $status ) . "' ";
 	    if($notstatus<>'')
-		 $query .= "AND bp.last_status<>'$notstatus' AND bp.last_status<>'UNKNOWN'";
+		 $query .= "AND bp.last_status<>'" . $this->db->escapeSimple( $notstatus ) . "' AND bp.last_status<>'UNKNOWN' ";
             if($maintainer)
-                 $query .= "AND p.port_maintainer='$maintainer'";
+                 $query .= "AND p.port_maintainer='" . $this->db->escapeSimple( $maintainer ) . "' ";
             $query .= " ORDER BY bp.last_built DESC ";
 
             $rc = $this->_doQueryHashRef($query, $results, array());
@@ -594,7 +594,7 @@
             $condition = implode(" OR ", $conds);
 
             if ($condition != "") {
-                $query = "SELECT * FROM $table WHERE $condition";
+                $query = "SELECT * FROM $table WHERE " . $this->db->escapeSimple( $condition );
             }
             else {
                 $query = "SELECT * FROM $table";
