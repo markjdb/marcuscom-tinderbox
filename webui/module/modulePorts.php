@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.1 2008/12/21 17:27:30 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.2 2009/01/18 20:09:29 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -39,6 +39,11 @@ class modulePorts extends module {
 		global $with_timer, $starttimer;
 
 		$ports = $this->TinderboxDS->getAllPortsByPortID( $port_id );
+		if ( ! $ports ) {
+			$this->TinderboxDS->addError( "Unknown port id : " . htmlentities( $port_id ) );
+			$this->template_assign( 'no_list', true );
+			return $this->template_parse( 'describe_port.tpl' );
+		}
 
 		if( is_array( $ports ) && count( $ports ) > 0 ) {
 			$this->template_assign( 'data', $this->get_list_data( '', $ports ) );
@@ -90,6 +95,10 @@ class modulePorts extends module {
 		} else {
 			$different_builds = false;
 			$build = $this->TinderboxDS->getBuildByName( $build_name );
+			if ( ! $build ) {
+				$this->TinderboxDS->addError( "Unknown build name : " . htmlentities( $build_name ) );
+				return false;
+			}
 			$package_suffix = $this->TinderboxDS->getPackageSuffix( $build->getJailId() );
 		}
 

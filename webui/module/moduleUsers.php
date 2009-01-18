@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleUsers.php,v 1.19.2.1 2008/10/05 10:37:18 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleUsers.php,v 1.19.2.2 2009/01/18 20:09:29 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -83,6 +83,10 @@ class moduleUsers extends module {
 		}
 
 		$user = $this->TinderboxDS->getUserById( $user_id );
+		if ( ! $user ) {
+			$this->TinderboxDS->addError( "Unknown user id: " . htmlentities( $user_id ) );
+			return $this->template_parse( 'user_admin.tpl' );
+		}
 		if( $first == 1 ) {
 			$user_name     = $user->getName();
 			$user_email    = $user->getEmail();

@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleBuildPorts.php,v 1.16.2.3 2009/01/05 20:12:16 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleBuildPorts.php,v 1.16.2.4 2009/01/18 20:09:29 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -41,6 +41,11 @@ class moduleBuildPorts extends module {
 		global $starttimer, $with_timer;
 
 		$build = $this->TinderboxDS->getBuildByName( $build_name );
+		if ( ! $build ) {
+			$this->TinderboxDS->addError( "Unknown build: " . htmlentities( $build_name ) );
+			$this->template_assign( 'no_list', true );
+			return $this->template_parse( 'list_buildports.tpl' );
+		}
 		$ports = $this->TinderboxDS->getPortsForBuild( $build, $sort, $search_port_name );
 		$ports_tree = $this->TinderboxDS->getPortsTreeById( $build->getPortsTreeId() );
 		$jail = $this->TinderboxDS->getJailById( $build->getJailId() );
@@ -103,6 +108,11 @@ class moduleBuildPorts extends module {
 
 		if( $build_name ) {
 			$build = $this->TinderboxDS->getBuildByName( $build_name );
+			if ( ! $build ) {
+				$this->TinderboxDS->addError( "Unknown build: " . htmlentities( $build_name ) );
+				$this->template_assign( 'no_list', true );
+				return $this->template_parse( 'failed_buildports.tpl' );
+			}
 			$build_id = $build->getId();
 		} else {
 			$build_id = false;
@@ -164,6 +174,11 @@ class moduleBuildPorts extends module {
 
 		if( $build_name ) {
 			$build = $this->TinderboxDS->getBuildByName( $build_name );
+			if ( ! $build ) {
+				$this->TinderboxDS->addError( "Unknown build: " . htmlentities( $build_name ) );
+				$this->template_assign( 'no_list', true );
+				return $this->template_parse( 'latest_buildports.tpl' );
+			}
 			$build_id = $build->getId();
 		} else {
 			$build_id = false;
