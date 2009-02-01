@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleLogs.php,v 1.5.2.2 2009/01/18 20:09:29 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleLogs.php,v 1.5.2.3 2009/02/01 13:32:16 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -32,9 +32,9 @@ require_once 'module/modulePorts.php';
 
 class moduleLogs extends module {
 
-	function moduleLogs() {
-		$this->module();
-		$this->modulePorts = new modulePorts();
+	function moduleLogs( $TinderboxDS, $modulePorts ) {
+		$this->module( $TinderboxDS );
+		$this->modulePorts = $modulePorts;
 	}
 
 	function markup_log( $build_id, $id ) {
