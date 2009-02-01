@@ -24,12 +24,8 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/functions.php,v 1.6 2008/01/25 20:12:50 marcus Exp $
+# $MCom: portstools/tinderbox/webui/core/functions.php,v 1.6.2.1 2009/02/01 19:43:27 beat Exp $
 #
-
-function prettyEmail($input) {
-	return eregi_replace("@FreeBSD.org", "", $input);
-}
 
 function prettyDatetime($input) {
 	if (ereg("[0-9]{14}", $input)) {

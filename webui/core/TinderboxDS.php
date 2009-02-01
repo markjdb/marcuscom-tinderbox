@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.5 2009/01/05 21:43:10 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.6 2009/02/01 19:43:27 beat Exp $
 #
 
     require_once 'DB.php';
@@ -386,7 +386,11 @@
 		    $sortbytable = "bp";
 		    $sortby = "last_built desc";
 	    }
-            $query = "SELECT p.*,
+            $query = "SELECT p.port_id,
+                             p.port_directory,
+                             TRIM(TRAILING '@FreeBSD.org' FROM p.port_maintainer) as port_maintainer,
+                             p.port_name,
+                             p.port_comment,
                              bp.last_built,
                              bp.last_status,
                              bp.last_successful_built,
