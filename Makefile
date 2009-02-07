@@ -1,6 +1,6 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.58.2.9 2008/12/21 17:27:29 beat Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.58.2.10 2009/02/07 20:12:01 marcus Exp $
 
-VERSION=	3.1.2
+VERSION=	3.2.0r1
 
 DATA=		README ds.ph.dist tc tinderbox.ph.dist tinderd
 LIBDATA=	buildscript db-mysql.sh db-pgsql.sh enterbuild makemake \
