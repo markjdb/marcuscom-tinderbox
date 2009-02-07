@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.10 2009/02/07 22:32:33 beat Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.11 2009/02/07 22:40:09 marcus Exp $
 #
 
 my $pb;
@@ -208,9 +208,10 @@ my $ds = new Tinderbox::TinderboxDS();
                 optstr => 'ab:oOR',
         },
         "addBuildPortsQueueEntry" => {
-                func   => \&addBuildPortsQueueEntry,
-                help   => "Adds a Port to the Ports to Build Queue",
-                usage  => "-b <build name> -d <port directory> [-p <priority>] [-u <username>]",
+                func => \&addBuildPortsQueueEntry,
+                help => "Adds a Port to the Ports to Build Queue",
+                usage =>
+                    "-b <build name> -d <port directory> [-p <priority>] [-u <username>]",
                 optstr => 'b:d:p:u:',
         },
         "addPortFailPattern" => {
@@ -515,6 +516,12 @@ my $ds = new Tinderbox::TinderboxDS();
                 usage  => "-b <build name>",
                 optstr => 'b:',
         },
+        "copyBuildPorts" => {
+                func   => \&copyBuildPorts,
+                help   => "Copy the ports from one build to another",
+                usage  => "-s <src build name> -d <dest build name> [-p]",
+                optstr => 's:d:p',
+        },
         "processLog" => {
                 func   => \&processLog,
                 help   => "Analyze a logfile to find the failure reason",
@@ -592,6 +599,14 @@ my $ds = new Tinderbox::TinderboxDS();
                 help   => "Update an existing ports tree",
                 usage  => "-p <portstreename>",
                 optstr => 'p',
+        },
+
+        "copyBuild" => {
+                help =>
+                    "Copy the environment and ports from one build to another",
+                usage =>
+                    "-s <src build name> -d <dest build name> [-c] [-E] [-O] [-p] [-P]",
+                optstr => 's:d:cEOpP',
         },
 
         "tbcleanup" => {
@@ -1454,7 +1469,7 @@ sub addBuildPortsQueueEntry {
 
         if ($opts->{'u'}) {
                 if ($ds->isValidUser($opts->{'u'})) {
-                        $user = $ds->getUserByName($opts->{'u'});
+                        $user    = $ds->getUserByName($opts->{'u'});
                         $user_id = $user->getId();
                 } else {
                         $user_id = 0;
@@ -3016,6 +3031,68 @@ sub listBuildUsers {
         } else {
                 cleanup($ds, 1,
                         "There are no users configured for this build.\n");
+        }
+}
+
+sub copyBuildPorts {
+        if (!$opts->{'s'} && !$opts->{'d'}) {
+                usage("copyBuild");
+        }
+
+        if (!$ds->isValidBuild($opts->{'s'})) {
+                cleanup($ds, 1, "Unknown build, " . $opts->{'s'} . "\n");
+        }
+
+        if (!$ds->isValidBuild($opts->{'d'})) {
+                cleanup($ds, 1, "Unknown build, " . $opts->{'d'} . "\n");
+        }
+
+        my $src    = $ds->getBuildByName($opts->{'s'});
+        my $dest   = $ds->getBuildByName($opts->{'d'});
+        my $doPkgs = 0;
+        if ($opts->{'p'}) {
+                $doPkgs = 1;
+        }
+
+        my @ports = $ds->getPortsForBuild($src);
+        foreach my $port (@ports) {
+                my $rc = $ds->addPortForBuild($port, $dest);
+                if (!$rc) {
+                        warn "WARN: Failed to add port "
+                            . $port->getName()
+                            . " for build, "
+                            . $dest->getName() . ": "
+                            . $ds->getError() . "\n";
+                        next;
+                }
+                if ($doPkgs) {
+                        $rc =
+                            $ds->updatePortTotalSize($port, $dest,
+                                $ds->getPortTotalSize($port, $src));
+                        if (!$rc) {
+                                warn
+                                    "WARN: Failed to update port total size for port "
+                                    . $port->getName() . "\n";
+                        }
+
+                        $rc =
+                            $ds->updatePortLastBuiltVersion($port, $dest,
+                                $ds->getPortLastBuiltVersion($port, $src));
+                        if (!$rc) {
+                                warn
+                                    "WARN: Failed to update port last built version for port "
+                                    . $port->getName() . "\n";
+                        }
+
+                        $rc =
+                            $ds->updatePortLastBuiltStatus($port, $dest,
+                                $ds->getPortLastBuiltStatus($port, $src));
+                        if (!$rc) {
+                                warn
+                                    "WARN: Failed to update port last built status for port "
+                                    . $port->getName() . "\n";
+                        }
+                }
         }
 }
 
