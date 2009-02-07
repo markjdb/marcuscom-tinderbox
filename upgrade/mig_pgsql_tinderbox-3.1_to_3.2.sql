@@ -1,3 +1,4 @@
+IF NOT EXISTS(SELECT tablename FROM pg_catalog.pg_tables WHERE tablename = 'logfile_patterns') THEN
 CREATE TABLE logfile_patterns (
 	logfile_pattern_id INTEGER PRIMARY KEY,
 	logfile_pattern_tag VARCHAR(30) NOT NULL,
@@ -5,6 +6,8 @@ CREATE TABLE logfile_patterns (
 	logfile_pattern_expr TEXT,
 	logfile_pattern_color VARCHAR(20) NOT NULL
 );
+END IF
+DELETE FROM logfile_patterns WHERE logfile_pattern_id % 10 = 0;
 INSERT INTO logfile_patterns VALUES ( 10, 'File not found', 'error', '/No such file or directory/', 'Red' );
 INSERT INTO logfile_patterns VALUES ( 500, 'Declaration prototype', 'warning', '/warning: function declaration isn\'t a prototype/', 'Violet' );
 INSERT INTO logfile_patterns VALUES ( 510, 'No prototype', 'warning', '/warning: no previous prototype for \'.*\'/', 'Violet' );
