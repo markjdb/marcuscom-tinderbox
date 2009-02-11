@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.11 2009/02/07 22:40:09 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.12 2009/02/11 08:50:34 beat Exp $
 #
 
 my $pb;
@@ -620,6 +620,11 @@ my $ds = new Tinderbox::TinderboxDS();
                 help   => "Kill a tinderbuild",
                 usage  => "-b <buildname> -s <signal>",
                 optstr => 'b:s:',
+        },
+
+        "tbversion" => {
+                help  => "Display Tinderbox version",
+                usage => "",
         },
 
 );
