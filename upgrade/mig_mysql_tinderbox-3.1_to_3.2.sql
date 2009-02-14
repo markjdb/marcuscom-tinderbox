@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS logfile_patterns (
 	logfile_pattern_color VARCHAR(20) NOT NULL
 );
 DELETE FROM logfile_patterns WHERE logfile_pattern_id % 10 = 0;
-INSERT INTO logfile_patterns VALUES ( 10, 'File not found', 'error', '/No such file or directory/', 'Red' );
+INSERT INTO logfile_patterns VALUES ( 10, 'File not found', 'error', '/^(?!fetch).*No such file or directory/', 'Red' );
 INSERT INTO logfile_patterns VALUES ( 500, 'Declaration prototype', 'warning', '/warning: function declaration isn\'t a prototype/', 'Violet' );
 INSERT INTO logfile_patterns VALUES ( 510, 'No prototype', 'warning', '/warning: no previous prototype for \'.*\'/', 'Violet' );
 INSERT INTO logfile_patterns VALUES ( 520, 'Implicit function', 'warning', '/warning: implicit declaration of function \'.*\'/', 'Magenta' );
