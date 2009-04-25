@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.14 2009/03/28 17:28:23 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.15 2009/04/25 19:34:08 marcus Exp $
 #
 
 my $pb;
@@ -179,7 +179,8 @@ my $ds = new Tinderbox::TinderboxDS();
         },
         "addJail" => {
                 func => \&addJail,
-                help => "Add a jail to the datastore",
+                help =>
+                    "Add a jail to the datastore (do NOT call this directly; use createJail instead)",
                 usage =>
                     "-j <jail name> -u CSUP|CVSUP|USER|NONE -t <jail tag> [-d <jail description>] [-m <src mount source>] [-a <arch>]",
                 optstr => 'm:j:t:u:d:a:',
@@ -677,6 +678,15 @@ sub failedShell {
         my $command = shift;
         usage($command);
         cleanup($ds, 1, undef);
+}
+
+sub trimstr {
+        my $str = shift;
+
+        $str =~ s/^\s+//;
+        $str =~ s/\s+$//;
+
+        return $str;
 }
 
 #---------------------------------------------------------------------------
@@ -1303,8 +1313,11 @@ sub addBuild {
         $build->setName($name);
         $build->setJailId($jCls->getId());
         $build->setPortsTreeId($pCls->getId());
-        $build->setDescription($opts->{'d'}) if ($opts->{'d'});
+        if ($opts->{'d'}) {
+                my $descr = trimstr($opts->{'d'});
 
+                $build->setDescription($descr);
+        }
         my $rc = $ds->addBuild($build);
 
         if (!$rc) {
@@ -1342,8 +1355,12 @@ sub addJail {
         $jail->setArch($arch);
         $jail->setTag($tag);
         $jail->setUpdateCmd($ucmd);
-        $jail->setDescription($opts->{'d'}) if ($opts->{'d'});
-        $jail->setSrcMount($opts->{'m'})    if ($opts->{'m'});
+        if ($opts->{'d'}) {
+                my $descr = trimstr($opts->{'d'});
+
+                $jail->setDescription($descr);
+        }
+        $jail->setSrcMount($opts->{'m'}) if ($opts->{'m'});
 
         my $rc = $ds->addJail($jail);
 
@@ -1373,9 +1390,13 @@ sub addPortsTree {
 
         $portstree->setName($name);
         $portstree->setUpdateCmd($ucmd);
-        $portstree->setDescription($opts->{'d'}) if ($opts->{'d'});
-        $portstree->setPortsMount($opts->{'m'})  if ($opts->{'m'});
-        $portstree->setCVSwebURL($opts->{'w'})   if ($opts->{'w'});
+        if ($opts->{'d'}) {
+                my $descr = trimstr($opts->{'d'});
+
+                $portstree->setDescription($descr);
+        }
+        $portstree->setPortsMount($opts->{'m'}) if ($opts->{'m'});
+        $portstree->setCVSwebURL($opts->{'w'})  if ($opts->{'w'});
         $portstree->setLastBuilt($ds->getTime());
 
         my $rc = $ds->addPortsTree($portstree);
@@ -1488,7 +1509,15 @@ sub addBuildPortsQueueEntry {
                 }
         }
 
-        $ds->addBuildPortsQueueEntry($build, $opts->{'d'}, $priority, $user_id);
+        my $rc = $ds->addBuildPortsQueueEntry($build, $opts->{'d'}, $priority, $user_id);
+	if (!$rc) {
+                cleanup($ds, 1,
+                              "Failed to add port "
+                            . $opts->{'d'}
+                            . " to the datastore: "
+                            . $ds->getError()
+                            . ".\n");
+        }
 }
 
 sub addPortFailPattern {
