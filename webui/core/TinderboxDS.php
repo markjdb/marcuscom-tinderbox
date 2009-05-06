@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.7 2009/03/13 07:57:24 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.8 2009/05/06 19:07:01 beat Exp $
 #
 
     require_once 'DB.php';
@@ -540,7 +540,7 @@
         function getPortById($id) {
             $results = $this->getPorts(array( 'port_id' => $id ));
 
-            if (is_null($results)) {
+            if ( is_null( $results ) || empty( $results ) ) {
                 return null;
             }
 
@@ -561,6 +561,11 @@
 	    $query = 'SELECT port_id AS id FROM build_ports WHERE build_id = ? AND currently_building = \'1\'';
 	    $rc = $this->_doQueryHashRef($query, $results, array($build_id));
 	    if (!$rc) return null;
+ 
+	    if ( empty( $results ) ) {
+	        return null;
+	    }
+
 	    $port = $this->getPortById($results[0]['id']);
 
 	    return $port;
