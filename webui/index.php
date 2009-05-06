@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.10 2009/05/06 19:48:32 beat Exp $
+# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.11 2009/05/06 20:37:53 beat Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
@@ -73,19 +73,22 @@ switch( $action ) {
 					break;
 	case 'failed_buildports':	$build      = isset ( $_REQUEST['build'] ) ? $_REQUEST['build'] : '';
 					$maintainer = isset ( $_REQUEST['maintainer'] ) ? $_REQUEST['maintainer'] : '';
+					$sort       = isset ( $_REQUEST['sort'] ) ? $_REQUEST['sort'] : '';
 					$list_limit_offset = isset ( $_REQUEST['list_limit_offset'] ) ? $_REQUEST['list_limit_offset'] : '0';
-					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, null, null, $list_limit_offset );
+					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, null, null, $list_limit_offset, $sort );
 					break;
 	case 'buildports_by_reason':	$build      = $_REQUEST['build'];
 					$maintainer = isset ( $_REQUEST['maintainer'] ) ? $_REQUEST['maintainer'] : '';
 					$reason = $_REQUEST['reason'];
+					$sort       = isset ( $_REQUEST['sort'] ) ? $_REQUEST['sort'] : '';
 					$list_limit_offset = isset ( $_REQUEST['list_limit_offset'] ) ? $_REQUEST['list_limit_offset'] : '0';
-					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, null, $reason, $list_limit_offset );
+					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, null, $reason, $list_limit_offset, $sort );
 					break;
 	case 'bad_buildports':		$build      = isset ( $_REQUEST['build'] ) ? $_REQUEST['build'] : '';
 					$maintainer = isset ( $_REQUEST['maintainer'] ) ? $_REQUEST['maintainer'] : '';
+					$sort       = isset ( $_REQUEST['sort'] ) ? $_REQUEST['sort'] : '';
 					$list_limit_offset = isset ( $_REQUEST['list_limit_offset'] ) ? $_REQUEST['list_limit_offset'] : '0';
-					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, 'foo', null, $list_limit_offset );
+					$display    = $moduleBuildPorts->display_failed_buildports( $build, $maintainer, 'foo', null, $list_limit_offset, $sort );
 					break;
 	case 'latest_buildports':	$build      = isset ( $_REQUEST['build'] ) ? $_REQUEST['build'] : '';
 					$display    = $moduleBuildPorts->display_latest_buildports( $build = '' );

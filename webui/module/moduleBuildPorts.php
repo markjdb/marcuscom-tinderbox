@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleBuildPorts.php,v 1.16.2.6 2009/05/06 19:48:33 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleBuildPorts.php,v 1.16.2.7 2009/05/06 20:37:53 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -122,7 +122,7 @@ class moduleBuildPorts extends module {
 		return $this->template_parse( 'list_buildports.tpl' );
 	}
 
-	function display_failed_buildports( $build_name, $maintainer, $all, $wanted_reason, $list_limit_offset ) {
+	function display_failed_buildports( $build_name, $maintainer, $all, $wanted_reason, $list_limit_offset, $sort ) {
 		global $list_limit_nr, $with_timer, $starttimer;
 
 		if( $build_name ) {
@@ -138,13 +138,13 @@ class moduleBuildPorts extends module {
 		}
 
 		if ($wanted_reason) {
-			$ports = $this->TinderboxDS->getPortsByStatus( $build_id, NULL, $wanted_reason, '', $list_limit_nr, $list_limit_offset );
+			$ports = $this->TinderboxDS->getPortsByStatus( $build_id, NULL, $wanted_reason, '', $list_limit_nr, $list_limit_offset, $sort );
 		}
 		else {
 			if ($all) {
-				$ports = $this->TinderboxDS->getPortsByStatus( $build_id, $maintainer, '', 'SUCCESS', $list_limit_nr, $list_limit_offset );
+				$ports = $this->TinderboxDS->getPortsByStatus( $build_id, $maintainer, '', 'SUCCESS', $list_limit_nr, $list_limit_offset, $sort );
 			} else {
-				$ports = $this->TinderboxDS->getPortsByStatus( $build_id, $maintainer, 'FAIL', '', $list_limit_nr, $list_limit_offset );
+				$ports = $this->TinderboxDS->getPortsByStatus( $build_id, $maintainer, 'FAIL', '', $list_limit_nr, $list_limit_offset, $sort );
 			}
 		}
 
@@ -172,6 +172,13 @@ class moduleBuildPorts extends module {
 			}
 		}
 
+		$qs = array();
+		$qkvs = explode( '&', $_SERVER['QUERY_STRING'] );
+		foreach ( $qkvs as $qkv ) {
+			$kv = explode( '=', $qkv );
+			$qs[$kv[0]] = $kv[1];
+		}
+
 		if ( !isset( $list_limit_nr ) || $list_limit_nr == '0' ) {
 			$list_limit_nr = 0;
 			$list_nr_prev = -1;
@@ -194,6 +201,7 @@ class moduleBuildPorts extends module {
 		$this->template_assign( 'build_name', $build_name );
 		$this->template_assign( 'maintainer', $maintainer );
 		$this->template_assign( 'local_time', prettyDatetime( date( 'Y-m-d H:i:s' ) ) );
+		$this->template_assign( 'querystring',$qs );
 		$elapsed_time = '';
 		if (isset($with_timer) && $with_timer == 1) {
 			$elapsed_time = get_ui_elapsed_time($starttimer);
