@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.5 2009/05/06 19:07:01 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.6 2009/06/13 07:17:06 beat Exp $ //-->
 <title><?php echo $tinderbox_name?></title>
 <link href="<?php echo $templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
 </head>
@@ -38,6 +38,7 @@ Build
 	<?php }?>
 	</p>
 <?php }?>
+<?php if($is_logged_in) {?>
 	<p>
 		<form method="post" action="index.php">
 			<input type="hidden" name="action" value="delete_tinderd_queue" />
@@ -46,6 +47,7 @@ Build
 			<input type="submit" name="delete_tinderd_queue" value="delete all" />
 		</form>
 	</p>
+<?php }?>
 	<table>
 		<tr>
 			<th>Build</th>
@@ -53,12 +55,24 @@ Build
 			<th>Port Directory</th>
 			<th>User</th>
 			<th style="width: 20px">&nbsp</th>
+<?php if($is_logged_in) {?>
 			<th>Email On<br />Completion</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
+<?php }?>
 		</tr>
 
+<?php if(!$is_logged_in && $no_list) {?>
+		<tr>
+			<td>Queue empty</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+<?php }?>
+<?php if($is_logged_in) {?>
 		<form method="post" action="index.php">
 		<input type="hidden" name="action" value="add_tinderd_queue" />
 		<input type="hidden" name="entry_id" value="<?php if(!empty($row['entry_id']))echo $row['entry_id']?>" />
@@ -89,6 +103,7 @@ Build
 			<td colspan="3"><br /><input type="submit" name="add_tinderd_queue" value="add" /></td>
 		</tr>
 		</form>
+<?php }?>
 <?php if(!$no_list){?>
 
 		<?php foreach($entries as $row) {?>
@@ -98,7 +113,7 @@ Build
 			<input type="hidden" name="filter_build_id" value="<?php echo $build_id?>" />
 			<tr>
 				<td>
-					<?php if($row['modify'] == 1){?>
+					<?php if($is_logged_in && $row['modify'] == 1){?>
 						<select name="build_id">
 							<?php foreach($all_builds as $build) {?>
 								<option value="<?php echo $build['build_id']?>" <?php if ($row['build'] == $build['build_name']) {?>selected<?php }?> ><?php echo $build['build_name']?></option>
@@ -109,7 +124,7 @@ Build
 					<?php }?>
 				</td>
 				<td>
-					<?php if($row['modify'] == 1){?>
+					<?php if($is_logged_in && $row['modify'] == 1){?>
 						<select name="priority">
 							<?php foreach($row['all_prio'] as $prio) {?>
 								<option value="<?php echo $prio?>" <?php if ($row['priority'] == $prio) {?>selected<?php }?> ><?php echo $prio?></option>
@@ -122,6 +137,7 @@ Build
 				<td><?php echo $row['directory']?></td>
 				<td><?php echo $row['user']?></td>
 				<td class="<?php echo $row['status_field_class']?>">&nbsp;</td>
+<?php if($is_logged_in) {?>
 				<td align="center">
 					<?php if($row['modify'] == 1){?>
 						<input type="checkbox" name="email_on_completion" value="1" <?php if($row['email_on_completion'] == 1 ) {?>checked="checked"<?php }?> />
@@ -144,6 +160,7 @@ Build
 						<input type="submit" name="change_tinderd_queue" value="reset status" />
 					<?php }?>
 				</td>
+<?php }?>
 			</tr>
 			</form>
 		<?php }?>
