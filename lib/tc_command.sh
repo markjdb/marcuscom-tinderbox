@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.27 2009/10/12 20:48:35 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.28 2009/10/12 21:01:17 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -2202,7 +2202,7 @@ tbcleanup () {
 	done
 
 	if [ ${cleanPkgs} = 1 ]; then
-	    for pkg in $(find ${pkg_path}/All -name "*.${package_suffix}"); do
+	    	for pkg in $(find ${pkg_path}/All -name "*.${package_suffix}"); do
 	    		if ! echo ${pkgs_seen} | grep -qw ${pkg}; then
 			    	echo "Removing stale package ${build}/${pkg}"
 		    		/bin/rm -f "${pkg_path}/All/${pkg}"
@@ -2276,11 +2276,12 @@ tbkill () {
 #---------------------------------------------------------------------------
 # display the Tinderbox version
 #---------------------------------------------------------------------------
-tbversion() {
-     version=$(tinderLoc scripts .version)
-     if [ -f "${version}" ]; then
-	 cat ${version}
-     else
-	 echo "tbversion: no version info found"
-     fi
+tbversion () {
+    version=$(tinderLoc scripts .version)
+    if [ -f "${version}" ]; then
+	cat ${version}
+    else
+	echo "tbversion: no version info found"
+    fi
 }
+
