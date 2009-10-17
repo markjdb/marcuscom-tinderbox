@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.16 2009/04/25 19:42:13 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.17 2009/10/17 19:32:32 marcus Exp $
 #
 
 my $pb;
@@ -1509,8 +1509,10 @@ sub addBuildPortsQueueEntry {
                 }
         }
 
-        my $rc = $ds->addBuildPortsQueueEntry($build, $opts->{'d'}, $priority, $user_id);
-	if (!$rc) {
+        my $rc =
+            $ds->addBuildPortsQueueEntry($build, $opts->{'d'}, $priority,
+                $user_id);
+        if (!$rc) {
                 cleanup($ds, 1,
                               "Failed to add port "
                             . $opts->{'d'}
