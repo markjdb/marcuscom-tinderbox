@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.58.2.18 2009/02/24 19:36:13 marcus Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.58.2.19 2009/10/17 19:42:20 marcus Exp $
 
 VERSION=	3.2
 
@@ -107,6 +107,9 @@ release:
 	cp ${.CURDIR}/man/man${ms}/${mf} ${.CURDIR}/tinderbox-${VERSION}/man/man${ms}
 .endfor
 .endfor
+mkdir -p ${.CURDIR}/tinderbox-${VERSION}/contrib
+tar -C ${.CURDIR}/contrib --exclude "*CVS*" -cf - . | \
+    tar -C ${.CURDIR}/tinderbox-${VERSION}/contrib -xf -
 	echo "Tinderbox version ${VERSION}" > tinderbox-${VERSION}/.version
 	cd ${.CURDIR} && \
 		tar cvzf tinderbox-${VERSION}.tar.gz tinderbox-${VERSION}
