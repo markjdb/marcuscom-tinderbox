@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.88.2.3 2008/09/10 17:22:11 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.88.2.4 2010/01/03 20:58:58 marcus Exp $
 #
 
 package Tinderbox::TinderboxDS;
@@ -1529,7 +1529,7 @@ sub removeBuildPortsQueue {
         my $self = shift;
 
         my $rc;
-        $rc = $self->_doQuery("DELETE FROM build_ports_queue WHERE 1");
+        $rc = $self->_doQuery("DELETE FROM build_ports_queue");
         return $rc;
 }
 
