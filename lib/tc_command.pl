@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.19 2009/10/17 19:48:36 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.20 2010/05/01 16:31:24 marcus Exp $
 #
 
 my $pb;
@@ -219,7 +219,7 @@ my $ds = new Tinderbox::TinderboxDS();
                 func => \&addBuildPortsQueueEntry,
                 help => "Adds a Port to the Ports to Build Queue",
                 usage =>
-                    "-b <build name> -d <port directory> [-p <priority>] [-u <username>]",
+                    "-b <build name> [-d <port directory>] [-p <priority>] [-u <username>]",
                 optstr => 'b:d:p:u:',
         },
         "addPortFailPattern" => {
@@ -1539,11 +1539,11 @@ sub addBuildPortsQueueEntry {
         my $user;
         my $user_id;
 
-        if (!$opts->{'b'} || !$opts->{'d'}) {
+        if (!$opts->{'b'}) {
                 usage("addBuildPortsQueueEntry");
         }
 
-        my $priority = $opts->{'p'} ? $opts->{'p'} : 10;
+	my $priority = defined $opts->{'p'} ? $opts->{'p'} : 10;
 
         if (!$ds->isValidBuild($opts->{'b'})) {
                 cleanup($ds, 1, "Unknown build, " . $opts->{'b'} . "\n");
@@ -1566,16 +1566,34 @@ sub addBuildPortsQueueEntry {
                 }
         }
 
-        my $rc =
-            $ds->addBuildPortsQueueEntry($build, $opts->{'d'}, $priority,
-                $user_id);
-        if (!$rc) {
+        my @portdirs = ();
+        if ($opts->{'d'}) {
+                push @portdirs, $opts->{'d'};
+        } else {
+                my @ports = $ds->getPortsForBuild($build);
+                foreach my $pObj (@ports) {
+                        push @portdirs, $pObj->getDirectory();
+                }
+        }
+
+        my $errors = 0;
+        foreach my $portdir (@portdirs) {
+                my $rc =
+                    $ds->addBuildPortsQueueEntry($build, $portdir, $priority,
+                        $user_id);
+                if (!$rc) {
+                        warn(         "Failed to add port "
+                                    . $portdir
+                                    . " to the datastore: "
+                                    . $ds->getError()
+                                    . ".\n");
+                        $errors++;
+                }
+        }
+        if ($errors) {
                 cleanup($ds, 1,
-                              "Failed to add port "
-                            . $opts->{'d'}
-                            . " to the datastore: "
-                            . $ds->getError()
-                            . ".\n");
+                        "Errors were encountered.  See output above for more details."
+                );
         }
 }
 
