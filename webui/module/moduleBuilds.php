@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleBuilds.php,v 1.9.2.1 2009/02/01 13:32:16 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleBuilds.php,v 1.9.2.2 2010/05/29 09:27:01 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -120,9 +120,9 @@ class moduleBuilds extends module {
 	}
 
 	function get_all_builds() {
-		$all_builds_raw = $this->TinderboxDS->getAllBuilds();
+		$all_builds_sorted = $this->TinderboxDS->getAllBuilds( 'build_name' );
 		$all_builds = array();
-		foreach( $all_builds_raw as $build ) {
+		foreach( $all_builds_sorted as $build ) {
 			$all_builds[] = array( 'build_id' => $build->getId(), 'build_name' => $build->getName() );
 		}
 		return $all_builds;
