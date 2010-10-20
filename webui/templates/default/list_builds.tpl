@@ -5,6 +5,7 @@ $legend = array(
     "F = Number of ports that failed to build",
     "D = Number of ports that were not built due to a dependency failure",
     "L = Number of ports with leftovers",
+    "DUD = Number of duds",
     "R = Number of ports to be remade",
     "T = Total"
 );
@@ -12,7 +13,7 @@ $legend = array(
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/list_builds.tpl,v 1.10.2.7 2009/05/06 20:52:29 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/list_builds.tpl,v 1.10.2.8 2010/10/20 20:21:38 beat Exp $ //-->
 <title><?php echo $tinderbox_name?></title>
 <link href="<?php echo $templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
 <link rel="alternate" type="application/rss+xml" title="<?php echo $tinderbox_name?> (RSS)" href="index.php?action=latest_buildports_rss" />
@@ -39,6 +40,7 @@ $legend = array(
 			<th style="width: 25px"><span title="fail"> F </span></th>
 			<th style="width: 25px"><span title="depend"> D </span></th>
 			<th style="width: 25px"><span title="leftovers"> L </span></th>
+			<th style="width: 25px"><span title="dud"> DUD </span></th>
 			<th style="width: 25px"><span title="remake"> R </span></th>
 			<th style="width: 25px"><span title="total"> T </span></th>
 			<th>Build Packages</th>
@@ -91,6 +93,15 @@ $legend = array(
 					<?php }?>
 					<span title="leftovers"><?php echo $row['results']['LEFTOVERS']?></span>
 					<?php if ($row['results']['LEFTOVERS'] != '-') {?>
+						</a>
+					<?php }?>
+				</td>
+				<td align="center">
+					<?php if ($row['results']['DUD'] != '-') {?>
+						<a href="index.php?action=buildports_by_reason&amp;build=<?php echo $row['name']?>&amp;reason=DUD">
+					<?php }?>
+					<span title="leftovers"><?php echo $row['results']['DUD']?></span>
+					<?php if ($row['results']['DUD'] != '-') {?>
 						</a>
 					<?php }?>
 				</td>
