@@ -1,4 +1,4 @@
-$MCom: portstools/tinderbox/README,v 1.78.2.10 2011/01/03 06:52:19 marcus Exp $
+$MCom: portstools/tinderbox/README,v 1.78.2.11 2011/01/03 06:53:16 marcus Exp $
 
 BASIC INSTALLATION AND USAGE INSTRUCTIONS
 
@@ -11,6 +11,12 @@ http://tinderbox.marcuscom.com.
 Tinderbox lives in MarcusCom CVS repository under ``portstools'' module.
 
 http://www.marcuscom.com:8080/cgi-bin/cvsweb.cgi/
+
+Two ports exist:
+- ports-mgmt/tinderbox which tracks the latest stable release (plus sometimes
+back-ported fixes from the STABLE branch)
+- ports-mgmt/tinderbox-devel which tracks HEAD and might contain additional
+experimental patches not (yet) present in the CVS
 
 Requirements:
 -------------
