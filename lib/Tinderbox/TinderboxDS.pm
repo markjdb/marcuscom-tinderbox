@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.88.2.5 2010/10/31 21:34:44 marcus Exp $
+# $MCom: portstools/tinderbox/lib/Tinderbox/TinderboxDS.pm,v 1.88.2.6 2011/01/16 02:06:22 marcus Exp $
 #
 
 package Tinderbox::TinderboxDS;
@@ -83,7 +83,10 @@ sub new {
                 $DBI_TYPE = 'database';
         }
 
-        my $dsn = "DBI:$DB_DRIVER:$DBI_TYPE=$DB_NAME;host=$DB_HOST";
+        my $dsn = "DBI:$DB_DRIVER:$DBI_TYPE=$DB_NAME";
+        if ($DB_HOST) {
+                $dsn .= ";host=$DB_HOST";
+        }
 
         $self->{'dbh'} =
                DBI->connect($dsn, $DB_USER, $DB_PASS, {PrintError => 0})
