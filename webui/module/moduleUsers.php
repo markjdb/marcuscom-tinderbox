@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleUsers.php,v 1.19.2.5 2011/08/11 12:42:26 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleUsers.php,v 1.19.2.6 2011/08/11 12:48:32 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -32,7 +32,7 @@ require_once 'module/moduleBuilds.php';
 
 class moduleUsers extends module {
 
-	var $permissions;
+	public $permissions;
 
 	function moduleUsers( $TinderboxDS, $moduleBuilds, $moduleSession ) {
 		$this->module( $TinderboxDS );
