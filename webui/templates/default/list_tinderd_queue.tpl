@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.9 2011/08/11 12:35:12 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/list_tinderd_queue.tpl,v 1.11.2.10 2011/08/11 14:06:27 beat Exp $ //-->
 <title><?php echo $tinderbox_name?></title>
 <link href="<?php echo $templatesuri?>/tinderstyle.css" rel="stylesheet" type="text/css" />
 </head>
@@ -184,7 +184,7 @@ Build
 					<td>
 						<select name="build_group_name">
 							<?php foreach($all_build_groups as $build_group) {?>
-								<option value="<?php echo $build_group?>" <?php if ($row['build'] == $build_group) {?>selected<?php }?> ><?php echo $build_group?></option>
+								<option value="<?php echo $build_group?>"><?php echo $build_group?></option>
 							<?php }?>
 						</select>
 					</td>
