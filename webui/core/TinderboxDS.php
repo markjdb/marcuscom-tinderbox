@@ -24,11 +24,12 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.15 2010/05/29 09:27:00 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.16 2011/08/11 12:35:12 beat Exp $
 #
 
     require_once 'MDB2.php';
     require_once 'Build.php';
+    require_once 'BuildGroups.php';
     require_once 'BuildPortsQueue.php';
     require_once 'Config.php';
     require_once 'Jail.php';
@@ -43,6 +44,7 @@
 
     $objectMap = array(
         "Build" => "builds",
+	'BuildGroups' => 'build_groups',
 	"BuildPortsQueue" => "build_ports_queue",
 	"LogfilePattern" => "logfile_patterns",
         "Config" => "config",
@@ -583,6 +585,33 @@
 	    return $port;
 	}
 
+	function addBuildGroupEntry( $build_group_name, $build_id ) {
+		$query = "INSERT INTO build_groups
+					(build_group_name, build_id)
+					VALUES (?,?)";
+
+		$rc = $this->_doQuery( $query, array( $build_group_name, $build_id ), $res );
+
+		if ( !$rc ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	function deleteBuildGroupEntry( $build_group_name, $build_id ) {
+		$query = "DELETE FROM build_groups
+						WHERE build_group_name=? AND build_id=?";
+
+		$rc = $this->_doQuery( $query, array( $build_group_name, $build_id ), $res );
+
+		if ( !$rc ) {
+			return false;
+		}
+
+		return true;
+	}
+
         function getObjects( $type, $params = array(), $orderby = "" ) {
             global $objectMap;
 
@@ -722,6 +751,10 @@
             return $this->getObjects( 'Build', $params, $sortby );
         }
 
+	function getBuildGroups( $params = array(), $sortby = '' ) {
+		return $this->getObjects( 'BuildGroups', $params, $sortby );
+	}
+
 	function getLogfilePatterns($params = array()) {
 		return $this->getObjects("LogfilePattern", $params);
 	}
@@ -761,6 +794,12 @@
 
             return $builds;
         }
+
+	function getAllBuildGroups( $sortby = '' ) {
+		$buildgroups = $this->getBuildGroups( array(), $sortby );
+        
+		return $buildgroups;
+	}
 
 	function getAllLogfilePatterns() {
 		$patterns = $this->getLogfilePatterns();

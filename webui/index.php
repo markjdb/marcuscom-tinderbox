@@ -24,13 +24,14 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.12 2009/05/07 20:02:52 beat Exp $
+# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.13 2011/08/11 12:35:12 beat Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
 
 require_once 'core/TinderboxDS.php';
 require_once 'module/moduleBuilds.php';
+require_once 'module/moduleBuildGroups.php';
 require_once 'module/moduleBuildPorts.php';
 require_once 'module/moduleConfig.php';
 require_once 'module/moduleLogs.php';
@@ -51,8 +52,9 @@ $moduleBuildPorts		= new moduleBuildPorts( $TinderboxDS, $modulePorts );
 $moduleLogs				= new moduleLogs( $TinderboxDS, $modulePorts );
 $modulePortFailureReasons	= new modulePortFailureReasons( $TinderboxDS );
 $moduleUsers			= new moduleUsers( $TinderboxDS, $moduleBuilds );
+$moduleBuildGroups		= new moduleBuildGroups ( $TinderboxDS, $moduleUsers, $moduleBuilds );
 $moduleConfig			= new moduleConfig( $TinderboxDS, $moduleUsers );
-$moduleTinderd			= new moduleTinderd( $TinderboxDS, $moduleBuilds, $moduleUsers );
+$moduleTinderd			= new moduleTinderd( $TinderboxDS, $moduleBuilds, $moduleBuildGroups, $moduleUsers );
 $moduleRss				= new moduleRss( $TinderboxDS, $modulePorts );
 
 $moduleSession->start();
@@ -166,6 +168,28 @@ switch( $action ) {
 	case 'display_markup_log':	$build = $_REQUEST['build'];
 					$id        = $_REQUEST['id'];
 					$display	= $moduleLogs->markup_log( $build, $id);
+					break;
+	case 'add_build_group':		$build_group_name = $_REQUEST['build_group_name'];
+					$build_id   = $_REQUEST['build_id'];
+					$moduleBuildGroups->add_build_group( $build_group_name, $build_id );
+					$display    = $moduleBuildGroups->display_build_groups();
+					break;
+	case 'delete_build_group':	$build_group_name = $_REQUEST['build_group_name'];
+					$build_name = $_REQUEST['build_name'];
+					$moduleBuildGroups->delete_build_group( $build_group_name, $build_name );
+					$display    = $moduleBuildGroups->display_build_groups();
+					break;
+	case 'add_build_group_queue':	$build_group_name = $_REQUEST['build_group_name'];
+					$priority   = $_REQUEST['new_priority'];
+					$directory  = $_REQUEST['new_port_directory'];
+					$emailoc    = isset ( $_REQUEST['new_email_on_completion'] ) ? $_REQUEST['new_email_on_completion'] : '';
+					$tinderd_queue = $moduleBuildGroups->add_build_group_queue( $build_group_name, $priority, $directory, $emailoc );
+					foreach ( $tinderd_queue as $entry ) {
+						$moduleTinderd->add_tinderd_queue( 'add', $entry['build_id'], $entry['priority'], $entry['directory'], $entry['emailoc'] );
+					}
+					$display    = $moduleTinderd->list_tinderd_queue( NULL );
+					break;
+	case 'list_build_group':	$display    = $moduleBuildGroups->display_build_groups();
 					break;
 	case 'list_builds':
 	default:			$display    = $moduleBuilds->display_list_builds();
