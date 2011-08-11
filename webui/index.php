@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.13 2011/08/11 12:35:12 beat Exp $
+# $MCom: portstools/tinderbox/webui/index.php,v 1.24.2.14 2011/08/11 12:42:25 beat Exp $
 #
 
 $starttimer = explode( ' ', microtime() );
@@ -51,7 +51,7 @@ $moduleSession			= new moduleSession( $TinderboxDS );
 $moduleBuildPorts		= new moduleBuildPorts( $TinderboxDS, $modulePorts );
 $moduleLogs				= new moduleLogs( $TinderboxDS, $modulePorts );
 $modulePortFailureReasons	= new modulePortFailureReasons( $TinderboxDS );
-$moduleUsers			= new moduleUsers( $TinderboxDS, $moduleBuilds );
+$moduleUsers			= new moduleUsers( $TinderboxDS, $moduleBuilds, $moduleSession );
 $moduleBuildGroups		= new moduleBuildGroups ( $TinderboxDS, $moduleUsers, $moduleBuilds );
 $moduleConfig			= new moduleConfig( $TinderboxDS, $moduleUsers );
 $moduleTinderd			= new moduleTinderd( $TinderboxDS, $moduleBuilds, $moduleBuildGroups, $moduleUsers );
