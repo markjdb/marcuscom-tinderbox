@@ -24,15 +24,17 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.5 2009/05/06 19:07:01 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.6 2011/08/11 13:26:30 beat Exp $
 #
 
 require_once 'module/module.php';
+require_once 'module/moduleUsers.php';
 
 class modulePorts extends module {
 
-	function modulePorts( $TinderboxDS ) {
+	function modulePorts( $TinderboxDS, $moduleUsers ) {
 		$this->module( $TinderboxDS );
+		$this->moduleUsers = $moduleUsers;
 	}
 
 	function display_describe_port( $port_id ) {
@@ -75,6 +77,7 @@ class modulePorts extends module {
 			}
 		}
 
+		$this->template_assign( 'is_logged_in',      $this->moduleUsers->is_logged_in() );
 		$this->template_assign( 'port_comment',      $ports[0]->getComment() );
 		$this->template_assign( 'port_dir',          $ports[0]->getDirectory() );
 		$this->template_assign( 'port_maintainer',   $ports[0]->getMaintainer() );
@@ -116,6 +119,11 @@ class modulePorts extends module {
 				$build_name = $build->getName();
 			}
 
+			if ( property_exists( $port, 'build_id' ) ) {
+			    $build_id = $port->getBuildId();
+			} else {
+			    $build_id = NULL;
+			}
 			$port_id = $port->getId();
 			$port_last_built_version = $port->getLastBuiltVersion();
 			$port_logfilename = $port->getLogfileName();
@@ -167,6 +175,7 @@ class modulePorts extends module {
 			}
 
 			$data[] = array(	'build_name'                 => $build_name,
+						'build_id'                   => $build_id,
 						'port_directory'             => $port->getDirectory(),
 						'port_maintainer'            => $port->getMaintainer().' ',
 						'port_id'                    => $port_id,

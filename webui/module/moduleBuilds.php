@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleBuilds.php,v 1.9.2.3 2010/10/20 20:21:38 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleBuilds.php,v 1.9.2.4 2011/08/11 13:26:30 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -66,6 +66,7 @@ class moduleBuilds extends module {
 			$status      = $build->getBuildStatus();
 			$description = $build->getDescription();
 			$name        = $build->getName();
+			$id          = $build->getId();
 
 			$stats       = $this->TinderboxDS->getBuildStatsWithStatus( $build->getId() );
 
