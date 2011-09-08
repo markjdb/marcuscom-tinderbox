@@ -89,24 +89,24 @@ include 'header.inc.tpl';
 <table>
 	<tr>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "port_directory") ?>">Port Directory</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "port_directory") ?>">Port Directory</a>
 		</th>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "port_maintainer") ?>">Maintainer</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "port_maintainer") ?>">Maintainer</a>
 		</th>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "last_built_version") ?>">Version</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "last_built_version") ?>">Version</a>
 		</th>
 		<th style="width: 20px">&nbsp;</th>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "last_fail_reason") ?>">Reason</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "last_fail_reason") ?>">Reason</a>
 		</th>
 		<th>&nbsp;</th>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "last_built") ?>">Last Build Attempt</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "last_built") ?>">Last Build Attempt</a>
 		</th>
 		<th>
-			<a href="<?php echo  build_query_string($_SERVER['PHP_SELF'], $querystring, "sort", "last_successful_built") ?>">Last Successful Build</a>
+			<a href="<?php echo  build_query_string(htmlentities($_SERVER['PHP_SELF']), $querystring, "sort", "last_successful_built") ?>">Last Successful Build</a>
 		</th>
 	</tr>
 	<?php foreach($data as $row) {?>
