@@ -1,11 +1,11 @@
 #!/bin/sh
 #
-# $MCom: portstools/tinderbox/lib/portbuild,v 1.123.2.8 2011/01/03 06:49:36 marcus Exp $
+# $MCom: portstools/tinderbox/lib/portbuild,v 1.123.2.9 2011/10/01 04:36:44 marcus Exp $
 
 . ${pb}/scripts/lib/tinderlib.sh
 
 usage () {
-    echo "usage: $0 <build name> <jail name> <portstree name> [-noclean] [-plistcheck] [-nullfs] [-fetch-original] [-nolog] ED PD FD BD RD pkgname dirname"
+    echo "usage: $0 <build name> <jail name> <portstree name> [-noclean] [-plistcheck] [-nullfs] [-fetch-original] [-nolog] ED PD FD BD RD TD pkgname dirname"
     exit 1
 }
 
@@ -141,8 +141,9 @@ PD=$2
 FD=$3
 BD=$4
 RD=$5
-pkgname=$(basename $6 ${PKGSUFFIX})
-dirname=$7
+TD=$6
+pkgname=$(basename $7 ${PKGSUFFIX})
+dirname=$8
 
 echo ${pkgname}
 echo ${dirname}
@@ -305,7 +306,7 @@ if [ ${ARCH} = "i386" ]; then
     chroot ${chroot} /sbin/ldconfig -aout /usr/lib/aout /usr/lib/compat/aout
 fi
 
-set x $ED $FD $PD $BD $RD
+set x $ED $FD $PD $BD $RD $TD
 shift 1
 
 cd ${chroot}/tmp/depends
@@ -336,7 +337,7 @@ if [ $? -ne 0 ]; then
     mark_failed ${tc} ${build} ${pkgname} ${portdir}
     exit 1
 fi
-chroot ${chroot} /buildscript ${dirname} 1 "$ED" "$PD" "$FD" "$BD" "$RD" "${plistcheck}" 2>&1 | tee -a ${chroot}/tmp/${pkgname}.log
+chroot ${chroot} /buildscript ${dirname} 1 "$ED" "$PD" "$FD" "$BD" "$RD" "$TD" "${plistcheck}" 2>&1 | tee -a ${chroot}/tmp/${pkgname}.log
 if [ -f ${chroot}/tmp/status ]; then
     error=$(cat ${chroot}/tmp/status)
 else
@@ -357,7 +358,7 @@ if [ "${error}" = "0" ]; then
 	    -cf - . | tar --unlink -C ${chroot}${DISTCACHE} -xvf -
     fi
 
-    chroot ${chroot} /usr/bin/nice -n $nice /buildscript ${dirname} 2  "$ED" "$PD" "$FD" "$BD" "$RD" "${plistcheck}" > ${chroot}/tmp/${pkgname}.log2 2>&1
+    chroot ${chroot} /usr/bin/nice -n $nice /buildscript ${dirname} 2  "$ED" "$PD" "$FD" "$BD" "$RD" "$TD" "${plistcheck}" > ${chroot}/tmp/${pkgname}.log2 2>&1
 
     grep pnohang ${chroot}/tmp/${pkgname}.log2
     cat ${chroot}/tmp/${pkgname}.log2 >> ${chroot}/tmp/${pkgname}.log
