@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $MCom: portstools/tinderbox/lib/portbuild,v 1.123.2.10 2011/10/01 04:37:43 marcus Exp $
+# $MCom: portstools/tinderbox/lib/portbuild,v 1.123.2.11 2011/10/01 04:39:20 marcus Exp $
 
 . ${pb}/scripts/lib/tinderlib.sh
 
@@ -329,8 +329,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-execute_hook "prePortChecksum" "PACKAGE_NAME=${pkgname} BUILD=${build} JAIL=${jail}
-PORTSTREE=${portstree} CHROOT=${chroot} PORTDIR=${portdir} PB=${pb} TOTAL_SIZE=${total_size}"
+execute_hook "prePortChecksum" "PACKAGE_NAME=${pkgname} BUILD=${build} JAIL=${jail} PORTSTREE=${portstree} CHROOT=${chroot} PORTDIR=${portdir} PB=${pb} TOTAL_SIZE=${total_size}"
 if [ $? -ne 0 ]; then
     echo "portbuild: Terminating build for ${pkgname} since prePortChecksum hook failed"
     ${tc} updatePortStatus -d ${portdir} -b ${build} -L -s FAIL -v ${pkgname} -r "hook"
