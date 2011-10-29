@@ -69,7 +69,7 @@
 
    List of Tables
 
-   5-1. configlog Options
+   5-1. configLog Options
 
    5-2. tinderbuild Commands
 
@@ -414,7 +414,7 @@
    configLog with the appropriate options. Those options are in Table
    5-1.
 
-   Table 5-1. configlog Options
+   Table 5-1. configLog Options
 
    -d <directory> Set the logging directory                           
    -D             Unset the logging directory                         
@@ -422,6 +422,9 @@
    -c             files to the log directory instead of using         
                   symlinks                                            
    -C             Set the LOG_DOCOPY option to 0                      
+   -z             Set the LOG_COMPRESSLOGS option to 1 which will     
+                  compress the log files to save space                
+   -Z             Set the LOG_COMPRESSLOGS option to 0                
 
    The tinderbuild function also accepts some additional commands,
    described in Table 5-2.
