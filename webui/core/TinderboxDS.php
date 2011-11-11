@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.19 2011/10/16 00:40:20 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.20 2011/11/11 19:31:24 beat Exp $
 #
 
     require_once 'MDB2.php';
@@ -736,7 +736,11 @@
                 return null;
             }
 
-            return $results[0];
+            if ( isset( $results[0] ) ) {
+                return $results[0];
+            } else {
+                return null;
+            }
         }
 
         function getUserByName($name) {
@@ -746,7 +750,11 @@
                 return null;
             }
 
-            return $results[0];
+            if ( isset( $results[0] ) ) {
+                return $results[0];
+            } else {
+                return null;
+            }
         }
 
         function getConfig($params = array()) {
