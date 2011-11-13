@@ -601,9 +601,9 @@
    (/usr/bin/csup). Every time a new Jail or PortsTree is created,
    they will inherit the default update type. This update type is
    stored in ${pb}/scripts/etc/env/GLOBAL as defaultUpdateType. The
-   allowed values are CVSUP, CSUP, LFTP, SVN, USER, and NONE.
-   For CVSUP and CSUP there is also a defaultUpdateHost. This can
-   also be changed in ${pb}/scripts/etc/env/GLOBAL.
+   allowed values are CVSUP, CSUP, LFTP, USER, and NONE. For CVSUP
+   and CSUP there is also a defaultUpdateHost. This can also be
+   changed in ${pb}/scripts/etc/env/GLOBAL.
 
    A Jail or PortsTree's update type can also be set when creating
    the Jail or PortsTree. To do this, specify the -u option to the
@@ -919,7 +919,7 @@
 
  # mkdir ${pb}
  # cd ${pb} && \
-         fetch -o - path_to_tinderbox-3.3.tar.gz | \
+         fetch -o - path_to_tinderbox-3.4.tar.gz | \
          tar xvf -
 
     4. Now we need to leave the jail, and on the host system chroot
