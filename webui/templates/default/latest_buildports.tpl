@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- $MCom: portstools/tinderbox/webui/templates/default/latest_buildports.tpl,v 1.10.2.9 2011/10/26 00:06:15 beat Exp $ //-->
+<!-- $MCom: portstools/tinderbox/webui/templates/default/latest_buildports.tpl,v 1.10.2.10 2011/12/26 17:16:04 beat Exp $ //-->
 <script language="JavaScript">
 	function reloadpage() {
 	    document.location.reload();
@@ -87,6 +87,9 @@
 <p>
 <p>Local time: <?php echo $local_time?></p>
 <p style="color:#FF0000;font-size:10px;"><?php echo $ui_elapsed_time?></p>
+<?php if(isset($load_average)){?>
+	<p style="color:#FF0000;font-size:10px;">LA: <?php echo $load_average?></p>
+<?php }?>
 <?php echo $display_login?>
 <p><a href="index.php">Back to homepage</a></p>
 </body>

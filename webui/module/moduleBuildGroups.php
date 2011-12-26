@@ -25,7 +25,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/moduleBuildGroups.php,v 1.2.2.2 2011/08/11 12:35:12 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/moduleBuildGroups.php,v 1.2.2.3 2011/12/26 17:16:04 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -135,6 +135,9 @@ class moduleBuildGroups extends module {
 			$elapsed_time = get_ui_elapsed_time( $starttimer );
 
 		$this->template_assign( 'ui_elapsed_time', $elapsed_time );
+
+		$load_average = get_load_average();
+		$this->template_assign( 'load_average', $load_average );
 
 		$mem_info = '';
 		if ( isset ( $with_meminfo ) && $with_meminfo == 1 ) {

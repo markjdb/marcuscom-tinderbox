@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/functions.php,v 1.6.2.2 2010/04/10 10:02:29 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/functions.php,v 1.6.2.3 2011/12/26 17:16:04 beat Exp $
 #
 
 function prettyDatetime($input) {
@@ -77,6 +77,11 @@ function get_ui_elapsed_time($starttimer) {
 	$endtimer = explode( ' ', microtime() );
         $timer = ( $endtimer[1]-$starttimer[1] )+( $endtimer[0]-$starttimer[0] );
         return sprintf( 'Elapsed: %03.6f sec.', $timer );
+}
+
+function get_load_average() {
+	$load_average = preg_replace(array('/{/','/}/'),'',`/sbin/sysctl -n vm.loadavg`);
+	return $load_average;
 }
 
 ?>
