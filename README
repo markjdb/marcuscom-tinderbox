@@ -63,6 +63,8 @@
 
                 8.11 Running Tinderbox in a Jail
 
+                8.12 Mounting ${pb} over NFS
+
    A. Contributed Articles / Further Reading
 
                 A.1 Using FreeBSD's Tinderbox as a package builder
@@ -243,12 +245,12 @@
        a Jail for FreeBSD 8.2-RELEASE:
 
  # cd ${pb}/scripts && ./tc createJail -j 8.2 -d "FreeBSD 8.2-RELEASE" \
-         -t RELENG_8_2_0_RELEASE -u CVSUP
+   -t RELENG_8_2_0_RELEASE -u CVSUP
 
        or
 
  # cd ${pb}/scripts && ./tc createJail -j 8.2 -d "FreeBSD 8.2-RELEASE" \
-         -t 8.2-RELEASE -u LFTP -H ftp.freebsd.org
+   -t 8.2-RELEASE -u LFTP -H ftp.freebsd.org
 
        The first method will download source via cvsup and use make
        world to compile a complete FreeBSD installation.
@@ -281,8 +283,8 @@
        FreeBSD ports tree:
 
  # cd ${pb}/scripts && ./tc createPortsTree -p FreeBSD \
-         -d "FreeBSD ports tree" \
-         -w http://www.freebsd.org/cgi/cvsweb.cgi/ports/
+   -d "FreeBSD ports tree" \
+   -w http://www.freebsd.org/cgi/cvsweb.cgi/ports/
 
    14. Create the required Builds using the tc command. A Build is a
        combination of a Jail and a PortsTree. The build is the object
@@ -290,7 +292,7 @@
        a 8.2 Jail with the FreeBSD ports tree:
 
  # cd ${pb}/scripts && ./tc createBuild -b 8.2-FreeBSD -j 8.2 \
-         -p FreeBSD -d "8.2-RELEASE with FreeBSD ports tree"
+   -p FreeBSD -d "8.2-RELEASE with FreeBSD ports tree"
 
        Note: the recommended way to name Builds is "Jail-PortsTree".
        All builds must also begin with their FreeBSD major version
@@ -303,14 +305,14 @@
      for all Jail updates, use the following command:
 
  # cd ${pb}/scripts && ./tc createJail -j 8-STABLE \
-         -d "FreeBSD 8-STABLE" -t RELENG_8 -u CVSUP -C \
-         -H cvsup2.freebsd.org
+   -d "FreeBSD 8-STABLE" -t RELENG_8 -u CVSUP -C \
+   -H cvsup2.freebsd.org
 
      Tip: It is possible to suppress spurious setuid warnings from
      periodic if ${pb} is on a dedicated partition. Simply add the
      nosuid flag to the partition; for UFS in /etc/fstab:
 
- /dev/ad5s1f     /usr/local/tinderbox    ufs     rw,nosuid       1       1
+ /dev/ad5s1f  /usr/local/tinderbox  ufs  rw,nosuid  1  1
 
      and for ZFS:
 
@@ -389,12 +391,12 @@
        * Bourne shell equivalents:
 
  # cd ${pb}/scripts && ./tc tinderbuild -b 8.2-FreeBSD \
-         x11/gnome2 > ${pb}/builds/8.2-FreeBSD/build.log 2>&1 &
+   x11/gnome2 > ${pb}/builds/8.2-FreeBSD/build.log 2>&1 &
 
        * C shell equivalents:
 
  # cd ${pb}/scripts && ./tc tinderbuild -b 8.2-FreeBSD \
-         x11/gnome2 >& ${pb}/builds/8.2-FreeBSD/build.log &
+   x11/gnome2 >& ${pb}/builds/8.2-FreeBSD/build.log &
 
      More advanced logging options are also available. All log files
      including tinderbuild output, make logs, and individual port
@@ -511,7 +513,7 @@
 
  # cd ${pb}/scripts && ./tc rmBuild -b {BUILD}
  # for dir in "" builds errors logs options packages ; \
-         do rm -r ${pb}/$dir/{BUILD} ; done
+   do rm -r ${pb}/$dir/{BUILD} ; done
 
    After a Build has been removed, you may also wish to remove the
    PortsTree and Jail:
@@ -887,7 +889,7 @@
    Now use:
 
  # cd ${pb}/scripts && ./tc addBuildPortsQueueEntry -b {BUILD} \
-         -d {PORT DIRECTORY}
+   -d {PORT DIRECTORY}
 
    To add a port to the queue for tinderd to automatically pick up,
    run a tinderbuild on it, and delete the entry after tinderbuild
@@ -919,8 +921,8 @@
 
  # mkdir ${pb}
  # cd ${pb} && \
-         fetch -o - path_to_tinderbox-3.4.tar.gz | \
-         tar xvf -
+   fetch -o - path_to_tinderbox-3.4.tar.gz | \
+   tar xvf -
 
     4. Now we need to leave the jail, and on the host system chroot
        into it:
@@ -945,6 +947,21 @@
 
    All administration and use of the Tinderbox must now be done from
    the host system, by using chroot into ${jail_dir}.
+
+     --------------------------------------------------------------
+
+8.12 Mounting ${pb} over NFS
+
+   Occasionally, one may wish to run Tinderbox on a computer with
+   limited storage.
+
+   The only issue is that make world relies on chflags(1) for various
+   operations while building Jails.
+
+   This can be resolved by adding NO_FSCHG into the the build
+   environment;
+
+ # echo "export NO_FSCHG=yes" >> ${pb}/scripts/etc/env/GLOBAL
 
      --------------------------------------------------------------
 
