@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.50 2012/02/25 19:40:12 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.51 2012/03/05 01:09:17 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -2328,9 +2328,9 @@ tbcleanup () {
 		    oldcwd=${PWD}
 		    path=$(tinderLoc portstree ${portstree})
 		    cd "${path}/ports/${port}"
-		    distinfo=$(env PORTSDIR="${path}/ports" make -V MD5_FILE)
+		    distinfo=$(env PORTSDIR="${path}/ports" make -V DISTINFO_FILE)
 		    if [ -f "${distinfo}" ]; then
-			for df in $(grep '^MD5' ${distinfo} | awk -F '[\(\)]' '{print $2}'); do
+			for df in $(grep '^SHA256' ${distinfo} | awk -F '[\(\)]' '{print $2}'); do
 			    if ! grep -q "^${df}\$" ${disttmp}; then
 				echo ${df} >> ${disttmp}
 			    fi
