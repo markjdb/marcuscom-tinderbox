@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.22 2011/11/14 06:55:50 beat Exp $
+# $MCom: portstools/tinderbox/webui/core/TinderboxDS.php,v 1.36.2.23 2012/04/03 06:18:42 beat Exp $
 #
 
     require_once 'MDB2.php';
@@ -965,7 +965,7 @@
                 return $this->packageSuffixCache[$jail_id];
             } else {
                 $jail = $this->getJailById($jail_id);
-                if (substr($jail->getName(), 0, 1) <= "4") {
+                if (substr($jail->getName(), 0, 1) == "4") {
                         $this->packageSuffixCache[$jail_id] = ".tgz";
                         return ".tgz";
                 } else {
