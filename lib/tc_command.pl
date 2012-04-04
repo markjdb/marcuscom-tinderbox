@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.23 2011/11/01 14:08:58 beat Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.24 2012/04/04 10:38:41 beat Exp $
 #
 
 my $pb;
@@ -240,7 +240,7 @@ my $ds = new Tinderbox::TinderboxDS();
                 func => \&getDependenciesForPort,
                 help => "Get stored dependencies for a given port and build",
                 usage =>
-                    "-b <build name> -d <port directory> [-t EXTRACT_DEPENDS|PATCH_DEPENDS|FETCH_DEPENDS|BUILD_DEPENDS|LIB_DEPENDS|RUN_DEPENDS|TEST_DEPENDS]",
+                    "-b <build name> -d <port directory> [-t PKG_DEPENDS|EXTRACT_DEPENDS|PATCH_DEPENDS|FETCH_DEPENDS|BUILD_DEPENDS|LIB_DEPENDS|RUN_DEPENDS|TEST_DEPENDS]",
                 optstr => 'b:d:t:',
         },
         "listHooks" => {
@@ -1524,6 +1524,7 @@ sub addPortToOneBuild {
                                 LIB_DEPENDS     => 'LibDepends',
                                 RUN_DEPENDS     => 'RunDepends',
                                 TEST_DEPENDS    => 'TestDepends',
+                                PKG_DEPENDS     => 'PkgDepends',
                         );
 
                         $ds->clearDependenciesForPort($pCls, $build, undef);
@@ -1720,6 +1721,7 @@ sub getDependenciesForPort {
                 LIB_DEPENDS     => 4,
                 RUN_DEPENDS     => 5,
                 TEST_DEPEND     => 6,
+                PKG_DEPENDS     => 7,
         );
 
         if (!$opts->{'b'} || !$opts->{'d'}) {

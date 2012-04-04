@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.9 2011/12/26 17:16:04 beat Exp $
+# $MCom: portstools/tinderbox/webui/module/modulePorts.php,v 1.12.2.10 2012/04/04 10:38:42 beat Exp $
 #
 
 require_once 'module/module.php';
@@ -101,6 +101,7 @@ class modulePorts extends module {
 		global $loguri;
 		global $logdir;
 		global $errorloguri;
+		global $pkgdir;
 		global $pkguri;
 		global $wrkuri;
 		global $wrkdir;
@@ -155,7 +156,11 @@ class modulePorts extends module {
 			$port_erroruri = $wrkuri . '/' . $build_name . '/' . $port_last_built_version . $package_suffix;
 			$port_logfile_path = $logdir . '/' . $build_name . '/' . $port_logfilename;
 			$port_link_logfile = $loguri . '/' . $build_name . '/' . $port_logfilename;
-			$port_link_package = $pkguri . '/' . $build_name . '/All/' . $port_last_built_version . $package_suffix;
+			if (file_exists($pkgdir . '/' . $build_name . '/All/' . $port_last_built_version . '.txz')) {
+				$port_link_package = $pkguri . '/' . $build_name . '/All/' . $port_last_built_version . '.txz';
+			} else {
+				$port_link_package = $pkguri . '/' . $build_name . '/All/' . $port_last_built_version . $package_suffix;
+			}
 			$port_last_run_duration = $port->getLastRunDuration();
 			$port_last_fail_reason = $port->getLastFailReason();
 			$port_link_wrksrc = false;
