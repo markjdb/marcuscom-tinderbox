@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.9 2012/04/04 10:38:41 beat Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.10 2012/05/21 01:19:28 marcus Exp $
 #
 
 tinderLocJail () {
@@ -225,6 +225,7 @@ cleanupMounts () {
 requestMount () {
     # set up defaults
     _type=""
+    _options=""
     _srcloc=""
     _dstloc=""
     _nullfs=0
