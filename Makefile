@@ -1,4 +1,4 @@
-# $MCom: portstools/tinderbox/Makefile,v 1.58.2.38 2012/04/04 10:38:40 beat Exp $
+# $MCom: portstools/tinderbox/Makefile,v 1.58.2.39 2012/05/28 23:07:32 marcus Exp $
 
 VERSION=	3.4.1
 
@@ -36,8 +36,8 @@ MIGDATA=	build_ports.map build_ports_queue.map builds.map config.map \
 		mig_pgsql_tinderbox-3.2.6_to_3.3.sql \
 		mig_mysql_tinderbox-3.3_to_3.3.1.sql \
 		mig_pgsql_tinderbox-3.3_to_3.3.1.sql \
-		mig_mysql_tinderbox-3.3.1_to_3.3.2.sql \
-		mig_pgsql_tinderbox-3.3.1_to_3.3.2.sql
+		mig_mysql_tinderbox-3.3.1_to_3.4.sql \
+		mig_pgsql_tinderbox-3.3.1_to_3.4.sql
 MAN1DATA=	tc-configCcache.1 tc-configDistfile.1 tc-configGet.1 \
 		tc-configJail.1 tc-configTinderd.1 tc-init.1
 WEBUIDATA=	favicon.ico inc_ds.php.dist inc_tinderbox.php.dist index.php
