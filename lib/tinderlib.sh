@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.10 2012/05/21 01:19:28 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.55.2.11 2012/06/26 20:08:00 crees Exp $
 #
 
 tinderLocJail () {
@@ -633,7 +633,7 @@ checkPreReqs () {
 
     for r in ${reqs} ; do
         if [ "${use_pkgng}" = "yes" ]; then 
-            if [ -z $(pkg info -q ${r}) ]; then
+            if [ -z $(pkg info -qgO ${r}) ]; then
                 missing="${missing} ${r}"
                 error=1
             fi
