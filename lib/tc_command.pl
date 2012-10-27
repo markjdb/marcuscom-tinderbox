@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.24 2012/04/04 10:38:41 beat Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.150.2.25 2012/10/27 18:05:03 marcus Exp $
 #
 
 my $pb;
@@ -1511,6 +1511,13 @@ sub addPortToOneBuild {
                         if (!$seen{$port}) {
                                 my $pCls =
                                     addPorts($port, $build, $makecache, \@deps);
+                                if (!defined($pCls)) {
+                                        cleanup(
+                                                $ds, 1,
+                                                "Dependency $port not
+						found in tree.\n"
+                                        );
+                                }
                                 $seen{$port} = $pCls;
                         }
                 }
@@ -1601,7 +1608,7 @@ sub addBuildPortsQueueEntry {
                     $ds->addBuildPortsQueueEntry($build, $portdir, $priority,
                         $user_id);
                 if (!$rc) {
-                        warn(         "Failed to add port " 
+                        warn(         "Failed to add port "
                                     . $portdir
                                     . " to the datastore: "
                                     . $ds->getError()
@@ -1819,7 +1826,7 @@ sub listBuildPortsQueue {
                                 if (defined($build_filter)) {
                                         next
                                             if $build->getId() !=
-                                                    $build_filter->getId();
+                                            $build_filter->getId();
                                 }
 
                                 if ($raw eq 1) {
@@ -3361,7 +3368,7 @@ sub addPorts {
         my $deps  = shift;
 
         my $portdir = $ENV{'PORTSDIR'} . "/" . $port;
-        return if (!-d $portdir);
+        return undef if (!-d $portdir);
 
         # Canonicalize the port directory.
         $port = abs_path($portdir);
