@@ -24,11 +24,14 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.54 2012/05/28 23:11:39 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.55 2012/10/27 17:49:12 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
 export _defaultUpdateType="CSUP"
+
+use_pkgng=no
+use_pkgng=$(make -VWITH_PKGNG)
 
 #---------------------------------------------------------------------------
 # Generic routines
@@ -296,8 +299,8 @@ updateTree () {
 #---------------------------------------------------------------------------
 
 Setup () {
-    MAN_PREREQS="lang/perl5.[81]*"
-    OPT_PREREQS="lang/php[45] databases/pear-MDB2 www/php[45]-session archivers/p5-Compress-Bzip2"
+    MAN_PREREQS="lang/perl5.[81]*@perl-5.[81]*"
+    OPT_PREREQS="lang/php[45]@php[45]-* databases/pear-MDB2@pear-MDB2-* www/php[45]-session@php[45]-session* archivers/p5-Compress-Bzip2@p5-Compress-Bzip2-*"
     PREF_FILES="tinderbox.ph"
     README="$(tinderLoc scripts README)"
     TINDERBOX_URL="http://tinderbox.marcuscom.com/"
@@ -2372,6 +2375,7 @@ tbcleanup () {
 	jail=$(${tc} getJailForBuild -b ${build} 2>/dev/null)
 	portstree=$(${tc} getPortsTreeForBuild -b ${build} 2>/dev/null)
 
+	cleanenv
 	buildenv ${jail} ${portstree} ""
 
 	if [ -n "${WITH_PKGNG}" ]; then

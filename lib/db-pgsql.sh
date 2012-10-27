@@ -22,10 +22,10 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/db-pgsql.sh,v 1.2.2.5 2009/02/07 20:15:49 marcus Exp $
+# $MCom: portstools/tinderbox/lib/db-pgsql.sh,v 1.2.2.6 2012/10/27 17:49:12 marcus Exp $
 #
-export DB_MAN_PREREQS="databases/p5-DBD-Pg databases/postgresql*-client"
-export DB_OPT_PREREQS="databases/php5-pgsql"
+export DB_MAN_PREREQS="databases/p5-DBD-Pg@p5-DBD-Pg-* databases/postgresql*-client@postgresql*-client-*"
+export DB_OPT_PREREQS="databases/php5-pgsql@php5-pgsql-*"
 
 if [ -n "${db_admin_pass}" ]; then
     export PGPASSWORD=${db_admin_pass}
