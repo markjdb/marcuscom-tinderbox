@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.55 2012/10/27 17:49:12 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.101.2.56 2012/10/27 18:32:21 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -398,9 +398,9 @@ Setup () {
 #---------------------------------------------------------------------------
 
 Upgrade () {
-    VERSION="3.4.1"
+    VERSION="3.4.2"
     TINDERBOX_URL="http://tinderbox.marcuscom.com/"
-    DB_MIGRATION_PATH="3.0 3.1 3.2 3.2.1 3.2.2 3.2.3 3.2.4 3.2.5 3.2.6 3.3 3.3.1 3.4 ${VERSION}"
+    DB_MIGRATION_PATH="3.0 3.1 3.2 3.2.1 3.2.2 3.2.3 3.2.4 3.2.5 3.2.6 3.3 3.3.1 3.4 3.4.1 ${VERSION}"
 
     bkup_file=""
 
