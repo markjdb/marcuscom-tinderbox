@@ -24,13 +24,12 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.157 2012/10/27 17:38:49 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.158 2012/11/12 23:32:34 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
 export _defaultUpdateType="CSUP"
 
-use_pkgng=no
 use_pkgng=$(make -VWITH_PKGNG)
 
 #---------------------------------------------------------------------------
@@ -1969,7 +1968,7 @@ tinderbuild () {
 #---------------------------------------------------------------------------
 
 init () {
-    for dir in builds errors logs packages portstrees wrkdirs
+    for dir in builds errors jails logs packages portstrees wrkdirs
     do
 	mkdir -p ${pb}/${dir}
     done

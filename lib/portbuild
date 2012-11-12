@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $MCom: portstools/tinderbox/lib/portbuild,v 1.145 2012/11/06 21:48:01 beat Exp $
+# $MCom: portstools/tinderbox/lib/portbuild,v 1.146 2012/11/12 23:32:34 marcus Exp $
 
 . ${pb}/scripts/lib/tinderlib.sh
 
@@ -155,8 +155,6 @@ TD=$6
 PKGD=$7
 pkgname=$(basename $8 ${PKGSUFFIX})
 dirname=$9
-
-use_pkgng=no
 
 use_pkgng=$(make -VWITH_PKGNG)
 

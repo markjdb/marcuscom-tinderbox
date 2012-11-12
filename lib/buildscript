@@ -38,7 +38,7 @@ add_pkg() {
       base=$(basename $i .tgz)
       base=$(basename $base .tbz)
       base=$(basename $base .txz)
-      if [ "${use_pkgng}" = "yes" ]; then
+      if [ -n "${use_pkgng}" ]; then
         if pkg info -q -e ${base}; then
           echo "skipping $base, already added"
         else
@@ -88,7 +88,7 @@ del_pkg() {
         base=$(basename $i .tgz)
         base=$(basename $base .tbz)
         base=$(basename $base .txz)
-        if [ "${use_pkgng}" = "yes" ]; then
+        if [ -n "${use_pkgng}" ]; then
          if [ "$(pkg query %?r $base)" = "1" ]; then
             recursion=1
             nextpkg="${base} ${nextpkg}"
@@ -108,7 +108,7 @@ del_pkg() {
       if [ "$dellist" != "" -a "$dellist" = "$delpkg" ]; then
         echo "deleted list =\""$dellist"\", packages to delete ="\"$delpkg\" #"
         echo "The following packages were left behind (perhaps your dependency list is incomplete):"
-        if [ "${use_pkgng}" = "yes" ]; then
+        if [ -n "${use_pkgng}" ]; then
           pkg info -qa
         else
           ls /var/db/pkg
@@ -118,7 +118,7 @@ del_pkg() {
       else
         for j in ${delpkg}; do
           echo "Deleting ${j}"
-          if [ "${use_pkgng}" = "yes" ]; then
+          if [ -n "${use_pkgng}" ]; then
             if ! pkg delete -y -f ${j}; then
               echo "--> error in pkg delete, exiting"
             fi
@@ -147,8 +147,6 @@ RD=$7
 TD=$8
 PKGD=$9
 PLISTCHECK=${10}
-
-use_pkgng=no
 
 use_pkgng=$(make -VWITH_PKGNG)
 
@@ -318,13 +316,13 @@ EOF
   echo "================================================================"
   echo "====================<phase 5: make test>===================="
 
-  if [ "${use_pkgng}" = "yes" ]; then
+  if [ -n "${use_pkgng}" ]; then
 	  pkg info -qa | sort > /tmp/pkgs_pre_test
   else
 	  pkg_info | awk '{print $1}' | sort > /tmp/pkgs_pre_test
   fi
   add_pkg ${TD}
-  if [ "${use_pkgng}" = "yes" ]; then
+  if [ -n "${use_pkgng}" ]; then
 	  pkg info -qa | sort > /tmp/pkgs_post_test
   else
 	  pkg_info | awk '{print $1}' | sort > /tmp/pkgs_post_test      
@@ -440,7 +438,7 @@ EOF
   BRD=$(echo $BD $RD | tr ' ' '\n' | sort -u | tr '\n' ' ')
   del_pkg ${BRD}
 # XXX: Check for leftover packages
-  if [ "${use_pkgng}" != "yes" ]; then
+  if [ -z "${use_pkgng}" ]; then
     cd /var/db/pkg
     if [ $(echo $(echo * | wc -c)) != 2 ]; then
       echo "leftover packages:" *
