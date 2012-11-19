@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.76 2012/11/12 23:32:34 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.77 2012/11/19 20:53:55 crees Exp $
 #
 
 use_pkgng=$(make -VWITH_PKGNG)
@@ -191,7 +191,9 @@ cleanupMounts () {
 	    echo "cleanupMounts: ${_type}: missing jail"
 	    return
 	fi
-	_dstloc=${_dstloc:-$(tinderLoc jail ${_jail})/src}
+	if [ -n "$(${tc} getSrcMount -j ${_jail})" ] ; then
+		_dstloc=${_dstloc:-$(tinderLoc jail ${_jail})/src}
+	fi
 	;;
 
     portstree)
@@ -199,7 +201,9 @@ cleanupMounts () {
 	    echo "cleanupMounts: ${_type}: missing portstree"
 	    return 1
 	fi
-	_dstloc=${_dstloc:-$(tinderLoc portstree ${_portstree})/ports}
+	if [ -n "$(${tc} getPortsMount -p ${_portstree})" ] ; then
+		_dstloc=${_dstloc:-$(tinderLoc portstree ${_portstree})/ports}
+	fi
 	;;
 
     *)
