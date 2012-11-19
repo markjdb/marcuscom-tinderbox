@@ -18,7 +18,7 @@
    excellent tool for testing new ports and port upgrades, especially
    for testing dependencies and packing lists. It's also useful for
    testing ports on various releases of FreeBSD, since you can run
-   FreeBSD 7.X/8.X world as a jail on a FreeBSD 9.X host.
+   FreeBSD 8.X/9.X world as a jail on a FreeBSD 10.X host.
 
      --------------------------------------------------------------
 
@@ -63,13 +63,17 @@
 
                 8.11 Running Tinderbox in a Jail
 
+                8.12 Mounting ${pb} over NFS
+
+                8.13 Cross-compiling ports
+
    A. Contributed Articles / Further Reading
 
                 A.1 Using FreeBSD's Tinderbox as a package builder
 
    List of Tables
 
-   5-1. configlog Options
+   5-1. configLog Options
 
    5-2. tinderbuild Commands
 
@@ -77,7 +81,9 @@
 
    6-2. tbcleanup Options
 
-   8-1. configOptions arguments
+   8-1. configCcache Options
+
+   8-2. configOptions arguments
 
      --------------------------------------------------------------
 
@@ -103,31 +109,27 @@
 
                          Chapter 2 Requirements
 
-   Recent FreeBSD (development happens on 9-CURRENT only, but
-   Tinderbox is known to work on RELENG_7 and RELENG_8 too), Perl 5.8
-   or later (lang/perl5.8), and one of MySQL 4.1 or later
-   (databases/mysql41-server), PostgreSQL 7.4 or later
-   (databases/postgres74-server), or SQLite 3.7 or later
-   (databases/sqlite3).
+   Recent FreeBSD (development happens on 10-CURRENT only, but
+   Tinderbox is known to work on RELENG_8 and RELENG_9 too), Perl 5.8
+   or later (lang/perl5.8), and either MySQL 4.1 or later
+   (databases/mysql41-server) or PostgreSQL 8.2 or later
+   (databases/postgresql82-server).
 
    If MySQL is used, the MySQL Perl module must also be installed
    (databases/p5-DBD-mysql41). If PostgreSQL is used, the Pg Perl
-   module must also be installed (databases/p5-DBD-Pg). Similarly, if
-   SQLite is used, the SQLite Perl module must be installed
-   (databases/p5-DBD-SQLite).
+   module must also be installed (databases/p5-DBD-Pg).
 
-   Please note, however, that it is recommended that either MySQL 5.0
-   or PostgreSQL 8.1 (or later) be used if SQLite is not being used.
-   There are currently no plans to make this a requirement, but it may
-   happen in the future.
+     Note: Please note, however, that is is recommended that for
+     MySQL version 5.0 or later be used. There are currently no plans
+     to make this a requirement, but it may happen in the future.
 
    PHP 4.x is now EOL, so the web front-end (found in the webui/
-   subdirectory) requires PHP 5 (lang/php5), PHP PDO
-   (databases/php5-pdo), PDO_MYSQL (databases/php5-pdo_mysql) or
-   PDO_PGSQL (databases/php5-pdo_pgsql), PHP Session (www/php5-session),
-   and one of PHP MySQL (databases/php5-mysql) or PHP Pgsql
-   (databases/php5-pgsql) depending on your choice of backend database
-   above.
+   subdirectory) requires PHP 5 (lang/php5), PEAR::MDB2_Driver_mysql
+   (databases/pear-MDB2_Driver_mysql) or PEAR::MDB2_Driver_pgsql
+   (databases/pear-MDB2_Driver_pgsql), PHP Session
+   (www/php5-session), and one of the PHP MySQL
+   (databases/php5-mysql) or PHP Pgsql (databases/php5-pgsql)
+   depending on your choice of backend database above.
 
    If you will be sending emails from Tinderbox (e.g. build failure
    or build completion emails) you must install net/p5-Net to get the
@@ -162,8 +164,7 @@
 
        If your Tinderbox host does not have administrative access to
        the database server, you must perform the next few steps by
-       hand. Else, skip to step 7. Since any user may create a SQLite
-       database, users of SQLite can also skip to step 7.
+       hand. Else, skip to step 7.
 
     4. Edit ${pb}/scripts/ds.ph.dist for your setup. Once this file
        has been edited, copy it to ds.ph.
@@ -189,8 +190,6 @@
          Tinderbox database as well as all the tables within that
          database.
 
-         SQLite users need not do anything for this step.
-
     6. Populate the database with the Tinderbox schema:
 
        MySQL:
@@ -212,14 +211,6 @@
          are required for upgrading, a separate upgrade schema file
          will be included, and instructions will be available at
          http://tinderbox.marcuscom.com.
-
-       SQLite:
-
-# cd sql
-# ./genschema sqlite | sqlite3 {DB_NAME}
-
-       Where {DB_NAME} is the name of the desired SQLite database file,
-       along with the desired full or relative path.
 
     7. Edit ${pb}/scripts/tinderbox.ph.dist for your environment (if
        you are using the web front-end, also edit
@@ -255,35 +246,36 @@
 
    12. Create the required Jails using the tc command. A Jail is
        nothing more than a version of FreeBSD. For example, to create
-       a Jail for FreeBSD 8.2-RELEASE:
+       a Jail for FreeBSD 9.0-RELEASE:
 
- # cd ${pb}/scripts && ./tc createJail -j 8.2 -d "FreeBSD 8.2-RELEASE" \
-         -t RELENG_8_2_0_RELEASE -u CVSUP
+ # cd ${pb}/scripts && ./tc createJail -j 9.0 -d "FreeBSD 9.0-RELEASE" \
+   -D base/release/9.0.0 \
+   -u SVN -H svn.FreeBSD.org -P http
 
        or
 
- # cd ${pb}/scripts && ./tc createJail -j 8.2 -d "FreeBSD 8.2-RELEASE" \
-         -t 8.2-RELEASE -u LFTP -H ftp.freebsd.org
+ # cd ${pb}/scripts && ./tc createJail -j 9.0 -d "FreeBSD 9.0-RELEASE" \
+   -t 9.0-RELEASE -u LFTP -H ftp.freebsd.org
 
-       The first method will download source via cvsup and use make
+       The first method will download source via svn and use make
        world to compile a complete FreeBSD installation.
 
        The second method will instead download binary release sets
        (used on CDs) and install them, making the process much
        shorter. As the command suggests, the second method requires
        lftp (ftp/lftp) to be installed. You need to specify what
-       release (not the CVS tag, as opposed to the first method) you
-       want to download with the -t option. Also note that you need
-       to provide an FTP server to download the sets from (with the
-       -H option).
+       release (not the Subversion tag, as opposed to the first
+       method) you want to download with the -t option. Also note
+       that you need to provide an FTP server to download the sets
+       from (with the -H option).
 
          Important: All Jail names MUST begin with their FreeBSD
          major version number. That is, the following is an illegal
-         jail name: "FreeBSD-8.2".
+         jail name: "FreeBSD-9.0".
 
          Tip: It is recommended that the Jail begin with the FreeBSD
-         major.minor version (i.e. "8.2-FreeBSD" instead of just
-         "8-FreeBSD") as this may prove useful when using things such
+         major.minor version (i.e. "9.0-FreeBSD" instead of just
+         "9-FreeBSD") as this may prove useful when using things such
          as Hooks (Section 8.8).
 
    13. Create the required PortsTrees using the tc command. A
@@ -296,36 +288,27 @@
        FreeBSD ports tree:
 
  # cd ${pb}/scripts && ./tc createPortsTree -p FreeBSD \
-         -d "FreeBSD ports tree" \
-         -w http://www.freebsd.org/cgi/cvsweb.cgi/ports/
+   -d "FreeBSD ports tree" \
+   -u SVN -P http -H svn.FreeBSD.org -D ports/head
+   -w http://svnweb.FreeBSD.org/ports/
 
    14. Create the required Builds using the tc command. A Build is a
        combination of a Jail and a PortsTree. The build is the object
        in which packages are created. To create a build that combines
-       a 8.2 Jail with the FreeBSD ports tree:
+       a 9.0 Jail with the FreeBSD ports tree:
 
- # cd ${pb}/scripts && ./tc createBuild -b 8.2-FreeBSD -j 8.2 \
-         -p FreeBSD -d "8.2-RELEASE with FreeBSD ports tree"
+ # cd ${pb}/scripts && ./tc createBuild -b 9.0-FreeBSD -j 9.0 \
+   -p FreeBSD -d "9.0-RELEASE with FreeBSD ports tree"
 
        Note: the recommended way to name Builds is "Jail-PortsTree".
        All builds must also begin with their FreeBSD major version
        number.
 
-     Note: tc uses cvsup12 as its default cvsup mirror. If you would
-     like to use another server or enable cvsup compression use the
-     -H and -C line arguments to the tc script respectively. For
-     example, to use cvsup2.freebsd.org and enable cvsup compression
-     for all Jail updates, use the following command:
-
- # cd ${pb}/scripts && ./tc createJail -j 8-STABLE \
-         -d "FreeBSD 8-STABLE" -t RELENG_8 -u CVSUP -C \
-         -H cvsup2.freebsd.org
-
      Tip: It is possible to suppress spurious setuid warnings from
      periodic if ${pb} is on a dedicated partition. Simply add the
      nosuid flag to the partition; for UFS in /etc/fstab:
 
- /dev/ad5s1f     /usr/local/tinderbox    ufs     rw,nosuid       1       1
+ /dev/ad5s1f  /usr/local/tinderbox  ufs  rw,nosuid  1  1
 
      and for ZFS:
 
@@ -374,9 +357,9 @@
    Where {BUILD} is the name of the Build for which this port should
    be built and {PORT DIRECTORY} is the directory within the
    PortsTree where this port can be found. For example, to build the
-   GNOME 2 Desktop port for the Build "8.2-FreeBSD":
+   GNOME 2 Desktop port for the Build "9.0-FreeBSD":
 
- # cd ${pb}/scripts && ./tc addPort -b 8.2-FreeBSD -d x11/gnome2
+ # cd ${pb}/scripts && ./tc addPort -b 9.0-FreeBSD -d x11/gnome2
 
      Note: A port does not have to be added to the database for
      Tinderbox to build it. If you just want to do a quick ad hoc
@@ -392,9 +375,9 @@
  # cd ${pb}/scripts && ./tc tinderbuild -b {BUILD} {PORT DIRECTORY}
 
    For example, to build the GNOME 2 Desktop for the Build
-   8.2-FreeBSD:
+   9.0-FreeBSD:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 8.2-FreeBSD x11/gnome2
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD x11/gnome2
 
      Tip: The example above will run the build in the foreground with
      all messages and errors echoing to the terminal. To capture all
@@ -403,13 +386,13 @@
 
        * Bourne shell equivalents:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 8.2-FreeBSD \
-         x11/gnome2 > ${pb}/builds/8.2-FreeBSD/build.log 2>&1 &
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD \
+   x11/gnome2 > ${pb}/builds/9.0-FreeBSD/build.log 2>&1 &
 
        * C shell equivalents:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 8.2-FreeBSD \
-         x11/gnome2 >& ${pb}/builds/8.2-FreeBSD/build.log &
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD \
+   x11/gnome2 >& ${pb}/builds/9.0-FreeBSD/build.log &
 
      More advanced logging options are also available. All log files
      including tinderbuild output, make logs, and individual port
@@ -419,7 +402,7 @@
      If set to a directory, a subdirectory will be created in the
      format of {BUILD}-{DATE} where {BUILD} is the Build name, and
      {DATE} is the date in the format YYYYMMDDHHMMSS (e.g.
-     8.2-FreeBSD-20091012112105). Within this subdirectory will be
+     9.0-FreeBSD-20091012112105). Within this subdirectory will be
      the tinderbuild log, and symlinks to the make logs and
      individual port build logs. If you would rather have the log
      files copied to this location (instead of using symlinks), set
@@ -429,7 +412,7 @@
    configLog with the appropriate options. Those options are in Table
    5-1.
 
-   Table 5-1. configlog Options
+   Table 5-1. configLog Options
 
    -d <directory> Set the logging directory                           
    -D             Unset the logging directory                         
@@ -437,6 +420,9 @@
    -c             files to the log directory instead of using         
                   symlinks                                            
    -C             Set the LOG_DOCOPY option to 0                      
+   -z             Set the LOG_COMPRESSLOGS option to 1 which will     
+                  compress the log files to save space                
+   -Z             Set the LOG_COMPRESSLOGS option to 0                
 
    The tinderbuild function also accepts some additional commands,
    described in Table 5-2.
@@ -484,7 +470,7 @@
 
    To update existing Jails:
 
- # cd ${pb}/scripts && ./tc makeJail -j 8.2
+ # cd ${pb}/scripts && ./tc makeJail -j 9.0
 
    The output of the Jail build will go to stdout. The output of
    update (e.g cvsup) will go to ${pb}/jails/{JAIL}/update.log (where
@@ -498,9 +484,9 @@
    If you want to clone various aspects of an existing Build, use the
    tc application with the copyBuild command. For example:
 
- # cd ${pb}/scripts && ./tc copyBuild -s 8.2-FreeBSD -d 9-FreeBSD
+ # cd ${pb}/scripts && ./tc copyBuild -s 9.0-FreeBSD -d 10-FreeBSD
 
-   The source and destination Builds (i.e. 8.2-FreeBSD and 9-FreeBSD
+   The source and destination Builds (i.e. 9.0-FreeBSD and 10-FreeBSD
    respectively in this example) must already exist. By default,
    copyBuild will copy the environment file, OPTIONS, and ports from
    the source Build to the destination Build. It can also optionally
@@ -523,7 +509,7 @@
 
  # cd ${pb}/scripts && ./tc rmBuild -b {BUILD}
  # for dir in "" builds errors logs options packages ; \
-         do rm -r ${pb}/$dir/{BUILD} ; done
+   do rm -r ${pb}/$dir/{BUILD} ; done
 
    After a Build has been removed, you may also wish to remove the
    PortsTree and Jail:
@@ -572,7 +558,7 @@
    If you encounter problems with Tinderbox, it helps to see what is
    going on inside a Build. Tinderbox operational logs can be found
    under ${pb}/builds/{BUILD} (where {BUILD} is the Build name). This
-   is where tinderbuild output should be redirected (see Chapter 5.
+   is where tinderbuild output should be redirected (see Chapter 5).
    The make.0 and make.1 logs contain the initial buildsetup for each
    port. The reason there are two logs is that tinderbuild runs in
    two phases. The second build phase is identical to the first, and
@@ -613,8 +599,8 @@
    (/usr/bin/csup). Every time a new Jail or PortsTree is created,
    they will inherit the default update type. This update type is
    stored in ${pb}/scripts/etc/env/GLOBAL as defaultUpdateType. The
-   allowed values are CVSUP, CSUP, LFTP, USER, and NONE. For CVSUP
-   and CSUP there is also a defaultUpdateHost. This can also be
+   allowed values are SVN, CVSUP, CSUP, LFTP, USER, and NONE. For
+   CVSUP and CSUP there is also a defaultUpdateHost. This can also be
    changed in ${pb}/scripts/etc/env/GLOBAL.
 
    A Jail or PortsTree's update type can also be set when creating
@@ -628,8 +614,8 @@
    If the value is USER, then an update.sh script must be created
    under the Jail or PortsTree's root directory. This script will be
    called when an update is required. For example, if you have a Jail
-   called "8.2", an executable update.sh script must be placed under
-   ${pb}/jails/8.2. If you have a PortsTree called "FreeBSD", an
+   called "9.0", an executable update.sh script must be placed under
+   ${pb}/jails/9.0. If you have a PortsTree called "FreeBSD", an
    executable update.sh script must be placed under
    ${pb}/portstrees/FreeBSD.
 
@@ -644,12 +630,12 @@
    Examples for NFS:
 
  # ./tc createPortsTree -p FreeBSD -m server:/directory
- # ./tc createJail -j 8-FreeBSD -m server:/directory
+ # ./tc createJail -j 9-FreeBSD -m server:/directory
 
    Examples for nullfs:
 
  # ./tc createPortsTree -p FreeBSD -m /directory
- # ./tc createJail -j 8-FreeBSD -m /directory
+ # ./tc createJail -j 9-FreeBSD -m /directory
 
    Tinderbuild will ensure that these file systems are correctly
    mounted so you do not need to mount them by your own before
@@ -686,8 +672,8 @@
 8.4 Using Ccache
 
    Another excellent way of accelerating builds is to use the
-   compiler cache, "ccache". To use ccache support, you must first
-   create a tar file with ccache and various symlinks within a /opt/
+   compiler cache, ccache. To use ccache support, you must first
+   create a tar file with ccache and various symlinks within a opt/
    directory. Your tarball contents should be:
 
  opt
@@ -697,14 +683,38 @@
  opt/g++ -> ccache
  opt/c++ -> ccache
 
+     Tip: If ccache is installed on the Tinderbox host machine,
+     ccache.tar is available in ${PREFIX}/share/ccache/.
+
    This tarball must be called ccache.tar, and be placed in the Jail
    directory for each Jail that will use ccache (e.g.
-   ${pb}/jails/8.2).
+   ${pb}/jails/9.0).
 
-   Once the tarball is created, run (-e for enabling, -d for
-   disabling, -c specifies directory, -s maximal size):
+     Note: If Tinderbox is configured to run builds for multiple
+     versions of FreeBSD and/or multiple architectures (for example,
+     i386 on amd64), it may be preferable to build the Tinderbox host
+     ccache as a statically-linked binary. Otherwise, it will be
+     necessary to ensure the ccache.tar contents are compiled for
+     each architecture and FreeBSD version.
+
+   Once the tarball is created, run:
 
  # ./tc configCcache -e -c /ccache -s 2G
+
+   Valid arguments for configCcache are:
+
+   Table 8-1. configCcache Options
+
+   -e                     Enable ccache                               
+   -d                     Disable ccache                              
+   -c /path/to/ccache/src The location relative to ${pb} where ccache 
+                          data should be stored                       
+   -s [size]              Maximum ccache cache size                   
+   -j                     Per-jail ccache                             
+   -J                     Per-build ccache                            
+   -l /path/to/logfile    Path relative to ${pb} where ccache should  
+                          log                                         
+   -L                     Disable ccache logging                      
 
    Then run your builds as you normally would. To debug ccache, add
    -l /ccache.log switch to the command.
@@ -722,9 +732,9 @@
    or build.{BUILD} respectively, and placing it in
    ${pb}/scripts/etc/env/.
 
-   For example, if you want a particular Build (e.g. "8.2-Perl56") to
+   For example, if you want a particular Build (e.g. "9.0-Perl56") to
    use Perl 5.6.2 instead of Perl 5.8.x, create a file named
-   build.8.2-Perl56 in ${pb}/scripts/etc/env/ that contains the
+   build.9.0-Perl56 in ${pb}/scripts/etc/env/ that contains the
    following:
 
  PERL_VER=5.6.2
@@ -736,6 +746,10 @@
 
  CFLAGS="-O -g -pipe"
  STRIP=
+
+     Note: Bear in mind that these files are parsed by sh(1), and
+     therefore are not as forgiving as make(1) when it comes to
+     whitespace. Do not insert tab characters after the "=" symbol.
 
      --------------------------------------------------------------
 
@@ -756,23 +770,24 @@
    do this, create a directory under which all build OPTIONS
    sub-directories will go (e.g. ${pb}/options/). For each Build that
    you wish to use to use OPTIONS, create a subdirectory named for
-   that build (e.g. 8-STABLE-FreeBSD/). This directory should look
+   that build (e.g. 9-STABLE-FreeBSD/). This directory should look
    like /var/db/ports/ in that it contains sub-directories for each
    OPTIONS-supporting port.
 
    For example, if you wanted to build net/wireshark with RTP support
-   for the Build 8-STABLE-FreeBSD, you would have the following
+   for the Build 9-STABLE-FreeBSD, you would have the following
    directory structure:
 
- ${pb}/options/8-STABLE-FreeBSD/wireshark/options
+ ${pb}/options/9-STABLE-FreeBSD/wireshark/options
 
    The contents of the wireshark/options file would be:
 
  _OPTIONS_READ=wireshark-0.99.4
- WITH_RTP=true
- WITH_SNMP=true
- WITH_ADNS=true
- WITH_PCRE=true
+ OPTIONS_FILE_SET+=RTP
+ OPTIONS_FILE_SET+=SNMP
+ OPTIONS_FILE_SET+=ADNS
+ OPTIONS_FILE_UNSET+=PCRE
+ _FILE_COMPLETE_OPTIONS_LIST=  RTP SNMP ADNS PCRE
 
    Once this structure is setup, then enable OPTIONS support in
    Tinderbox, and specify the path to the OPTIONS directory
@@ -782,9 +797,9 @@
  # ./tc configOptions -o /options
 
    The configOptions command takes the arguments described in Table
-   8-1.
+   8-2.
 
-   Table 8-1. configOptions arguments
+   Table 8-2. configOptions arguments
 
    -e               enable OPTIONS support                            
    -d               disable OPTIONS support                           
@@ -899,7 +914,7 @@
    Now use:
 
  # cd ${pb}/scripts && ./tc addBuildPortsQueueEntry -b {BUILD} \
-         -d {PORT DIRECTORY}
+   -d {PORT DIRECTORY}
 
    To add a port to the queue for tinderd to automatically pick up,
    run a tinderbuild on it, and delete the entry after tinderbuild
@@ -931,8 +946,8 @@
 
  # mkdir ${pb}
  # cd ${pb} && \
-         fetch -o - path_to_tinderbox-3.3.tar.gz | \
-         tar xvf -
+   fetch -o - path_to_tinderbox-3.4.tar.gz | \
+   tar xvf -
 
     4. Now we need to leave the jail, and on the host system chroot
        into it:
@@ -957,6 +972,45 @@
 
    All administration and use of the Tinderbox must now be done from
    the host system, by using chroot into ${jail_dir}.
+
+     --------------------------------------------------------------
+
+8.12 Mounting ${pb} over NFS
+
+   Occasionally, one may wish to run Tinderbox on a computer with
+   limited storage.
+
+   The only issue is that make world relies on chflags(1) for various
+   operations while building Jails.
+
+   This can be resolved by adding NO_FSCHG into the the build
+   environment;
+
+ # echo "export NO_FSCHG=yes" >> ${pb}/scripts/etc/env/GLOBAL
+
+     --------------------------------------------------------------
+
+8.13 Cross-compiling ports
+
+     Warning: Building ports on different architectures is entirely
+     experimental and unsupported. Please expect this to blow up in
+     your face in weird ways. However, success stories are welcome.
+
+    1. Create an environment file for the target Jail (Section 8.5);
+       for example ${pb}/scripts/etc/env/jail.9-i386:
+
+ ARCH=i386
+ MACHINE_ARCH=i386
+ UNAME_m=i386
+ UNAME_p=i386
+
+    2. Create a Jail (Chapter 3) using the name in step 1:
+
+ # cd ${pb}/scripts && ./tc createJail -j 9-i386 -u CSUP \
+         -t RELENG_9 -d "FreeBSD-9-STABLE i386" -a i386
+
+   The Jail can then be used as though it were any other to create
+   Builds.
 
      --------------------------------------------------------------
 
