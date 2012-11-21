@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <err.h>
 
 int
 main(int argc, char *argv[])
@@ -70,7 +71,7 @@ main(int argc, char *argv[])
 		    child = wait(&status);
 		    /*printf("exited child is %d, status is %d\n", child, status);*/
 
-		    if (pid1 = child) {
+		    if ((pid1 = child) > 0) {
 			/*printf("killing process %d (second child)\n", pid2);*/
 			kill(pid2, SIGTERM);
 		    } else {
