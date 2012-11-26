@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.77 2012/11/19 20:53:55 crees Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.78 2012/11/26 12:18:16 crees Exp $
 #
 
 use_pkgng=$(make -VWITH_PKGNG)
@@ -158,6 +158,7 @@ cleanupMounts () {
     _portstree=""
     _type=""
     _dstloc=""
+    _mtpt=""
 
     # argument processing
     while getopts b:d:j:p:t: arg
@@ -214,13 +215,13 @@ cleanupMounts () {
     esac
 
     if [ -n "${_dstloc}" ]; then
-	mtpt=$(df | awk '$NF == mtpt { print $NF }' mtpt=${_dstloc})
+	_mtpt=$(df | awk '$NF == _mtpt { print $NF }' _mtpt=${_dstloc})
     fi
 
-    if [ -n "${mtpt}" ]; then
-	killMountProcesses ${mtpt}
-	if ! umount ${mtpt}; then
-	    echo "cleanupMounts: ${chroot}${mtpt} failed"
+    if [ -n "${_mtpt}" ]; then
+	killMountProcesses ${_mtpt}
+	if ! umount ${_mtpt}; then
+	    echo "cleanupMounts: ${chroot}${_mtpt} failed"
 	    return 1
 	fi
     fi
