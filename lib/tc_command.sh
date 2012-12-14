@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.159 2012/11/19 00:10:39 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.160 2012/12/14 23:00:14 beat Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -224,7 +224,7 @@ generateUpdateCode () {
 		  echo "${updateCmd} co ${8}://${4}/${9} ${treeSubDir}"
 		  echo "else"
 		  echo "cd ${treeDir}/${treeSubDir}"
-		  echo "${updateCmd} up"
+		  echo "${updateCmd} up --accept theirs-full"
 		  echo "fi"
 		) > ${treeDir}/update.sh
 		chmod +x ${treeDir}/update.sh
