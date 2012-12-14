@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.182 2012/10/27 18:03:59 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.pl,v 1.183 2012/12/14 20:56:32 beat Exp $
 #
 
 my $pb;
@@ -3423,6 +3423,7 @@ sub addPorts {
 
         if (defined($deps)) {
                 my @list;
+                push @list, $cache->PkgDependsList($port);
                 push @list, $cache->BuildDependsList($port);
                 push @list, $cache->RunDependsList($port);
                 push @list, $cache->TestDependsList($port);
