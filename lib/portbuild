@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $MCom: portstools/tinderbox/lib/portbuild,v 1.146 2012/11/12 23:32:34 marcus Exp $
+# $MCom: portstools/tinderbox/lib/portbuild,v 1.147 2012/12/15 15:04:24 marcus Exp $
 
 . ${pb}/scripts/lib/tinderlib.sh
 
@@ -156,8 +156,6 @@ PKGD=$7
 pkgname=$(basename $8 ${PKGSUFFIX})
 dirname=$9
 
-use_pkgng=$(make -VWITH_PKGNG)
-
 echo ${pkgname}
 echo ${dirname}
 
@@ -204,6 +202,8 @@ mtree -deU -f ${chroot}/etc/mtree/BSD.var.dist \
       -p ${chroot}/var >/dev/null 2>&1
 mtree -deU -f ${chroot}/etc/mtree/BSD.usr.dist \
       -p ${chroot}/usr >/dev/null 2>&1
+
+use_pkgng=$(make -f ${chroot}/a/ports/Mk/bsd.port.mk -VWITH_PKGNG)
 
 mkdir -p ${chroot}${LOCALBASE}
 if [ -f ${chroot}/a/ports/Templates/BSD.local.dist ]; then

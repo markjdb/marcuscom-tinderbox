@@ -148,7 +148,7 @@ TD=$8
 PKGD=$9
 PLISTCHECK=${10}
 
-use_pkgng=$(make -VWITH_PKGNG)
+use_pkgng=$(make -f /a/ports/Mk/bsd.port.mk -VWITH_PKGNG)
 
 L=$(echo ${LOCALBASE} | sed 's,^/,,')
 
