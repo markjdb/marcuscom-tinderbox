@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.79 2012/12/15 15:04:24 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.80 2013/01/02 21:18:59 marcus Exp $
 #
 
 tinderLocJail () {
@@ -501,6 +501,9 @@ buildenv () {
     # Allow SRCBASE to be overridden
     eval "export SRCBASE=${SRCBASE:-`realpath $(tinderLoc jail ${jail})/src`}" \
 	>/dev/null 2>&1
+
+    # Set ARCH (needed for cross-building)
+    export ARCH=$(${tc} getJailArch -j ${jail})
 
     for _tb_var in $(buildenvlist "${jail}" "${portstree}" "${build}" "${major_version}")
     do
