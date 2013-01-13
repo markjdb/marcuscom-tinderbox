@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.163 2013/01/13 16:39:46 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.164 2013/01/13 16:45:35 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -102,7 +102,7 @@ generateUpdateCode () {
 		fetchRc=0
 		tested=0
 		while [ 1 -eq 1 ]; do
-		    ${fetchCmd} -s ${fetchUrl}/${fetchSets%% *}${fetchSufx}
+		    ${fetchCmd} -s ${fetchUrl}/${fetchSets%% *}${fetchSufx} >/dev/null 2>&1
 		    fetchRc=$?
 		    if [ ${fetchRc} -ne 0 ]; then
 			fetchUrl="ftp://${4}/pub/FreeBSD/releases/${updateArch}/${updateArch}/${5}"
