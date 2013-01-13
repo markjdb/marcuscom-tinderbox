@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.162 2013/01/03 16:58:47 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.163 2013/01/13 16:39:46 marcus Exp $
 #
 
 export _defaultUpdateHost="cvsup18.FreeBSD.org"
@@ -99,7 +99,25 @@ generateUpdateCode () {
 		    mkdir -p ${treeDir} >/dev/null 2>&1
 		fi
 
-		if [ "$(${fetchCmd} -s ${fetchUrl}/${fetchSets%% *}${fetchSufx})" != "Unknown" ]; then
+		fetchRc=0
+		tested=0
+		while [ 1 -eq 1 ]; do
+		    ${fetchCmd} -s ${fetchUrl}/${fetchSets%% *}${fetchSufx}
+		    fetchRc=$?
+		    if [ ${fetchRc} -ne 0 ]; then
+			fetchUrl="ftp://${4}/pub/FreeBSD/releases/${updateArch}/${updateArch}/${5}"
+		    else
+			break
+		    fi
+
+		    if [ ${tested} -eq 1 ]; then
+			break
+		    else
+			tested=1
+		    fi
+		done
+
+		if [ ${fetchRc} -eq 0 ]; then
 		  ( updateCmd="${fetchCmd}"
 		    echo "#!/bin/sh"
 		    echo "mkdir -p ${treeDir}/sets"
