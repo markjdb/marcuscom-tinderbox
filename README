@@ -110,26 +110,30 @@
                          Chapter 2 Requirements
 
    Recent FreeBSD (development happens on 10-CURRENT only, but
-   Tinderbox is known to work on RELENG_8 and RELENG_9 too), Perl 5.8
-   or later (lang/perl5.8), and either MySQL 4.1 or later
-   (databases/mysql41-server) or PostgreSQL 8.2 or later
-   (databases/postgresql82-server).
+   Tinderbox is known to work on RELENG_8 and RELENG_9 too), Perl
+   (lang/perl5.14), and either MySQL (databases/mysql55-server) or
+   PostgreSQL (databases/postgresql90-server). All versions of each
+   in the ports tree are supported.
 
    If MySQL is used, the MySQL Perl module must also be installed
-   (databases/p5-DBD-mysql41). If PostgreSQL is used, the Pg Perl
+   (databases/p5-DBD-mysql). If PostgreSQL is used, the Pg Perl
    module must also be installed (databases/p5-DBD-Pg).
 
-     Note: Please note, however, that is is recommended that for
-     MySQL version 5.0 or later be used. There are currently no plans
-     to make this a requirement, but it may happen in the future.
+     Note: Please note that is is recommended that for MySQL version
+     5.0 or later be used. There are currently no plans to make this
+     a requirement, but it may happen in the future.
 
-   PHP 4.x is now EOL, so the web front-end (found in the webui/
-   subdirectory) requires PHP 5 (lang/php5), PEAR::MDB2_Driver_mysql
-   (databases/pear-MDB2_Driver_mysql) or PEAR::MDB2_Driver_pgsql
-   (databases/pear-MDB2_Driver_pgsql), PHP Session
-   (www/php5-session), and one of the PHP MySQL
-   (databases/php5-mysql) or PHP Pgsql (databases/php5-pgsql)
-   depending on your choice of backend database above.
+   The web front-end (found in webui/) requires PHP 5 (lang/php5),
+   PHP5 pdo (databases/php5-pdo), PHP Session (www/php5-session), and
+   a set from:
+
+     * databases/php5-mysql and databases/php5-pdo_mysql
+
+     * databases/php5-pgsql and databases/php5-pdo_pgsql
+
+     * databases/php5-sqlite3 and databases/php5-pdo_sqlite
+
+     Note: SQLite support is only in Tinderbox version 4.0 or later
 
    If you will be sending emails from Tinderbox (e.g. build failure
    or build completion emails) you must install net/p5-Net to get the
@@ -164,7 +168,12 @@
 
        If your Tinderbox host does not have administrative access to
        the database server, you must perform the next few steps by
-       hand. Else, skip to step 7.
+       hand. Else, skip to step 7. Since any user may create a SQLite
+       database, users of SQLite can skip to step 6.
+
+         Note: If you are going to be using the web front-end with
+         SQLite, you should be sure to keep the database in a
+         directory to which the www user has write permissions.
 
     4. Edit ${pb}/scripts/ds.ph.dist for your setup. Once this file
        has been edited, copy it to ds.ph.
@@ -190,6 +199,8 @@
          Tinderbox database as well as all the tables within that
          database.
 
+         SQLite users need not do anything for this step.
+
     6. Populate the database with the Tinderbox schema:
 
        MySQL:
@@ -202,9 +213,16 @@
  # cd sql
  # ./genschema pgsql | psql -U {DB_USER} -W -h {DB_HOST} -d {DB_NAME}
 
+       SQLite:
+
+ # cd sql
+ # ./genschema sqlite | sqlite3 {DB_NAME}
+
        Where {DB_HOST} and {DB_NAME} are the values of $DB_HOST and
        $DB_NAME from ds.ph respectively, {DB_ADMIN} is the database
-       administrator username, and {DB_USER} is the Tinderbox user.
+       administrator username, {DB_USER} is the Tinderbox user, and
+       {DB_NAME} is the name of the desired SQLite database file,
+       including the desired full or relative path.
 
          Caution: Do not do this if you are upgrading! If you do, you
          will overwrite all of your previous data. If schema changes
