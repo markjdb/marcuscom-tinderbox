@@ -268,7 +268,7 @@
 
  # cd ${pb}/scripts && ./tc createJail -j 9.0 -d "FreeBSD 9.0-RELEASE" \
    -D base/release/9.0.0 \
-   -u SVN -H svn.FreeBSD.org -P http
+   -u SVN -H svn.FreeBSD.org -P https
 
        or
 
@@ -307,7 +307,7 @@
 
  # cd ${pb}/scripts && ./tc createPortsTree -p FreeBSD \
    -d "FreeBSD ports tree" \
-   -u SVN -P http -H svn.FreeBSD.org -D ports/head
+   -u SVN -P https -H svn.FreeBSD.org -D ports/head
    -w http://svnweb.FreeBSD.org/ports/
 
    14. Create the required Builds using the tc command. A Build is a
