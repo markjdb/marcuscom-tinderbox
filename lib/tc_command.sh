@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.166 2013/02/06 14:50:04 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.167 2013/02/10 22:38:16 marcus Exp $
 #
 
 export _defaultUpdateHost="svn.FreeBSD.org"
@@ -1389,8 +1389,14 @@ makeBuild () {
 		zfs set mountpoint=${BUILD_DIR} ${MD_UNIT}
 	    fi
 	fi
+    elif [ "${MD_FSTYPE}" = "tmpfs" ]; then
+	if [ -n "${MD_SIZE}" -a ${MD_SIZE%[a-zA-Z]} -gt 0 ]; then
+	    mount -t tmpfs -o size=${MD_SIZE} tmpfs ${BUILD_DIR}
+	else
+	    mount -t tmpfs tmpfs ${BUILD_DIR}
+	fi
     elif [ -n "${MD_FSTYPE}" ]; then
-	echo "You must define either ufs or zfs as your memory device."
+	echo "You must define either ufs, zfs or tmpfs as your memory device."
     fi
 
     # Extract the tarball
@@ -1552,6 +1558,8 @@ tinderbuild_reset () {
 		mdconfig -d -u ${MD_UNIT}
 	    fi
 	fi
+    elif [ "${MD_FSTYPE}" = "tmpfs" ]; then
+	umount -f ${BUILD_DIR}
     fi
 }
 
