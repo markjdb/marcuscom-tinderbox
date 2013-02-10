@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $MCom: portstools/tinderbox/lib/portbuild,v 1.149 2013/02/08 15:40:27 marcus Exp $
+# $MCom: portstools/tinderbox/lib/portbuild,v 1.150 2013/02/10 23:04:06 marcus Exp $
 
 . ${pb}/scripts/lib/tinderlib.sh
 
@@ -414,7 +414,7 @@ if [ "${error}" = "0" ]; then
 	    -cf - . | tar --unlink -C ${DISTFILE_CACHE} -xvf -
     fi
 
-    if [ -n "${PREFIX}" ]; then
+    if [ -n "${PREFIX}" -a "${PREFIX}" != "/usr/local" ]; then
         jexec -U root ${jname} env LOCALBASE=${LOCALBASE:-/usr/local} PREFIX=${PREFIX} PATH=${LOCALBASE}/bin:${LOCALBASE}/sbin:${PATH} /usr/bin/nice -n $nice /buildscript ${dirname} 2 "$ED" "$PD" "$FD" "$BD" "$RD" "$TD" "$PKGD" "${plistcheck}" > ${chroot}/tmp/${pkgname}.log2 2>&1
     else
 	jexec -U root ${jname} env LOCALBASE=${LOCALBASE:-/usr/local} PATH=${LOCALBASE}/bin:${LOCALBASE}/sbin:${PATH} /usr/bin/nice -n $nice /buildscript ${dirname} 2 "$ED" "$PD" "$FD" "$BD" "$RD" "$TD" "$PKGD" "${plistcheck}" > ${chroot}/tmp/${pkgname}.log2 2>&1
