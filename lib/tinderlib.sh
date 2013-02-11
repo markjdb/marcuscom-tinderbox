@@ -23,7 +23,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.80 2013/01/02 21:18:59 marcus Exp $
+# $MCom: portstools/tinderbox/lib/tinderlib.sh,v 1.81 2013/02/11 22:28:42 beat Exp $
 #
 
 tinderLocJail () {
@@ -690,16 +690,14 @@ checkPreReqs () {
     use_pkgng=$(make -f /usr/ports/Mk/bsd.port.mk -VWITH_PKGNG)
 
     for r in ${reqs} ; do
-	png_r=${r##*@}
-	p_r=${r%%@*}
         if [ -n "${use_pkgng}" ]; then 
-            if [ -z "$(pkg info -qgO ${png_r})" ]; then
-                missing="${missing} ${png_r}"
+            if [ -z "$(pkg info -qgO ${r})" ]; then
+                missing="${missing} ${r}"
                 error=1
             fi
         else
-            if [ -z "$(pkg_info -Q -O ${p_r})" ]; then
-                missing="${missing} ${p_r}"
+            if [ -z "$(pkg_info -Q -O ${r})" ]; then
+                missing="${missing} ${r}"
                 error=1
             fi
         fi
