@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.168 2013/02/11 22:28:42 beat Exp $
+# $MCom: portstools/tinderbox/lib/tc_command.sh,v 1.169 2013/03/03 21:16:25 marcus Exp $
 #
 
 export _defaultUpdateHost="svn.FreeBSD.org"
@@ -523,7 +523,7 @@ Upgrade () {
         major_upgrade=0
 	if [ -n "${bkup_file}" ]; then
 	    major_upgrade=1
-        elif [ ${dsmajor} -lt ${curmajor} ]; then
+        elif [ ${dsmajor} -lt ${curmajor} -a ${dsmajor} != 3 ]; then
 	    major_upgrade=1
         fi
 
