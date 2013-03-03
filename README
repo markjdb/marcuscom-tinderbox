@@ -168,17 +168,14 @@
 
        If your Tinderbox host does not have administrative access to
        the database server, you must perform the next few steps by
-       hand. Else, skip to step 7. Since any user may create a SQLite
-       database, users of SQLite can skip to step 6.
+       hand. Else, skip to step 6. Since any user may create a SQLite
+       database, users of SQLite can skip to step 5.
 
          Note: If you are going to be using the web front-end with
          SQLite, you should be sure to keep the database in a
          directory to which the www user has write permissions.
 
-    4. Edit ${pb}/scripts/ds.ph.dist for your setup. Once this file
-       has been edited, copy it to ds.ph.
-
-    5. Create the database and database user on the host that you
+    4. Create the database and database user on the host that you
        defined within ds.ph.
 
          Tip: The database can live on the same server as Tinderbox.
@@ -201,7 +198,7 @@
 
          SQLite users need not do anything for this step.
 
-    6. Populate the database with the Tinderbox schema:
+    5. Populate the database with the Tinderbox schema:
 
        MySQL:
 
@@ -230,21 +227,21 @@
          will be included, and instructions will be available at
          http://tinderbox.marcuscom.com.
 
-    7. Edit ${pb}/scripts/tinderbox.ph.dist for your environment (if
+    6. Edit ${pb}/scripts/tinderbox.ph.dist for your environment (if
        you are using the web front-end, also edit
        webui/inc_tinderbox.php.dist). Once these files have been
        edited they must be copied to tinderbox.ph and
        inc_tinderbox.php respectively.
 
-    8. Initialize the Tinderbox:
+    7. Initialize the Tinderbox:
 
  # cd ${pb}/scripts && ./tc init
 
-    9. Tinderbox can use either NFS or nullfs to mount the required
+    8. Tinderbox can use either NFS or nullfs to mount the required
        file systems within the build chroots (called Builds in
-       Tinderbox). If you wish to use nullfs, skip to step 12.
+       Tinderbox). If you wish to use nullfs, skip to step 11.
 
-   10. Setup the Tinderbox server as an NFS server by adding the
+    9. Setup the Tinderbox server as an NFS server by adding the
        following to /etc/exports:
 
  ${pb} -alldirs -maproot=0:0 localhost
@@ -253,7 +250,7 @@
          fully qualified path (hint: use realpath on your desired
          ${pb} to find out what this needs to be).
 
-   11. Add the following to /etc/rc.conf to enable the NFS client and
+   10. Add the following to /etc/rc.conf to enable the NFS client and
        server:
 
  nfs_client_enable="YES"
@@ -262,7 +259,7 @@
  nfs_server_enable="YES"
  nfs_reserved_port_only="YES"
 
-   12. Create the required Jails using the tc command. A Jail is
+   11. Create the required Jails using the tc command. A Jail is
        nothing more than a version of FreeBSD. For example, to create
        a Jail for FreeBSD 9.0-RELEASE:
 
@@ -296,7 +293,7 @@
          "9-FreeBSD") as this may prove useful when using things such
          as Hooks (Section 8.8).
 
-   13. Create the required PortsTrees using the tc command. A
+   12. Create the required PortsTrees using the tc command. A
        PortsTree is a set of ports you wish to build. A PortsTree
        does not have to be a complete FreeBSD ports tree. However,
        all ports within a tree must have all of their dependencies
@@ -310,7 +307,7 @@
    -u SVN -P https -H svn.FreeBSD.org -D ports/head
    -w http://svnweb.FreeBSD.org/ports/
 
-   14. Create the required Builds using the tc command. A Build is a
+   13. Create the required Builds using the tc command. A Build is a
        combination of a Jail and a PortsTree. The build is the object
        in which packages are created. To create a build that combines
        a 9.0 Jail with the FreeBSD ports tree:
@@ -397,10 +394,10 @@
 
  # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD x11/gnome2
 
-     Tip: The example above will run the build in the foreground with
-     all messages and errors echoing to the terminal. To capture all
-     of this, it is recommended to redirect tinderbuild output to a
-     log file. For example:
+     Tip: Although port build logs are saved separately, messages and
+     errors from Tinderbox itself will be echoed to the terminal. To
+     capture all of this, it is recommended to redirect tinderbuild
+     output to a log file. For example:
 
        * Bourne shell equivalents:
 
@@ -683,7 +680,8 @@
  # ./tc configDistfile -c ${distfiles}
 
    Where ${distfiles} is either an NFS mount point or, if using
-   nullfs, a fully qualified path where distfiles should be stored.
+   nullfs, a fully qualified path on the host where distfiles should
+   be stored.
 
      --------------------------------------------------------------
 
