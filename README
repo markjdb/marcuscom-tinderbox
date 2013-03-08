@@ -261,16 +261,16 @@
 
    11. Create the required Jails using the tc command. A Jail is
        nothing more than a version of FreeBSD. For example, to create
-       a Jail for FreeBSD 9.0-RELEASE:
+       a Jail for FreeBSD 9.1-RELEASE:
 
- # cd ${pb}/scripts && ./tc createJail -j 9.0 -d "FreeBSD 9.0-RELEASE" \
-   -D base/release/9.0.0 \
+ # cd ${pb}/scripts && ./tc createJail -j 9.1 -d "FreeBSD 9.1-RELEASE" \
+   -D base/release/9.1.0 \
    -u SVN -H svn.FreeBSD.org -P https
 
        or
 
- # cd ${pb}/scripts && ./tc createJail -j 9.0 -d "FreeBSD 9.0-RELEASE" \
-   -t 9.0-RELEASE -u LFTP -H ftp.freebsd.org
+ # cd ${pb}/scripts && ./tc createJail -j 9.1 -d "FreeBSD 9.1-RELEASE" \
+   -t 9.1-RELEASE -u LFTP -H ftp.freebsd.org
 
        The first method will download source via svn and use make
        world to compile a complete FreeBSD installation.
@@ -286,10 +286,10 @@
 
          Important: All Jail names MUST begin with their FreeBSD
          major version number. That is, the following is an illegal
-         jail name: "FreeBSD-9.0".
+         jail name: "FreeBSD-9.1".
 
          Tip: It is recommended that the Jail begin with the FreeBSD
-         major.minor version (i.e. "9.0-FreeBSD" instead of just
+         major.minor version (i.e. "9.1-FreeBSD" instead of just
          "9-FreeBSD") as this may prove useful when using things such
          as Hooks (Section 8.8).
 
@@ -310,10 +310,10 @@
    13. Create the required Builds using the tc command. A Build is a
        combination of a Jail and a PortsTree. The build is the object
        in which packages are created. To create a build that combines
-       a 9.0 Jail with the FreeBSD ports tree:
+       a 9.1 Jail with the FreeBSD ports tree:
 
- # cd ${pb}/scripts && ./tc createBuild -b 9.0-FreeBSD -j 9.0 \
-   -p FreeBSD -d "9.0-RELEASE with FreeBSD ports tree"
+ # cd ${pb}/scripts && ./tc createBuild -b 9.1-FreeBSD -j 9.1 \
+   -p FreeBSD -d "9.1-RELEASE with FreeBSD ports tree"
 
        Note: the recommended way to name Builds is "Jail-PortsTree".
        All builds must also begin with their FreeBSD major version
@@ -372,9 +372,9 @@
    Where {BUILD} is the name of the Build for which this port should
    be built and {PORT DIRECTORY} is the directory within the
    PortsTree where this port can be found. For example, to build the
-   GNOME 2 Desktop port for the Build "9.0-FreeBSD":
+   GNOME 2 Desktop port for the Build "9.1-FreeBSD":
 
- # cd ${pb}/scripts && ./tc addPort -b 9.0-FreeBSD -d x11/gnome2
+ # cd ${pb}/scripts && ./tc addPort -b 9.1-FreeBSD -d x11/gnome2
 
      Note: A port does not have to be added to the database for
      Tinderbox to build it. If you just want to do a quick ad hoc
@@ -387,12 +387,15 @@
 
    To start a Tinderbox build, use tc:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b {BUILD} {PORT DIRECTORY}
+ # cd ${pb}/scripts && ./tc tinderbuild -b {BUILD} [{PORT DIRECTORY}]
+
+     Note: If the {PORT_DIRECTORY} argument is empty, all ports
+     without an up to date package in the datastore will be built.
 
    For example, to build the GNOME 2 Desktop for the Build
-   9.0-FreeBSD:
+   9.1-FreeBSD:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD x11/gnome2
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.1-FreeBSD x11/gnome2
 
      Tip: Although port build logs are saved separately, messages and
      errors from Tinderbox itself will be echoed to the terminal. To
@@ -401,13 +404,13 @@
 
        * Bourne shell equivalents:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD \
-   x11/gnome2 > ${pb}/builds/9.0-FreeBSD/build.log 2>&1 &
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.1-FreeBSD \
+   x11/gnome2 > ${pb}/builds/9.1-FreeBSD/build.log 2>&1 &
 
        * C shell equivalents:
 
- # cd ${pb}/scripts && ./tc tinderbuild -b 9.0-FreeBSD \
-   x11/gnome2 >& ${pb}/builds/9.0-FreeBSD/build.log &
+ # cd ${pb}/scripts && ./tc tinderbuild -b 9.1-FreeBSD \
+   x11/gnome2 >& ${pb}/builds/9.1-FreeBSD/build.log &
 
      More advanced logging options are also available. All log files
      including tinderbuild output, make logs, and individual port
@@ -417,7 +420,7 @@
      If set to a directory, a subdirectory will be created in the
      format of {BUILD}-{DATE} where {BUILD} is the Build name, and
      {DATE} is the date in the format YYYYMMDDHHMMSS (e.g.
-     9.0-FreeBSD-20091012112105). Within this subdirectory will be
+     9.1-FreeBSD-20091012112105). Within this subdirectory will be
      the tinderbuild log, and symlinks to the make logs and
      individual port build logs. If you would rather have the log
      files copied to this location (instead of using symlinks), set
@@ -485,7 +488,7 @@
 
    To update existing Jails:
 
- # cd ${pb}/scripts && ./tc makeJail -j 9.0
+ # cd ${pb}/scripts && ./tc makeJail -j 9.1
 
    The output of the Jail build will go to stdout. The output of
    update (e.g cvsup) will go to ${pb}/jails/{JAIL}/update.log (where
@@ -499,9 +502,9 @@
    If you want to clone various aspects of an existing Build, use the
    tc application with the copyBuild command. For example:
 
- # cd ${pb}/scripts && ./tc copyBuild -s 9.0-FreeBSD -d 10-FreeBSD
+ # cd ${pb}/scripts && ./tc copyBuild -s 9.1-FreeBSD -d 10-FreeBSD
 
-   The source and destination Builds (i.e. 9.0-FreeBSD and 10-FreeBSD
+   The source and destination Builds (i.e. 9.1-FreeBSD and 10-FreeBSD
    respectively in this example) must already exist. By default,
    copyBuild will copy the environment file, OPTIONS, and ports from
    the source Build to the destination Build. It can also optionally
@@ -629,8 +632,8 @@
    If the value is USER, then an update.sh script must be created
    under the Jail or PortsTree's root directory. This script will be
    called when an update is required. For example, if you have a Jail
-   called "9.0", an executable update.sh script must be placed under
-   ${pb}/jails/9.0. If you have a PortsTree called "FreeBSD", an
+   called "9.1", an executable update.sh script must be placed under
+   ${pb}/jails/9.1. If you have a PortsTree called "FreeBSD", an
    executable update.sh script must be placed under
    ${pb}/portstrees/FreeBSD.
 
@@ -704,7 +707,7 @@
 
    This tarball must be called ccache.tar, and be placed in the Jail
    directory for each Jail that will use ccache (e.g.
-   ${pb}/jails/9.0).
+   ${pb}/jails/9.1).
 
      Note: If Tinderbox is configured to run builds for multiple
      versions of FreeBSD and/or multiple architectures (for example,
@@ -748,9 +751,9 @@
    or build.{BUILD} respectively, and placing it in
    ${pb}/scripts/etc/env/.
 
-   For example, if you want a particular Build (e.g. "9.0-Perl56") to
+   For example, if you want a particular Build (e.g. "9.1-Perl56") to
    use Perl 5.6.2 instead of Perl 5.8.x, create a file named
-   build.9.0-Perl56 in ${pb}/scripts/etc/env/ that contains the
+   build.9.1-Perl56 in ${pb}/scripts/etc/env/ that contains the
    following:
 
  PERL_VER=5.6.2
@@ -962,7 +965,7 @@
 
  # mkdir ${pb}
  # cd ${pb} && \
-   fetch -o - path_to_tinderbox-3.4.tar.gz | \
+   fetch -o - path_to_tinderbox-4.0.0.tar.gz | \
    tar xvf -
 
     4. Now we need to leave the jail, and on the host system chroot
@@ -1022,8 +1025,9 @@
 
     2. Create a Jail (Chapter 3) using the name in step 1:
 
- # cd ${pb}/scripts && ./tc createJail -j 9-i386 -u CSUP \
-         -t RELENG_9 -d "FreeBSD-9-STABLE i386" -a i386
+ # cd ${pb}/scripts && ./tc createJail -j 9-i386 \
+   -u SVN -H svn.FreeBSD.org -P https \
+   -D base/stable/9 -d "FreeBSD-9-STABLE i386" -a i386
 
    The Jail can then be used as though it were any other to create
    Builds.
